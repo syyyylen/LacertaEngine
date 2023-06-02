@@ -1,6 +1,8 @@
 #include <iostream>
-#include "Core.h"
-#include "Logger/Logger.h"
+#include <LacertaEngine.h>
+
+// Lacerta Engine Editor Entry Point
+// Launches the editor and uses LacertaEngine DLL core code
 
 int main(int argc, char* argv[])
 {
@@ -10,9 +12,9 @@ int main(int argc, char* argv[])
     LOG(Warning, "This is a warning message !");
     LOG(Error, "This is a error message !");
 
-    Logger::Get()->WriteLogsToFile();
+    LacertaEngine::Logger::Get()->WriteLogsToFile();
 
     std::cin.get();
-    
+
     return 0;
 }

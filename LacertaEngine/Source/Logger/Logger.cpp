@@ -1,12 +1,14 @@
 ﻿#include "Logger.h"
 
+namespace LacertaEngine {
+
 static Logger s_logger;
 
 void Logger::Log(LogType logType, const std::string& content)
 {
     HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
     std::string logPrefix;
-    
+
     switch (logType)
     {
     case LogType::Debug:
@@ -26,7 +28,7 @@ void Logger::Log(LogType logType, const std::string& content)
         SetConsoleTextAttribute(hConsole, 15);
         break;
     }
-    
+
     std::cout << logPrefix << content << std::endl;
     m_logMessages.push_back(logPrefix + content);
 }
@@ -35,9 +37,12 @@ void Logger::WriteLogsToFile()
 {
     Log(LogType::Debug, "Writing Logs to file");
 
-    std::filesystem::create_directory("Log"); // C++ 17 only functionnality
-    
-    std::ofstream file("LOG/log.txt");
+    std::filesystem::path currentDir = std::filesystem::current_path(); // filesystem is C++ 17 only
+    std::filesystem::path logDir = currentDir.parent_path() / "Log";
+    std::filesystem::create_directory(logDir);
+
+    std::filesystem::path logFilePath = logDir / "log.txt";
+    std::ofstream file(logFilePath.string());
     if (file.is_open()) {
         for (const auto& log : m_logMessages) {
             file << log << std::endl;
@@ -53,4 +58,6 @@ void Logger::WriteLogsToFile()
 Logger* Logger::Get()
 {
     return &s_logger;
+}
+
 }

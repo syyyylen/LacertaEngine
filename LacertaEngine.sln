@@ -1,5 +1,10 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.6.33723.286
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LacertaEngineEditor", "LacertaEngineEditor\LacertaEngineEditor.vcxproj", "{0CBC6B7D-548C-4070-9DDC-620640BD1B5C}"
+EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LacertaEngine", "LacertaEngine\LacertaEngine.vcxproj", "{42329C55-01E9-45EE-A1DE-AA377A0ED32D}"
 EndProject
 Global
@@ -14,9 +19,21 @@ Global
 		{42329C55-01E9-45EE-A1DE-AA377A0ED32D}.Debug|Win32.Build.0 = Debug|Win32
 		{42329C55-01E9-45EE-A1DE-AA377A0ED32D}.Debug|x64.ActiveCfg = Debug|x64
 		{42329C55-01E9-45EE-A1DE-AA377A0ED32D}.Debug|x64.Build.0 = Debug|x64
-		{42329C55-01E9-45EE-A1DE-AA377A0ED32D}.Release|Win32.ActiveCfg = Release|Win32
-		{42329C55-01E9-45EE-A1DE-AA377A0ED32D}.Release|Win32.Build.0 = Release|Win32
+		{42329C55-01E9-45EE-A1DE-AA377A0ED32D}.Release|Win32.ActiveCfg = Release|x64
 		{42329C55-01E9-45EE-A1DE-AA377A0ED32D}.Release|x64.ActiveCfg = Release|x64
 		{42329C55-01E9-45EE-A1DE-AA377A0ED32D}.Release|x64.Build.0 = Release|x64
+		{0CBC6B7D-548C-4070-9DDC-620640BD1B5C}.Debug|Win32.ActiveCfg = Debug|Win32
+		{0CBC6B7D-548C-4070-9DDC-620640BD1B5C}.Debug|Win32.Build.0 = Debug|Win32
+		{0CBC6B7D-548C-4070-9DDC-620640BD1B5C}.Debug|x64.ActiveCfg = Debug|x64
+		{0CBC6B7D-548C-4070-9DDC-620640BD1B5C}.Debug|x64.Build.0 = Debug|x64
+		{0CBC6B7D-548C-4070-9DDC-620640BD1B5C}.Release|Win32.ActiveCfg = Release|x64
+		{0CBC6B7D-548C-4070-9DDC-620640BD1B5C}.Release|x64.ActiveCfg = Release|x64
+		{0CBC6B7D-548C-4070-9DDC-620640BD1B5C}.Release|x64.Build.0 = Release|x64
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {A5249958-D5FE-45E0-AA23-AD68AC6E0605}
 	EndGlobalSection
 EndGlobal

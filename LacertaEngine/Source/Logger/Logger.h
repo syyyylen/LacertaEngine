@@ -1,6 +1,8 @@
 ﻿#pragma once
 #include "../Core.h"
 
+namespace LacertaEngine {
+
 enum class LogType
 {
     Debug,
@@ -8,17 +10,19 @@ enum class LogType
     Error
 };
 
-class Logger
+class LACERTAENGINE_API Logger
 {
 public:
     void Log(LogType type, const std::string& content);
 
     void WriteLogsToFile();
-    
+
     static Logger* Get();
 
 private:
     std::vector<std::string> m_logMessages;
 };
 
-#define LOG(type, content) Logger::Get()->Log(LogType::type, content)
+#define LOG(type, content) LacertaEngine::Logger::Get()->Log(LacertaEngine::LogType::type, content)
+
+}
