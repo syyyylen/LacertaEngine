@@ -1,0 +1,56 @@
+﻿#include "Logger.h"
+
+static Logger s_logger;
+
+void Logger::Log(LogType logType, const std::string& content)
+{
+    HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+    std::string logPrefix;
+    
+    switch (logType)
+    {
+    case LogType::Debug:
+        logPrefix = "[Debug] ";
+        SetConsoleTextAttribute(hConsole, 10);
+        break;
+    case LogType::Warning:
+        logPrefix = "[Warning] ";
+        SetConsoleTextAttribute(hConsole, 14);
+        break;
+    case LogType::Error:
+        logPrefix = "[Error] ";
+        SetConsoleTextAttribute(hConsole, 12);
+        break;
+    default:
+        logPrefix = "[Debug] ";
+        SetConsoleTextAttribute(hConsole, 15);
+        break;
+    }
+    
+    std::cout << logPrefix << content << std::endl;
+    m_logMessages.push_back(logPrefix + content);
+}
+
+void Logger::WriteLogsToFile()
+{
+    Log(LogType::Debug, "Writing Logs to file");
+
+    std::filesystem::create_directory("Log"); // C++ 17 only functionnality
+    
+    std::ofstream file("LOG/log.txt");
+    if (file.is_open()) {
+        for (const auto& log : m_logMessages) {
+            file << log << std::endl;
+        }
+        file.close();
+        std::cout << "Log written to file." << std::endl;
+    }
+    else {
+        std::cerr << "Failed to open log file." << std::endl;
+    }
+}
+
+Logger* Logger::Get()
+{
+    return &s_logger;
+}
