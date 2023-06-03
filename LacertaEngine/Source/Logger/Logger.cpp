@@ -8,7 +8,7 @@ void Logger::Log(LogType logType, const std::string& content)
 {
     HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
     std::string logPrefix;
-
+    
     switch (logType)
     {
     case LogType::Debug:
