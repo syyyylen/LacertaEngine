@@ -1,9 +1,8 @@
 #include <iostream>
 #include <LacertaEngine.h>
 
+#include "LacertaEditor.h"
 #include "EditorWindow/EditorWindow.h"
-#include "InputSystem/InputSystem.h"
-#include "Window/Window.h"
 
 // Lacerta Engine Editor Entry Point
 // Launches the editor and uses LacertaEngine DLL core code
@@ -11,22 +10,15 @@
 int main(int argc, char* argv[])
 {
     std::cout << "Hello There !" << std::endl;
-    LOG(Debug, "Hello Log");
 
-    LacertaEngineEditor::EditorWindow EngineWindow(L"EngineWindow");
-    LacertaEngine::InputSystem::Create();
-    LacertaEngine::InputSystem::Get()->AddListener(&EngineWindow);
-    
-    while(EngineWindow.IsRunning())
+    LacertaEngineEditor::LacertaEditor LacertaEditor;
+    LacertaEditor.Start();
+    while(LacertaEditor.IsRunning())
     {
-        LacertaEngine::InputSystem::Get()->Update();
+        LacertaEditor.Update();
     }
-
-    LacertaEngine::InputSystem::Release();
-
-    LacertaEngine::Logger::Get()->WriteLogsToFile();
+    LacertaEditor.Quit();
 
     std::cin.get();
-
     return 0;
 }

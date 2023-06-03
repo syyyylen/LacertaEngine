@@ -13,9 +13,11 @@ namespace LacertaEngine
             {
                 LPCREATESTRUCT pCreateStruct = (LPCREATESTRUCT)lparam;
                 SetWindowLongPtr(hwnd, GWLP_USERDATA, (LONG_PTR)pCreateStruct->lpCreateParams);
-                Window* window = (Window*)GetWindowLongPtr(hwnd, GWLP_USERDATA);
-                if(window)
-                    window->OnCreate();
+
+                // TODO find a solution, calling this in the constructor is problematic since overrides aren't called 
+                // Window* window = (Window*)GetWindowLongPtr(hwnd, GWLP_USERDATA);
+                // if(window)
+                //     window->OnCreate();
                 break;
             }
 
@@ -233,6 +235,13 @@ namespace LacertaEngine
 
     bool Window::Broadcast()
     {
+        // TODO remove this an use evenmential approach
+        if(!m_isInit)
+        {
+            OnCreate();
+            m_isInit = true;
+        }
+        
         MSG msg;
         while(::PeekMessageW(&msg, NULL, 0, 0, PM_REMOVE) > 0)
         {

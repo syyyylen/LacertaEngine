@@ -43,6 +43,8 @@ protected:
     HINSTANCE m_hinstance;
     bool m_maximized = false;
     RECT m_unmaxedRect;
+
+    bool m_isInit = false; // TODO remove this and use evenmential approach
 };
     
 }

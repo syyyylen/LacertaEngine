@@ -3,18 +3,16 @@
 
 namespace LacertaEngine
 {
-    
+
 class LACERTAENGINE_API InputListener
 {
 public:
     InputListener()
     {
-        
     }
 
     ~InputListener()
     {
-        
     }
 
     // Keyboard pure virtual callbacks

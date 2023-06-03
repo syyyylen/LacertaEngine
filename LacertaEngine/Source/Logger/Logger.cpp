@@ -48,7 +48,6 @@ void Logger::WriteLogsToFile()
             file << log << std::endl;
         }
         file.close();
-        std::cout << "Log written to file." << std::endl;
     }
     else {
         std::cerr << "Failed to open log file." << std::endl;

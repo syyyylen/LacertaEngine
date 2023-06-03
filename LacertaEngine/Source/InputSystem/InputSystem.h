@@ -1,11 +1,12 @@
 ﻿#pragma once
 
-#include <unordered_set>
+#include "../Maths/Point.h"
 #include "InputListener.h"
+#include <unordered_set>
 
 namespace LacertaEngine
 {
-    
+
 class LACERTAENGINE_API InputSystem
 {
 private:
@@ -33,7 +34,6 @@ private:
     bool m_first_time = true;
 
     static InputSystem* m_inputSystem;
-    
 };
 
 }

@@ -1,13 +1,15 @@
 ﻿#pragma once
-#include "InputSystem/InputListener.h"
+#include <LacertaEngine.h>
 #include "Window/Window.h"
-#include "Core.h"
 
 namespace LacertaEngineEditor
 {
 
 using namespace LacertaEngine; // This is making the code less explicit. Might remove it if it's too confusing. 
 
+/**
+ * \brief Handle the main Editor Window that will contain the scene viewport, ImGui menus etc...
+ */
 class EditorWindow : public Window, public InputListener
 {
 public:
