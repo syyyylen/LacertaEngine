@@ -13,6 +13,9 @@ namespace LacertaEngine
             {
                 LPCREATESTRUCT pCreateStruct = (LPCREATESTRUCT)lparam;
                 SetWindowLongPtr(hwnd, GWLP_USERDATA, (LONG_PTR)pCreateStruct->lpCreateParams);
+                Window* window = (Window*)GetWindowLongPtr(hwnd, GWLP_USERDATA);
+                if(window)
+                    window->OnCreate();
                 break;
             }
 
@@ -58,8 +61,6 @@ namespace LacertaEngine
     
     Window::Window(LPCWSTR windowName)
     {
-        LOG(Debug, "Creating a window");
-
         // Window properties
         WNDCLASSEXW wc;
         wc.cbClsExtra = NULL;
@@ -108,34 +109,27 @@ namespace LacertaEngine
 
     void Window::OnCreate()
     {
-        LOG(Debug, "Window OnCreate!");
     }
 
     void Window::OnUpdate()
     {
-        // LOG(Debug, "Window OnUpdate!");
     }
 
     void Window::OnDestroy()
     {
-        LOG(Debug, "Window OnDestroy!");
-        
         m_isRunning = false;
     }
 
     void Window::OnFocus()
     {
-        LOG(Debug, "Window OnFocus!");
     }
 
     void Window::OnLooseFocus()
     {
-        LOG(Debug, "Window OnLooseFocus!");
     }
 
     void Window::OnResize()
     {
-        LOG(Debug, "Window OnResize!");
     }
 
     bool Window::IsMinimized() const

@@ -38,10 +38,10 @@ private:
     bool Broadcast();
 
 protected:
-    bool m_isRunning;
+    bool m_isRunning = false;
     HWND m_hwnd;
     HINSTANCE m_hinstance;
-    bool m_maximized;
+    bool m_maximized = false;
     RECT m_unmaxedRect;
 };
     
