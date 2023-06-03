@@ -9,12 +9,10 @@
 int main(int argc, char* argv[])
 {
     std::cout << "Hello There !" << std::endl;
-
-    LOG(Debug, "This is a debug message !");
-    LOG(Warning, "This is a warning message !");
-    LOG(Error, "This is a error message !");
+    LOG(Debug, "Hello Log");
 
     LacertaEngine::Window EngineWindow(L"EngineWindow");
+    while(EngineWindow.IsRunning());
 
     LacertaEngine::Logger::Get()->WriteLogsToFile();
 

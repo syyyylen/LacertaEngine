@@ -110,6 +110,7 @@
     <ClInclude Include="Source\Core.h" />
     <ClInclude Include="Source\LacertaEngine.h" />
     <ClInclude Include="Source\Logger\Logger.h" />
+    <ClInclude Include="Source\Utilities.h" />
     <ClInclude Include="Source\Window\Window.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
