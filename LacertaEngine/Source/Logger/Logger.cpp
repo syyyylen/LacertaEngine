@@ -41,7 +41,7 @@ void Logger::WriteLogsToFile()
     std::filesystem::path logDir = currentDir.parent_path() / "Log";
     std::filesystem::create_directory(logDir);
 
-    std::filesystem::path logFilePath = logDir / "log.txt";
+    std::filesystem::path logFilePath = logDir / "Log.txt";
     std::ofstream file(logFilePath.string());
     if (file.is_open()) {
         for (const auto& log : m_logMessages) {
