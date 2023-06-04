@@ -2,7 +2,6 @@
 #include <LacertaEngine.h>
 
 #include "LacertaEditor.h"
-#include "EditorWindow/EditorWindow.h"
 
 // Lacerta Engine Editor Entry Point
 // Launches the editor and uses LacertaEngine DLL core code

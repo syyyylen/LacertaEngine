@@ -16,6 +16,8 @@ LacertaEditor::~LacertaEditor()
 void LacertaEditor::Start()
 {
     LOG(Debug, "Lacerta Editor : Start");
+
+    m_editorWindow->Maximize();
 }
 
 void LacertaEditor::Update()

@@ -164,17 +164,21 @@ namespace LacertaEngine
         HR(DestroyWindow(m_hwnd));
     }
 
-    void Window::SetMaximized(bool maximized)
+    /**
+     * \brief Set the window fullscreen (not maximized)
+     * \param fullscreen fullscreen / not fullscreen
+     */
+    void Window::SetFullscreen(bool fullscreen)
     {
-        if (maximized != m_maximized)
+        if (fullscreen != m_fullscreen)
         {
-            m_maximized = maximized;
+            m_fullscreen = fullscreen;
 
             // TODO handle this differently
             DWORD style = GetWindowLong(m_hwnd, GWL_STYLE);
             DWORD extendedStyle = GetWindowLong(m_hwnd, GWL_EXSTYLE);
             
-            if (m_maximized)
+            if (m_fullscreen)
             {
                 // Create the new style that has no menu bars or borders
                 DWORD newStyle = style & ~(WS_CAPTION | WS_THICKFRAME | WS_MINIMIZE | WS_MAXIMIZE | WS_SYSMENU);
@@ -217,6 +221,22 @@ namespace LacertaEngine
         }
     }
 
+    /**
+     * \brief Set the window maximized (not fullscreen)
+     */
+    void Window::Maximize()
+    {
+        // Get the monitor work area dimensions
+        RECT workArea;
+        MONITORINFO monitorInfo;
+        monitorInfo.cbSize = sizeof(MONITORINFO);
+        GetMonitorInfo(MonitorFromWindow(m_hwnd, MONITOR_DEFAULTTONEAREST), &monitorInfo);
+        workArea = monitorInfo.rcWork;
+
+        // Set the window position and size
+        SetWindowPos(m_hwnd, HWND_TOP, workArea.left, workArea.top, workArea.right - workArea.left,
+                     workArea.bottom - workArea.top, SWP_SHOWWINDOW);
+    }
 
     RECT Window::GetClientWindowRect()
     {

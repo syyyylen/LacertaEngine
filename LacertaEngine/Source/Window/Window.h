@@ -29,7 +29,8 @@ public:
     void Show();
     void Hide();
     void Destroy();
-    void SetMaximized(bool maximized);
+    void SetFullscreen(bool fullscreen);
+    void Maximize();
     
     RECT GetClientWindowRect();
     RECT GetScreenSize();
@@ -41,7 +42,7 @@ protected:
     bool m_isRunning = false;
     HWND m_hwnd;
     HINSTANCE m_hinstance;
-    bool m_maximized = false;
+    bool m_fullscreen = false;
     RECT m_unmaxedRect;
 
     bool m_isInit = false; // TODO remove this and use evenmential approach
