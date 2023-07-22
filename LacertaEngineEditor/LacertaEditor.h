@@ -28,6 +28,7 @@ public:
 
 private:
     EditorWindow* m_editorWindow;
+    GraphicsEngine* m_graphicsEngine;
 };
     
 }

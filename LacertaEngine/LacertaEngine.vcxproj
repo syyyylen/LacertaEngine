@@ -105,6 +105,12 @@
   <ItemGroup>
     <ClCompile Include="Source\InputSystem\InputSystem.cpp" />
     <ClCompile Include="Source\Logger\Logger.cpp" />
+    <ClCompile Include="Source\Rendering\Drawcall.cpp" />
+    <ClCompile Include="Source\Rendering\GraphicsEngine.cpp" />
+    <ClCompile Include="Source\Rendering\Renderer.cpp" />
+    <ClCompile Include="Source\Rendering\RenderTarget.cpp" />
+    <ClCompile Include="Source\Rendering\Shader.cpp" />
+    <ClCompile Include="Source\Rendering\WinDX11\WinDX11Renderer.cpp" />
     <ClCompile Include="Source\Window\Window.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -114,6 +120,12 @@
     <ClInclude Include="Source\LacertaEngine.h" />
     <ClInclude Include="Source\Logger\Logger.h" />
     <ClInclude Include="Source\Maths\Point.h" />
+    <ClInclude Include="Source\Rendering\Drawcall.h" />
+    <ClInclude Include="Source\Rendering\GraphicsEngine.h" />
+    <ClInclude Include="Source\Rendering\Renderer.h" />
+    <ClInclude Include="Source\Rendering\RenderTarget.h" />
+    <ClInclude Include="Source\Rendering\Shader.h" />
+    <ClInclude Include="Source\Rendering\WinDX11\WinDX11Renderer.h" />
     <ClInclude Include="Source\Utilities.h" />
     <ClInclude Include="Source\Window\Window.h" />
   </ItemGroup>

@@ -224,7 +224,7 @@ namespace LacertaEngine
     /**
      * \brief Set the window maximized (not fullscreen)
      */
-    void Window::Maximize()
+    void Window::Maximize() // TODO my store default size for unmaximization ? 
     {
         // Get the monitor work area dimensions
         RECT workArea;
@@ -236,6 +236,11 @@ namespace LacertaEngine
         // Set the window position and size
         SetWindowPos(m_hwnd, HWND_TOP, workArea.left, workArea.top, workArea.right - workArea.left,
                      workArea.bottom - workArea.top, SWP_SHOWWINDOW);
+    }
+
+    HWND Window::GetHWND()
+    {
+        return m_hwnd;
     }
 
     RECT Window::GetClientWindowRect()

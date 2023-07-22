@@ -31,7 +31,8 @@ public:
     void Destroy();
     void SetFullscreen(bool fullscreen);
     void Maximize();
-    
+
+    HWND GetHWND();
     RECT GetClientWindowRect();
     RECT GetScreenSize();
 
