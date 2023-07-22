@@ -34,7 +34,6 @@ public:
     virtual void OnLooseFocus() override;
     virtual void OnResize() override;
     // end Window overrides
-    
 };
 
 }

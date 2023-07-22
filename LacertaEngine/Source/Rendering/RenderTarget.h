@@ -1,5 +1,7 @@
 ﻿#pragma once
 #include "../Core.h"
+#include "Renderer.h"
+#include "../Maths/Color.h"
 
 namespace LacertaEngine
 {
@@ -10,9 +12,11 @@ public:
     RenderTarget();
     virtual ~RenderTarget();
 
-    virtual void Initialize() = 0;
-    virtual void SetActive() = 0;
-    virtual void Clear() = 0;
+    virtual void Initialize(Renderer* renderer, int width, int height, int depth) = 0;
+    virtual void SetActive(Renderer* renderer) = 0;
+    virtual void Clear(Renderer* renderer, Color color) = 0;
+    virtual void SetViewportSize(Renderer* renderer, UINT width, UINT height) = 0;
+
 
 private:
     int m_width;

@@ -74,6 +74,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>d3d11.lib;d3dcompiler.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>xcopy /Y /D "$(TargetPath)" "$(SolutionDir)bin\$(Configuration)\LacertaEngineEditor\"</Command>
@@ -97,6 +98,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>d3d11.lib;d3dcompiler.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>xcopy /Y /D "$(TargetPath)" "$(SolutionDir)bin\$(Configuration)\LacertaEngineEditor\"</Command>
@@ -111,6 +113,7 @@
     <ClCompile Include="Source\Rendering\RenderTarget.cpp" />
     <ClCompile Include="Source\Rendering\Shader.cpp" />
     <ClCompile Include="Source\Rendering\WinDX11\WinDX11Renderer.cpp" />
+    <ClCompile Include="Source\Rendering\WinDX11\WinDX11RenderTarget.cpp" />
     <ClCompile Include="Source\Window\Window.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -119,6 +122,7 @@
     <ClInclude Include="Source\InputSystem\InputSystem.h" />
     <ClInclude Include="Source\LacertaEngine.h" />
     <ClInclude Include="Source\Logger\Logger.h" />
+    <ClInclude Include="Source\Maths\Color.h" />
     <ClInclude Include="Source\Maths\Point.h" />
     <ClInclude Include="Source\Rendering\Drawcall.h" />
     <ClInclude Include="Source\Rendering\GraphicsEngine.h" />
@@ -126,6 +130,7 @@
     <ClInclude Include="Source\Rendering\RenderTarget.h" />
     <ClInclude Include="Source\Rendering\Shader.h" />
     <ClInclude Include="Source\Rendering\WinDX11\WinDX11Renderer.h" />
+    <ClInclude Include="Source\Rendering\WinDX11\WinDX11RenderTarget.h" />
     <ClInclude Include="Source\Utilities.h" />
     <ClInclude Include="Source\Window\Window.h" />
   </ItemGroup>

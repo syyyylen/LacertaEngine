@@ -54,10 +54,10 @@ void LacertaEditor::Quit()
     }
     
     InputSystem::Release();
-    
-    Logger::Get()->WriteLogsToFile();
 
     LOG(Debug, "Lacerta Editor : Quit");
+    
+    Logger::Get()->WriteLogsToFile();
 }
 
 bool LacertaEditor::IsRunning()

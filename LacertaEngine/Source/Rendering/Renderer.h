@@ -6,7 +6,7 @@ namespace LacertaEngine
 
 class Drawcall;
 class RenderTarget;
-    
+
 class LACERTAENGINE_API Renderer
 {
 public:
@@ -17,6 +17,8 @@ public:
     virtual void CreateRenderTarget(int width, int height, int depth) = 0;
     virtual void RenderFrame() = 0;
 
+    virtual int* GetDriver() = 0;
+    
     RenderTarget* GetRenderTarget() { return m_renderTarget; }
 
 protected:
