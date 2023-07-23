@@ -1,6 +1,13 @@
 ﻿#include "WinDX11Shader.h"
+
+#include <codecvt>
+
+#include <Windows.h>
+
 #include "WinDX11Renderer.h"
 #include "../../Logger/Logger.h"
+
+#include <d3dcompiler.h>
 
 D3D11_INPUT_ELEMENT_DESC CBuffer_VertexDesc_Full[] =
 {
@@ -34,16 +41,89 @@ LacertaEngine::WinDX11Shader::~WinDX11Shader()
     }
 }
 
-void LacertaEngine::WinDX11Shader::Load(Renderer* renderer)
+void LacertaEngine::WinDX11Shader::Load(Renderer* renderer, const wchar_t* vertexShaderName, const wchar_t* pixelShaderName)
 {
     LOG(Debug, "WinDX11Shader : Load");
-    
-    // TODO load a pixel and vertex shader
 
-    // TODO get the device & device->CreateVertexShader 
-    // TODO get the device & device->CreatePixelShader
+    // Compiling & Creating Vertex Shader
+    ID3DBlob* vertexErrorBlob = nullptr;
+    ID3DBlob* vertexBlob;
     
-    // TODO get the device & device->CreateInputLayout 
+    HRESULT hr = D3DCompileFromFile(vertexShaderName, nullptr, nullptr, "main", "vs_5_0", 0, 0, &vertexBlob, &vertexErrorBlob);
+    if(FAILED(hr))
+    {
+        LOG(Error, "WinDX11Shader : Failed vertex shader compilation !");
+        std::string errorMsg = std::system_category().message(hr);
+        LOG(Error, errorMsg);
+
+        if (vertexErrorBlob) 
+        {
+            std::string errorMessage(static_cast<const char*>(vertexErrorBlob->GetBufferPointer()), vertexErrorBlob->GetBufferSize());
+            LOG(Error, errorMessage);
+            vertexErrorBlob->Release();
+        }
+    }
+
+    void* vertexShaderByteCode = vertexBlob->GetBufferPointer();
+    size_t vertexByteCodeSize = vertexBlob->GetBufferSize();
+
+    ID3D11Device* localDev = (ID3D11Device*)renderer->GetDriver();
+    hr = localDev->CreateVertexShader(vertexShaderByteCode, vertexByteCodeSize, nullptr, &m_vertexShader);
+    if(FAILED(hr))
+    {
+        LOG(Error, "WinDX11Shader : Failed vertex shader creation !");
+    }
+
+    // Compiling & Creating Pixel Shader
+    ID3DBlob* pixelErrorBlob = nullptr;
+    ID3DBlob* pixelBlob;
+    
+    hr = D3DCompileFromFile(pixelShaderName, nullptr, nullptr, "main", "ps_5_0", 0, 0, &pixelBlob, &pixelErrorBlob);
+    if(FAILED(hr))
+    {
+        LOG(Error, "WinDX11Shader : Failed pixel shader compilation !");
+        std::string errorMsg = std::system_category().message(hr);
+        LOG(Error, errorMsg);
+
+        if (vertexErrorBlob) 
+        {
+            std::string errorMessage(static_cast<const char*>(pixelErrorBlob->GetBufferPointer()), pixelErrorBlob->GetBufferSize());
+            LOG(Error, errorMessage);
+            pixelErrorBlob->Release();
+        }
+    }
+
+    void* pixelShaderByteCode = pixelBlob->GetBufferPointer();
+    size_t pixelByteCodeSize = pixelBlob->GetBufferSize();
+
+    hr = localDev->CreatePixelShader(pixelShaderByteCode, pixelByteCodeSize, nullptr, &m_fragmentShader);
+    if(FAILED(hr))
+    {
+        LOG(Error, "WinDX11Shader : Failed pixel shader creation !");
+    }
+
+    D3D11_INPUT_ELEMENT_DESC layout[]=
+    {
+        {"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
+    };
+
+    UINT layoutSize = ARRAYSIZE(layout);
+
+    WinDX11Renderer* localDriver = (WinDX11Renderer*)renderer;
+    hr = ((ID3D11Device*)(localDriver->GetDriver()))->CreateInputLayout(
+        layout,
+        layoutSize,
+        vertexShaderByteCode,
+        vertexByteCodeSize,
+        &m_vertexLayout);
+
+    if(FAILED(hr))
+    {
+        LOG(Error, "WinDX11Shader : Failed input layout creation !");
+        throw std::exception("Create Input Layout failed");
+    }
+
+    m_vertexLayoutStride = sizeof(layout);
 }
 
 void LacertaEngine::WinDX11Shader::PreparePass(Renderer* renderer, Drawcall* dc)
@@ -62,8 +142,8 @@ void LacertaEngine::WinDX11Shader::PreparePass(Renderer* renderer, Drawcall* dc)
 
     ctx->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-    ctx->VSSetShader(m_vertexShader, 0, 0);
-    ctx->PSSetShader(m_fragmentShader, 0, 0);
+    ctx->VSSetShader(m_vertexShader, nullptr, 0);
+    ctx->PSSetShader(m_fragmentShader, nullptr, 0);
 }
 
 void LacertaEngine::WinDX11Shader::Pass(Renderer* renderer, Drawcall* dc)

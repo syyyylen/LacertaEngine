@@ -62,6 +62,24 @@ void LacertaEngine::WinDX11Renderer::Initialize(int* context, int width, int hei
         LOG(Error, "Failed Device & SwapChain creation");
         throw std::exception("Failed SwapChain creation");
     }
+
+    // Changing rasterizer properties & state 
+    D3D11_RASTERIZER_DESC rasterizerDesc;
+    ZeroMemory(&rasterizerDesc, sizeof(D3D11_RASTERIZER_DESC));
+    rasterizerDesc.FillMode = D3D11_FILL_SOLID;
+    rasterizerDesc.CullMode = D3D11_CULL_NONE; // D3D11_CULL_NONE = Disable culling of face with counterclockwise vertices indexes. Curr activated // TODO D3D11_CULL_BACK
+    rasterizerDesc.FrontCounterClockwise = false;
+    rasterizerDesc.DepthBias = 0;
+    rasterizerDesc.SlopeScaledDepthBias = 0.0f;
+    rasterizerDesc.DepthBiasClamp = 0.0f;
+    rasterizerDesc.DepthClipEnable = true;
+    rasterizerDesc.ScissorEnable = false;
+    rasterizerDesc.MultisampleEnable = false;
+    rasterizerDesc.AntialiasedLineEnable = false;
+
+    ID3D11RasterizerState* rasterizerState;
+    m_device->CreateRasterizerState(&rasterizerDesc, &rasterizerState);
+    m_deviceContext->RSSetState(rasterizerState);
 }
 
 void LacertaEngine::WinDX11Renderer::CreateRenderTarget(int width, int height, int depth)
@@ -70,32 +88,29 @@ void LacertaEngine::WinDX11Renderer::CreateRenderTarget(int width, int height, i
 
     m_renderTarget = new WinDX11RenderTarget();
     m_renderTarget->Initialize(this, width, height, depth);
-
-
-    return;
     
-    // TODO Remove debug draw call
     WinDX11Drawcall* dc = new WinDX11Drawcall();
     dc->Setup(this);
 
-    dc->CreateVBO(this, nullptr, 0);
+    VertexDataScreen screenVertices[] =
+    {
+        { Vector3(0.0f, 0.5f, 0.0f) },
+        { Vector3(0.45f, -0.5f, 0.0f) },
+        { Vector3(-0.45f, -0.5f, 0.0f) }
+    };
+
+    dc->CreateVBO(this, &screenVertices, ARRAYSIZE(screenVertices));
     m_drawcalls.push_back(dc);
 }
 
 void LacertaEngine::WinDX11Renderer::RenderFrame()
 {
-    if(m_renderTarget)
-    {
-        m_renderTarget->SetActive(this);
-        m_renderTarget->Clear(this, Color(255.0f, 240.0f, 0.0f, 1.0f));
-    }
+    m_renderTarget->SetActive(this);
+    m_renderTarget->Clear(this, Color(255.0f, 240.0f, 0.0f, 1.0f));
 
     for(auto dc : m_drawcalls)
         dc->Pass(this);
 
-    if(m_dxgiSwapChain)
-    {
-        m_dxgiSwapChain->Present(true, NULL);   
-    }
+    m_dxgiSwapChain->Present(true, NULL);   
 }
 

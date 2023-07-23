@@ -24,7 +24,7 @@ void LacertaEngine::WinDX11Drawcall::Setup(Renderer* renderer)
     auto shader = new WinDX11Shader();
     m_shader = (Shader*)shader;
 
-    m_shader->Load(renderer);
+    m_shader->Load(renderer, L"ScreenVertex.hlsl", L"SimpleColorPixelShader.hlsl");
 }
 
 void LacertaEngine::WinDX11Drawcall::Pass(Renderer* renderer)
@@ -38,12 +38,38 @@ void LacertaEngine::WinDX11Drawcall::Pass(Renderer* renderer)
 void LacertaEngine::WinDX11Drawcall::CreateVBO(Renderer* renderer, void* data, unsigned long size)
 {
     LOG(Debug, "WinDX11Shader : CreateVBO");
-    
-    D3D11_BUFFER_DESC desc;
-    ZeroMemory(&desc, sizeof(desc));
 
     unsigned long dataLength = size * (unsigned long)((WinDX11Shader*)m_shader)->GetVerticesStride();
 
+    D3D11_BUFFER_DESC desc = {};
+    desc.Usage = D3D11_USAGE_DEFAULT;
+    desc.ByteWidth = dataLength;
+    desc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+    desc.CPUAccessFlags = 0;
+    desc.MiscFlags = 0;
+
+    D3D11_SUBRESOURCE_DATA InitData;
+    InitData.pSysMem = data;
+    InitData.SysMemPitch = 0;
+    InitData.SysMemSlicePitch = 0;
+    
+    ID3D11Device* dev = (ID3D11Device*)renderer->GetDriver();
+    
+    HRESULT hr = dev->CreateBuffer(&desc, &InitData, &m_vbo);
+
+    if (FAILED(hr))
+    {
+        LOG(Error, "WinDX11Drawcall : VBO object creation failed");
+        throw std::exception("VBO object creation failed");
+    }
+
+    m_verticesCount = size;
+    
+    /*
+    
+    unsigned long dataLength = size * (unsigned long)((WinDX11Shader*)m_shader)->GetVerticesStride();
+
+    D3D11_BUFFER_DESC desc = {};
     desc.Usage = D3D11_USAGE_DYNAMIC;
     desc.ByteWidth = dataLength;
     desc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
@@ -73,4 +99,5 @@ void LacertaEngine::WinDX11Drawcall::CreateVBO(Renderer* renderer, void* data, u
     }
 
     m_verticesCount = size;
+    */
 }

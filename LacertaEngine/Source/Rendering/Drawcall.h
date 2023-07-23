@@ -1,9 +1,15 @@
 ﻿#pragma once
 #include "../Core.h"
 #include "Renderer.h"
+#include "../Maths/Vector3.h"
 
 namespace LacertaEngine
 {
+
+struct VertexDataScreen
+{
+    Vector3 Position;
+};
 
 class Shader;
 
