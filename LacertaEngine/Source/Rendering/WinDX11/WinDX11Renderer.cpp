@@ -1,5 +1,6 @@
 ﻿#include "WinDX11Renderer.h"
 
+#include "WinDX11Drawcall.h"
 #include "WinDX11RenderTarget.h"
 #include "../Drawcall.h"
 #include "../../Logger/Logger.h"
@@ -69,6 +70,16 @@ void LacertaEngine::WinDX11Renderer::CreateRenderTarget(int width, int height, i
 
     m_renderTarget = new WinDX11RenderTarget();
     m_renderTarget->Initialize(this, width, height, depth);
+
+
+    return;
+    
+    // TODO Remove debug draw call
+    WinDX11Drawcall* dc = new WinDX11Drawcall();
+    dc->Setup(this);
+
+    dc->CreateVBO(this, nullptr, 0);
+    m_drawcalls.push_back(dc);
 }
 
 void LacertaEngine::WinDX11Renderer::RenderFrame()
@@ -78,6 +89,9 @@ void LacertaEngine::WinDX11Renderer::RenderFrame()
         m_renderTarget->SetActive(this);
         m_renderTarget->Clear(this, Color(255.0f, 240.0f, 0.0f, 1.0f));
     }
+
+    for(auto dc : m_drawcalls)
+        dc->Pass(this);
 
     if(m_dxgiSwapChain)
     {
