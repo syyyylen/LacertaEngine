@@ -9,19 +9,6 @@
 
 #include <d3dcompiler.h>
 
-D3D11_INPUT_ELEMENT_DESC CBuffer_VertexDesc_Full[] =
-{
-    { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-    { "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-    { "TANGENT", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 24, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-    { "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 36, D3D11_INPUT_PER_VERTEX_DATA, 0 }
-};
-
-D3D11_INPUT_ELEMENT_DESC CBuffer_VertexDesc_Screen[] =
-{
-    { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 }
-};
-
 LacertaEngine::WinDX11Shader::WinDX11Shader()
 {
 }
@@ -123,13 +110,11 @@ void LacertaEngine::WinDX11Shader::Load(Renderer* renderer, const wchar_t* verte
         throw std::exception("Create Input Layout failed");
     }
 
-    m_vertexLayoutStride = sizeof(layout);
+    m_vertexLayoutStride = 12; // TODO concentre toi sale fdp de merde, tu branles quoi ????? (C'est sizeof(la struct passée dans layout))
 }
 
 void LacertaEngine::WinDX11Shader::PreparePass(Renderer* renderer, Drawcall* dc)
 {
-    LOG(Debug, "WinDX11Shader : PreparePass");
-    
     WinDX11Renderer* driver = (WinDX11Renderer*)renderer;
     auto ctx = driver->GetImmediateContext();
 
@@ -138,6 +123,7 @@ void LacertaEngine::WinDX11Shader::PreparePass(Renderer* renderer, Drawcall* dc)
     unsigned int offsets = 0;
 
     ID3D11Buffer* vbo = (ID3D11Buffer*)dc->GetVBO();
+
     ctx->IASetVertexBuffers(0, 1, &vbo, &m_vertexLayoutStride, &offsets);
 
     ctx->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
@@ -148,8 +134,6 @@ void LacertaEngine::WinDX11Shader::PreparePass(Renderer* renderer, Drawcall* dc)
 
 void LacertaEngine::WinDX11Shader::Pass(Renderer* renderer, Drawcall* dc)
 {
-    LOG(Debug, "WinDX11Shader : Pass");
-    
     WinDX11Renderer* driver = (WinDX11Renderer*)renderer;
     auto ctx = driver->GetImmediateContext();
 

@@ -29,8 +29,6 @@ void LacertaEngine::WinDX11Drawcall::Setup(Renderer* renderer)
 
 void LacertaEngine::WinDX11Drawcall::Pass(Renderer* renderer)
 {
-    LOG(Debug, "WinDX11Shader : Pass");
-    
     m_shader->PreparePass(renderer, this);
     m_shader->Pass(renderer, this);
 }
@@ -38,6 +36,9 @@ void LacertaEngine::WinDX11Drawcall::Pass(Renderer* renderer)
 void LacertaEngine::WinDX11Drawcall::CreateVBO(Renderer* renderer, void* data, unsigned long size)
 {
     LOG(Debug, "WinDX11Shader : CreateVBO");
+
+    if(m_vbo)
+        m_vbo->Release();
 
     unsigned long dataLength = size * (unsigned long)((WinDX11Shader*)m_shader)->GetVerticesStride();
 
@@ -50,8 +51,6 @@ void LacertaEngine::WinDX11Drawcall::CreateVBO(Renderer* renderer, void* data, u
 
     D3D11_SUBRESOURCE_DATA InitData;
     InitData.pSysMem = data;
-    InitData.SysMemPitch = 0;
-    InitData.SysMemSlicePitch = 0;
     
     ID3D11Device* dev = (ID3D11Device*)renderer->GetDriver();
     
