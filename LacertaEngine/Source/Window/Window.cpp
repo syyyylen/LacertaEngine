@@ -7,6 +7,13 @@ namespace LacertaEngine
 {
     LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
     {
+        Window* window = (Window*)GetWindowLongPtr(hwnd, GWLP_USERDATA);
+        if(window)
+        {
+            if(window->OnWndProcHandler(hwnd, msg, wparam, lparam))
+                return true;
+        }
+        
         switch(msg)
         {
         case WM_CREATE:
@@ -132,6 +139,11 @@ namespace LacertaEngine
 
     void Window::OnResize()
     {
+    }
+
+    bool Window::OnWndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
+    {
+        return false;
     }
 
     bool Window::IsMinimized() const

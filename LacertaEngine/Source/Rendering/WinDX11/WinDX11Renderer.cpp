@@ -28,7 +28,6 @@ void LacertaEngine::WinDX11Renderer::Initialize(int* context, int width, int hei
 
     DXGI_SWAP_CHAIN_DESC desc;
     ZeroMemory(&desc, sizeof(DXGI_SWAP_CHAIN_DESC));
-    desc.Windowed = TRUE;
     desc.BufferCount = 2;
     desc.BufferDesc.Width = width;
     desc.BufferDesc.Height = height;
@@ -39,8 +38,9 @@ void LacertaEngine::WinDX11Renderer::Initialize(int* context, int width, int hei
     desc.SampleDesc.Count = 1;      
     desc.SampleDesc.Quality = 0; 
     desc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_SEQUENTIAL;
-    desc.Flags = 0;
+    desc.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
     desc.OutputWindow = wnd;
+    desc.Windowed = TRUE;
 
     HRESULT hr = D3D11CreateDeviceAndSwapChain(
         nullptr,                   
@@ -62,6 +62,8 @@ void LacertaEngine::WinDX11Renderer::Initialize(int* context, int width, int hei
         LOG(Error, "Failed Device & SwapChain creation");
         throw std::exception("Failed SwapChain creation");
     }
+
+    return; // TODO enable rasterizer 
 
     // Changing rasterizer properties & state 
     D3D11_RASTERIZER_DESC rasterizerDesc;
@@ -106,11 +108,20 @@ void LacertaEngine::WinDX11Renderer::CreateRenderTarget(int width, int height, i
 void LacertaEngine::WinDX11Renderer::RenderFrame()
 {
     m_renderTarget->SetActive(this);
-    m_renderTarget->Clear(this, Color(155.0f, 0.0f, 0.0f, 1.0f));
+    m_renderTarget->Clear(this, Color(0.0f, 0.0f, 0.0f, 1.0f));
 
     for(auto dc : m_drawcalls)
         dc->Pass(this);
+}
 
+void LacertaEngine::WinDX11Renderer::PresentSwapChain()
+{
     m_dxgiSwapChain->Present(true, NULL);   
+}
+
+void LacertaEngine::WinDX11Renderer::OnResize(unsigned width, unsigned height)
+{
+    WinDX11RenderTarget* rendTarg = (WinDX11RenderTarget*)m_renderTarget;
+    rendTarg->Resize(this, width, height);
 }
 

@@ -14,12 +14,15 @@ public:
 
     void Initialize(Renderer* renderer, int width, int height, int depth) override;
     void SetActive(Renderer* renderer) override;
+    void ReloadBuffers(Renderer* renderer, unsigned width, unsigned height);
+    void Resize(Renderer* renderer, unsigned width, unsigned height);
     void Clear(Renderer* renderer, Color color) override;
     void SetViewportSize(Renderer* renderer, UINT width, UINT height) override;
 
+    ID3D11RenderTargetView* GetRtv() { return m_renderTarget; }
+
 private:
     ID3D11RenderTargetView* m_renderTarget;
-    D3D11_VIEWPORT* m_viewport;
 };
 
 }

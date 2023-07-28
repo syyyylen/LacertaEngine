@@ -1,11 +1,11 @@
 ﻿#pragma once
 #include <LacertaEngine.h>
+
 #include "Window/Window.h"
 
 namespace LacertaEngineEditor
 {
-
-using namespace LacertaEngine; // This is making the code less explicit. Might remove it if it's too confusing. 
+    using namespace LacertaEngine; // This is making the code less explicit. Might remove it if it's too confusing. 
 
 /**
  * \brief Handle the main Editor Window that will contain the scene viewport, ImGui menus etc...
@@ -33,6 +33,7 @@ public:
     virtual void OnFocus() override;
     virtual void OnLooseFocus() override;
     virtual void OnResize() override;
+    virtual bool OnWndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) override;
     // end Window overrides
 };
 

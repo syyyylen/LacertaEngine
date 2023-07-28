@@ -19,10 +19,15 @@ public:
     
     void InitializeRenderer(int* context, RendererType type, int width, int height, int depth, int targetRefreshRate);
     void Render();
+    void PresentSwapChain();
     void Shutdown();
+    
+    Renderer* GetRenderer();
 
 private:
     RendererType m_rendererType;
+
+public:
     Renderer* m_renderer;
 };
     

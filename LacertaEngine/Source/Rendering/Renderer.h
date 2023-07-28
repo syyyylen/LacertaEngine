@@ -16,6 +16,8 @@ public:
     virtual void Initialize(int* context, int width, int height, int targetRefreshRate) = 0;
     virtual void CreateRenderTarget(int width, int height, int depth) = 0;
     virtual void RenderFrame() = 0;
+    virtual void OnResize(unsigned width, unsigned height) = 0;
+    virtual void PresentSwapChain() = 0;
 
     virtual int* GetDriver() = 0;
     

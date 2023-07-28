@@ -19,6 +19,8 @@ public:
     void CreateRenderTarget(int width, int height, int depth) override;
 
     void RenderFrame() override;
+    void PresentSwapChain() override;
+    void OnResize(unsigned width, unsigned height) override;
 
     int* GetDriver() override { return (int*)m_device; }
 

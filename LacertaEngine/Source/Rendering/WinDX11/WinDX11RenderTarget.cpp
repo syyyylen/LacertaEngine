@@ -9,7 +9,6 @@ LacertaEngine::WinDX11RenderTarget::WinDX11RenderTarget()
 
 LacertaEngine::WinDX11RenderTarget::~WinDX11RenderTarget()
 {
-    delete m_viewport;
     delete m_renderTarget;
 }
 
@@ -17,6 +16,18 @@ void LacertaEngine::WinDX11RenderTarget::Initialize(Renderer* renderer, int widt
 {
     LOG(Debug, "WinDX11RenderTarget : Initialize");
     
+    ReloadBuffers(renderer, width, height);
+    SetViewportSize(renderer, width, height);
+}
+
+void LacertaEngine::WinDX11RenderTarget::SetActive(Renderer* renderer)
+{
+    WinDX11Renderer* localRenderer = (WinDX11Renderer*)renderer;
+    localRenderer->GetImmediateContext()->OMSetRenderTargets(1, &m_renderTarget, nullptr);
+}
+
+void LacertaEngine::WinDX11RenderTarget::ReloadBuffers(Renderer* renderer, unsigned width, unsigned height)
+{
     WinDX11Renderer* localRenderer = (WinDX11Renderer*)renderer;
     ID3D11Device* device = (ID3D11Device*)renderer->GetDriver();
     ID3D11Texture2D* buffer = NULL;
@@ -35,14 +46,17 @@ void LacertaEngine::WinDX11RenderTarget::Initialize(Renderer* renderer, int widt
         throw std::exception("Failed Render Target creation");
     }
 
-    m_viewport = new D3D11_VIEWPORT();
-    SetViewportSize(renderer, width, height);
+    buffer->Release();
 }
 
-void LacertaEngine::WinDX11RenderTarget::SetActive(Renderer* renderer)
+void LacertaEngine::WinDX11RenderTarget::Resize(Renderer* renderer, unsigned width, unsigned height)
 {
+    if(m_renderTarget)
+        m_renderTarget->Release();
+
     WinDX11Renderer* localRenderer = (WinDX11Renderer*)renderer;
-    localRenderer->GetImmediateContext()->OMSetRenderTargets(1, &m_renderTarget, nullptr);
+    localRenderer->GetDXGISwapChain()->ResizeBuffers(1, width, height, DXGI_FORMAT_R8G8B8A8_UNORM, 0);
+    ReloadBuffers(renderer, width, height);
 }
 
 void LacertaEngine::WinDX11RenderTarget::Clear(Renderer* renderer, Color color)
@@ -55,10 +69,10 @@ void LacertaEngine::WinDX11RenderTarget::Clear(Renderer* renderer, Color color)
 void LacertaEngine::WinDX11RenderTarget::SetViewportSize(Renderer* renderer, UINT width, UINT height)
 {
     WinDX11Renderer* localRenderer = (WinDX11Renderer*)renderer;
-    ZeroMemory(m_viewport, sizeof(D3D11_VIEWPORT));
-    m_viewport->Width = (float)width;
-    m_viewport->Height = (float)height;
-    m_viewport->MinDepth = 0.0f;
-    m_viewport->MaxDepth = 1.0f;
-    localRenderer->GetImmediateContext()->RSSetViewports(1, m_viewport);
+    D3D11_VIEWPORT vp = {};
+    vp.Width = (float)width;
+    vp.Height = (float)height;
+    vp.MinDepth = 0.0f;
+    vp.MaxDepth = 1.0f;
+    localRenderer->GetImmediateContext()->RSSetViewports(1, &vp);
 }

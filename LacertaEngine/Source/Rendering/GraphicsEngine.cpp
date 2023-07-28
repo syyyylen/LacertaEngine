@@ -36,8 +36,19 @@ void LacertaEngine::GraphicsEngine::Render()
     m_renderer->RenderFrame();
 }
 
+void LacertaEngine::GraphicsEngine::PresentSwapChain()
+{
+    m_renderer->PresentSwapChain();
+}
+
 void LacertaEngine::GraphicsEngine::Shutdown()
 {
     LOG(Debug, "GraphicsEngine : Shutdown");
+
     
+}
+
+LacertaEngine::Renderer* LacertaEngine::GraphicsEngine::GetRenderer()
+{
+    return m_renderer;
 }

@@ -20,6 +20,7 @@ public:
     virtual void OnFocus();
     virtual void OnLooseFocus();
     virtual void OnResize();
+    virtual bool OnWndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam); // Override to add ImGui proc handler
 
     // Utilites
     bool IsMinimized() const;
