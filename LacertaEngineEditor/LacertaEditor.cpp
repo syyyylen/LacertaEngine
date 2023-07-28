@@ -15,7 +15,7 @@ void LacertaEditor::Start()
 {
     LOG(Debug, "Lacerta Editor : Start");
 
-    m_editorWindow = new EditorWindow(L"EngineWindow");
+    m_editorWindow = new EditorWindow(L"Lacerta Engine");
     m_editorWindow->Maximize();
 
     InputSystem::Create();
@@ -34,12 +34,8 @@ void LacertaEditor::Update()
 {
     InputSystem::Get()->Update();
 
-    // TODO update the Scene
-
     if(m_graphicsEngine)
-    {
         m_graphicsEngine->Render();
-    }
 }
 
 void LacertaEditor::Quit()

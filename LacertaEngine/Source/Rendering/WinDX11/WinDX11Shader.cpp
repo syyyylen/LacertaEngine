@@ -36,7 +36,7 @@ void LacertaEngine::WinDX11Shader::Load(Renderer* renderer, const wchar_t* verte
     ID3DBlob* vertexErrorBlob = nullptr;
     ID3DBlob* vertexBlob;
     
-    HRESULT hr = D3DCompileFromFile(vertexShaderName, nullptr, nullptr, "main", "vs_5_0", 0, 0, &vertexBlob, &vertexErrorBlob);
+    HRESULT hr = D3DCompileFromFile(vertexShaderName, nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, "main", "vs_5_0", 0, 0, &vertexBlob, &vertexErrorBlob);
     if(FAILED(hr))
     {
         LOG(Error, "WinDX11Shader : Failed vertex shader compilation !");
@@ -65,7 +65,7 @@ void LacertaEngine::WinDX11Shader::Load(Renderer* renderer, const wchar_t* verte
     ID3DBlob* pixelErrorBlob = nullptr;
     ID3DBlob* pixelBlob;
     
-    hr = D3DCompileFromFile(pixelShaderName, nullptr, nullptr, "main", "ps_5_0", 0, 0, &pixelBlob, &pixelErrorBlob);
+    hr = D3DCompileFromFile(pixelShaderName, nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, "main", "ps_5_0", 0, 0, &pixelBlob, &pixelErrorBlob);
     if(FAILED(hr))
     {
         LOG(Error, "WinDX11Shader : Failed pixel shader compilation !");
@@ -110,7 +110,7 @@ void LacertaEngine::WinDX11Shader::Load(Renderer* renderer, const wchar_t* verte
         throw std::exception("Create Input Layout failed");
     }
 
-    m_vertexLayoutStride = 12; // TODO concentre toi sale fdp de merde, tu branles quoi ????? (C'est sizeof(la struct passée dans layout))
+    m_vertexLayoutStride  = sizeof(VertexDataScreen);
 }
 
 void LacertaEngine::WinDX11Shader::PreparePass(Renderer* renderer, Drawcall* dc)

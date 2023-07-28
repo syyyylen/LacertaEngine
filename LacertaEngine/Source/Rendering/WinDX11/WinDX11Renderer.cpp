@@ -63,8 +63,6 @@ void LacertaEngine::WinDX11Renderer::Initialize(int* context, int width, int hei
         throw std::exception("Failed SwapChain creation");
     }
 
-    return;
-    
     // Changing rasterizer properties & state 
     D3D11_RASTERIZER_DESC rasterizerDesc;
     ZeroMemory(&rasterizerDesc, sizeof(D3D11_RASTERIZER_DESC));
@@ -107,8 +105,8 @@ void LacertaEngine::WinDX11Renderer::CreateRenderTarget(int width, int height, i
 
 void LacertaEngine::WinDX11Renderer::RenderFrame()
 {
-    m_renderTarget->SetActive(this); // TODO see if this is really necessary...
-    m_renderTarget->Clear(this, Color(255.0f, 247.0f, 0.0f, 0.8f));
+    m_renderTarget->SetActive(this);
+    m_renderTarget->Clear(this, Color(155.0f, 0.0f, 0.0f, 1.0f));
 
     for(auto dc : m_drawcalls)
         dc->Pass(this);
