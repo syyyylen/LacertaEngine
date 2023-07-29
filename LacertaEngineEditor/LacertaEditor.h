@@ -1,6 +1,5 @@
 ﻿#pragma once
 #include <LacertaEngine.h>
-
 #include "EditorWindow/EditorWindow.h"
 
 namespace LacertaEngineEditor

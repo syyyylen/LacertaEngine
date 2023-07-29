@@ -4,7 +4,7 @@
 namespace LacertaEngine
 {
 
-InputSystem* InputSystem::m_inputSystem = nullptr;
+InputSystem* InputSystem::s_inputSystem = nullptr;
 
 InputSystem::InputSystem()
 {
@@ -12,28 +12,28 @@ InputSystem::InputSystem()
 
 InputSystem::~InputSystem()
 {
-    m_inputSystem = nullptr;
+    s_inputSystem = nullptr;
 }
 
 InputSystem* InputSystem::Get()
 {
-    return m_inputSystem;
+    return s_inputSystem;
 }
 
 void InputSystem::Create()
 {
-    if(m_inputSystem)
+    if(s_inputSystem)
         throw std::exception("Input System already created");
 
-    m_inputSystem = new InputSystem();
+    s_inputSystem = new InputSystem();
 }
 
 void InputSystem::Release()
 {
-    if(!m_inputSystem)
+    if(!s_inputSystem)
         return;
     
-    delete m_inputSystem;
+    delete s_inputSystem;
 }
 
 void InputSystem::Update()

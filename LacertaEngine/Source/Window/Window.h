@@ -20,6 +20,7 @@ public:
     virtual void OnFocus();
     virtual void OnLooseFocus();
     virtual void OnResize();
+    virtual bool OnWndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam); // Override to add ImGui proc handler
 
     // Utilites
     bool IsMinimized() const;
@@ -31,7 +32,8 @@ public:
     void Destroy();
     void SetFullscreen(bool fullscreen);
     void Maximize();
-    
+
+    HWND GetHWND();
     RECT GetClientWindowRect();
     RECT GetScreenSize();
 
