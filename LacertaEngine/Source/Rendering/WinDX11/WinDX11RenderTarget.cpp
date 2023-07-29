@@ -61,10 +61,10 @@ void LacertaEngine::WinDX11RenderTarget::Resize(Renderer* renderer, unsigned wid
     ReloadBuffers(renderer, width, height);
 }
 
-void LacertaEngine::WinDX11RenderTarget::Clear(Renderer* renderer, Color color)
+void LacertaEngine::WinDX11RenderTarget::Clear(Renderer* renderer, Vector4 color)
 {
     ID3D11DeviceContext* ctx = ((WinDX11Renderer*)renderer)->GetImmediateContext();
-    FLOAT clearColor[] = { color.R, color.G, color.B, color.A };
+    FLOAT clearColor[] = { color.X, color.Y, color.Z, color.W };
     ctx->ClearRenderTargetView(m_renderTarget, clearColor);
 }
 

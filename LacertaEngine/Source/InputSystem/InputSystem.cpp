@@ -43,7 +43,7 @@ void InputSystem::Update()
 
     if (m_first_time)
     {
-        m_old_mouse_pos = Point(current_mouse_pos.x, current_mouse_pos.y);
+        m_old_mouse_pos = Vector2(current_mouse_pos.x, current_mouse_pos.y);
         m_first_time = false;
     }
 
@@ -54,11 +54,11 @@ void InputSystem::Update()
 
         while (it != m_listenersSet.end())
         {
-            (*it)->OnMouseMove(Point(current_mouse_pos.x, current_mouse_pos.y));
+            (*it)->OnMouseMove(Vector2(current_mouse_pos.x, current_mouse_pos.y));
             ++it;
         }
     }
-    m_old_mouse_pos = Point(current_mouse_pos.x, current_mouse_pos.y);
+    m_old_mouse_pos = Vector2(current_mouse_pos.x, current_mouse_pos.y);
     
     if (::GetKeyboardState(m_keys_state))
     {
@@ -74,12 +74,12 @@ void InputSystem::Update()
                     if (i == VK_LBUTTON)
                     {
                         if (m_keys_state[i] != m_old_keys_state[i]) 
-                            (*it)->OnLeftMouseDown(Point(current_mouse_pos.x, current_mouse_pos.y));
+                            (*it)->OnLeftMouseDown(Vector2(current_mouse_pos.x, current_mouse_pos.y));
                     }
                     else if (i == VK_RBUTTON)
                     {
                         if (m_keys_state[i] != m_old_keys_state[i])
-                            (*it)->OnRightMouseDown(Point(current_mouse_pos.x, current_mouse_pos.y));
+                            (*it)->OnRightMouseDown(Vector2(current_mouse_pos.x, current_mouse_pos.y));
                     }
                     else
                         (*it)->OnKeyDown(i);
@@ -96,9 +96,9 @@ void InputSystem::Update()
                     while (it != m_listenersSet.end())
                     {
                         if (i == VK_LBUTTON)
-                            (*it)->OnLeftMouseUp(Point(current_mouse_pos.x, current_mouse_pos.y));
+                            (*it)->OnLeftMouseUp(Vector2(current_mouse_pos.x, current_mouse_pos.y));
                         else if (i == VK_RBUTTON)
-                            (*it)->OnRightMouseUp(Point(current_mouse_pos.x, current_mouse_pos.y));
+                            (*it)->OnRightMouseUp(Vector2(current_mouse_pos.x, current_mouse_pos.y));
                         else
                             (*it)->OnKeyUp(i);
                         
@@ -124,7 +124,7 @@ void InputSystem::RemoveListener(InputListener* Listener)
     m_listenersSet.erase(Listener);
 }
 
-void InputSystem::SetCursorPosition(const Point& pos)
+void InputSystem::SetCursorPosition(const Vector2& pos)
 {
     ::SetCursorPos(pos.X, pos.Y);
 }

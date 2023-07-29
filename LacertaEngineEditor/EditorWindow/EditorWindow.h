@@ -19,11 +19,11 @@ public:
     // InputListener interface
     void OnKeyDown(int key) override;
     void OnKeyUp(int key) override;
-    void OnMouseMove(const Point& mousePosition) override;
-    virtual void OnLeftMouseDown(const Point& mousePos) override;
-    virtual void OnRightMouseDown(const Point& mousePos) override;
-    virtual void OnLeftMouseUp(const Point& mousePos) override;
-    virtual void OnRightMouseUp(const Point& mousePos) override;
+    void OnMouseMove(const Vector2& mousePosition) override;
+    virtual void OnLeftMouseDown(const Vector2& mousePos) override;
+    virtual void OnRightMouseDown(const Vector2& mousePos) override;
+    virtual void OnLeftMouseUp(const Vector2& mousePos) override;
+    virtual void OnRightMouseUp(const Vector2& mousePos) override;
     // end InputListener interface
 
     // Window overrides

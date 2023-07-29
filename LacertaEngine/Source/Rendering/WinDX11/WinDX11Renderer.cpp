@@ -108,7 +108,7 @@ void LacertaEngine::WinDX11Renderer::CreateRenderTarget(int width, int height, i
 void LacertaEngine::WinDX11Renderer::RenderFrame()
 {
     m_renderTarget->SetActive(this);
-    m_renderTarget->Clear(this, Color(0.0f, 0.0f, 0.0f, 1.0f));
+    m_renderTarget->Clear(this, Vector4(0.0f, 0.0f, 0.0f, 1.0f));
 
     for(auto dc : m_drawcalls)
         dc->Pass(this);
