@@ -32,14 +32,14 @@ void LacertaEditor::Start()
 
     // ----------------------- Graphics Engine Creation & Renderer Initialization  ------------------------
     
-    m_graphicsEngine = new GraphicsEngine();
+    GraphicsEngine::Create();
     
     RECT windowRect = m_editorWindow->GetClientWindowRect();
     int width = windowRect.right - windowRect.left;
     int height = windowRect.bottom - windowRect.top;
     HWND hwnd = m_editorWindow->GetHWND();
     
-    m_graphicsEngine->InitializeRenderer((int*)hwnd, RendererType::RENDERER_WIN_DX11, width, height, 24, 60);
+    GraphicsEngine::Get()->InitializeRenderer((int*)hwnd, RendererType::RENDERER_WIN_DX11, width, height, 24, 60);
 
     // ----------------------------- UI Initialization  ------------------------
 
@@ -53,10 +53,8 @@ void LacertaEditor::Start()
     // Setup Dear ImGui style
     ImGui::StyleColorsDark();
 
-    // TODO remove all references to a specific type of renderer etc...
-    // Setup Platform/Renderer backends
     ImGui_ImplWin32_Init(hwnd);
-    WinDX11Renderer* Dx11Renderer = (WinDX11Renderer*)m_graphicsEngine->GetRenderer();
+    WinDX11Renderer* Dx11Renderer = (WinDX11Renderer*)GraphicsEngine::Get()->GetRenderer(); // TODO remove direct reference to DX11
     ImGui_ImplDX11_Init((ID3D11Device*)Dx11Renderer->GetDriver(), Dx11Renderer->GetImmediateContext());
 }
 
@@ -64,19 +62,16 @@ void LacertaEditor::Update()
 {
     InputSystem::Get()->Update();
 
-    // TODO remove all references to a specific type of renderer etc...
-    WinDX11Renderer* Dx11Renderer = (WinDX11Renderer*)m_graphicsEngine->GetRenderer();
+    // ----------------------------- Rendering Update  --------------------------
+
+    WinDX11Renderer* Dx11Renderer = (WinDX11Renderer*)GraphicsEngine::Get()->GetRenderer(); // TODO remove direct reference to DX11
     WinDX11RenderTarget* Dx11RenderTarget = (WinDX11RenderTarget*)Dx11Renderer->GetRenderTarget();
     RECT windowRect = m_editorWindow->GetClientWindowRect();
     int width = windowRect.right - windowRect.left;
     int height = windowRect.bottom - windowRect.top;
     Dx11RenderTarget->SetViewportSize(Dx11Renderer, width, height);
 
-    // TODO move this to evenmential approach ofc
-    Dx11Renderer->OnResize(width, height);
-
-    if(m_graphicsEngine)
-        m_graphicsEngine->Render();
+    GraphicsEngine::Get()->Render();
 
     // ----------------------------- UI Update  --------------------------
 
@@ -95,7 +90,8 @@ void LacertaEditor::Update()
     ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
 
     // ------------------------ UI & DrawCalls done, present Swap Chain now ----------------
-    m_graphicsEngine->PresentSwapChain();
+    
+    GraphicsEngine::Get()->PresentSwapChain();
 }
 
 void LacertaEditor::Quit()
@@ -107,11 +103,7 @@ void LacertaEditor::Quit()
     if(m_editorWindow)
         m_editorWindow->Destroy();
 
-    if(m_graphicsEngine)
-    {
-        m_graphicsEngine->Shutdown();
-        delete m_graphicsEngine;
-    }
+    GraphicsEngine::Shutdown();
     
     InputSystem::Release();
 

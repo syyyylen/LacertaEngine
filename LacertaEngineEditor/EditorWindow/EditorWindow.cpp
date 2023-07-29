@@ -26,6 +26,12 @@ void EditorWindow::OnKeyUp(int key)
 
 void EditorWindow::OnMouseMove(const Point& mousePos)
 {
+    return;
+    
+    int width = GetClientWindowRect().right - GetClientWindowRect().left;
+    int height = GetClientWindowRect().bottom - GetClientWindowRect().top;
+
+    InputSystem::Get()->SetCursorPosition(Point(width/2.0f, height/2.0f));
 }
 
 void EditorWindow::OnLeftMouseDown(const Point& mousePos)
@@ -75,7 +81,8 @@ void EditorWindow::OnResize()
 {
     Window::OnResize();
 
-    // TODO resize render target
+    RECT windowRect = GetClientWindowRect();
+    GraphicsEngine::Get()->Resize(windowRect.right, windowRect.bottom);
 }
 
 bool EditorWindow::OnWndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)

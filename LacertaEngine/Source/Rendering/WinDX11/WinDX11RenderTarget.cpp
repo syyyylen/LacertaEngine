@@ -55,7 +55,9 @@ void LacertaEngine::WinDX11RenderTarget::Resize(Renderer* renderer, unsigned wid
         m_renderTarget->Release();
 
     WinDX11Renderer* localRenderer = (WinDX11Renderer*)renderer;
-    localRenderer->GetDXGISwapChain()->ResizeBuffers(1, width, height, DXGI_FORMAT_R8G8B8A8_UNORM, 0);
+    // carefull with the buffer count (curr : 2, set to 0 to preserve all)
+    // see : https://learn.microsoft.com/en-us/windows/win32/api/dxgi/nf-dxgi-idxgiswapchain-resizebuffers
+    localRenderer->GetDXGISwapChain()->ResizeBuffers(0, width, height, DXGI_FORMAT_R8G8B8A8_UNORM, 0);
     ReloadBuffers(renderer, width, height);
 }
 
@@ -70,8 +72,8 @@ void LacertaEngine::WinDX11RenderTarget::SetViewportSize(Renderer* renderer, UIN
 {
     WinDX11Renderer* localRenderer = (WinDX11Renderer*)renderer;
     D3D11_VIEWPORT vp = {};
-    vp.Width = (float)width;
-    vp.Height = (float)height;
+    vp.Width = width;
+    vp.Height = height;
     vp.MinDepth = 0.0f;
     vp.MaxDepth = 1.0f;
     localRenderer->GetImmediateContext()->RSSetViewports(1, &vp);

@@ -3,15 +3,34 @@
 #include "../Logger/Logger.h"
 #include "WinDX11/WinDX11Renderer.h"
 
-LacertaEngine::GraphicsEngine::GraphicsEngine()
+namespace LacertaEngine
+{
+
+GraphicsEngine* GraphicsEngine::s_graphicsEngine = nullptr;
+    
+GraphicsEngine::GraphicsEngine()
 {
 }
 
-LacertaEngine::GraphicsEngine::~GraphicsEngine()
+GraphicsEngine::~GraphicsEngine()
 {
+    s_graphicsEngine = nullptr;
 }
 
-void LacertaEngine::GraphicsEngine::InitializeRenderer(int* context, RendererType type, int width, int height, int depth, int targetRefreshRate)
+GraphicsEngine* GraphicsEngine::Get()
+{
+    return s_graphicsEngine;
+}
+
+void GraphicsEngine::Create()
+{
+    if(s_graphicsEngine)
+        throw std::exception("Graphics Engine already created");
+
+    s_graphicsEngine = new GraphicsEngine();
+}
+
+void GraphicsEngine::InitializeRenderer(int* context, RendererType type, int width, int height, int depth, int targetRefreshRate)
 {
     LOG(Debug, "GraphicsEngine : Initialize Renderer");
 
@@ -19,7 +38,7 @@ void LacertaEngine::GraphicsEngine::InitializeRenderer(int* context, RendererTyp
 
     switch (m_rendererType)
     {
-        case RendererType::RENDERER_WIN_DX11:
+        case RENDERER_WIN_DX11:
             m_renderer = new WinDX11Renderer();
             break;
     }
@@ -31,24 +50,29 @@ void LacertaEngine::GraphicsEngine::InitializeRenderer(int* context, RendererTyp
     }
 }
 
-void LacertaEngine::GraphicsEngine::Render()
+void GraphicsEngine::Render()
 {
     m_renderer->RenderFrame();
 }
 
-void LacertaEngine::GraphicsEngine::PresentSwapChain()
+void GraphicsEngine::Resize(unsigned width, unsigned height)
+{
+    m_renderer->OnResize(width, height);
+}
+
+void GraphicsEngine::PresentSwapChain()
 {
     m_renderer->PresentSwapChain();
 }
 
-void LacertaEngine::GraphicsEngine::Shutdown()
+void GraphicsEngine::Shutdown()
 {
     LOG(Debug, "GraphicsEngine : Shutdown");
 
+    if(!s_graphicsEngine)
+        return;
     
+    delete s_graphicsEngine;
 }
-
-LacertaEngine::Renderer* LacertaEngine::GraphicsEngine::GetRenderer()
-{
-    return m_renderer;
+    
 }

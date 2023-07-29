@@ -13,22 +13,26 @@ enum RendererType
 
 class LACERTAENGINE_API GraphicsEngine
 {
-public:
+private:
     GraphicsEngine();
     ~GraphicsEngine();
+
+public:
+    static GraphicsEngine* Get();
+    static void Create();
+    static void Shutdown();
     
     void InitializeRenderer(int* context, RendererType type, int width, int height, int depth, int targetRefreshRate);
     void Render();
+    void Resize(unsigned width, unsigned height);
     void PresentSwapChain();
-    void Shutdown();
+    Renderer* GetRenderer() { return m_renderer; }
     
-    Renderer* GetRenderer();
-
 private:
     RendererType m_rendererType;
-
-public:
     Renderer* m_renderer;
+
+    static GraphicsEngine* s_graphicsEngine;
 };
     
 }
