@@ -27,6 +27,7 @@ public:
 
 private:
     EditorWindow* m_editorWindow;
+    Timer* m_globalTimer;
 };
     
 }

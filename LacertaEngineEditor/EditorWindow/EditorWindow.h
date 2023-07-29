@@ -1,8 +1,6 @@
 ﻿#pragma once
 #include <LacertaEngine.h>
 
-#include "Window/Window.h"
-
 namespace LacertaEngineEditor
 {
     using namespace LacertaEngine; // This is making the code less explicit. Might remove it if it's too confusing. 

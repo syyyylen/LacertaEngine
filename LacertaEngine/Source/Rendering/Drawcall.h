@@ -12,8 +12,7 @@ struct VertexDataScreen
 };
 
 class Shader;
-
-
+    
 class LACERTAENGINE_API Drawcall
 {
 public:

@@ -9,11 +9,14 @@
 
 #include <d3dcompiler.h>
 
-LacertaEngine::WinDX11Shader::WinDX11Shader()
+namespace LacertaEngine
+{
+    
+WinDX11Shader::WinDX11Shader()
 {
 }
 
-LacertaEngine::WinDX11Shader::~WinDX11Shader()
+WinDX11Shader::~WinDX11Shader()
 {
     if (m_vertexShader)
     {
@@ -28,7 +31,7 @@ LacertaEngine::WinDX11Shader::~WinDX11Shader()
     }
 }
 
-void LacertaEngine::WinDX11Shader::Load(Renderer* renderer, const wchar_t* vertexShaderName, const wchar_t* pixelShaderName)
+void WinDX11Shader::Load(Renderer* renderer, const wchar_t* vertexShaderName, const wchar_t* pixelShaderName)
 {
     LOG(Debug, "WinDX11Shader : Load");
 
@@ -113,7 +116,7 @@ void LacertaEngine::WinDX11Shader::Load(Renderer* renderer, const wchar_t* verte
     m_vertexLayoutStride  = sizeof(VertexDataScreen);
 }
 
-void LacertaEngine::WinDX11Shader::PreparePass(Renderer* renderer, Drawcall* dc)
+void WinDX11Shader::PreparePass(Renderer* renderer, Drawcall* dc)
 {
     WinDX11Renderer* driver = (WinDX11Renderer*)renderer;
     auto ctx = driver->GetImmediateContext();
@@ -132,11 +135,13 @@ void LacertaEngine::WinDX11Shader::PreparePass(Renderer* renderer, Drawcall* dc)
     ctx->PSSetShader(m_fragmentShader, nullptr, 0);
 }
 
-void LacertaEngine::WinDX11Shader::Pass(Renderer* renderer, Drawcall* dc)
+void WinDX11Shader::Pass(Renderer* renderer, Drawcall* dc)
 {
     WinDX11Renderer* driver = (WinDX11Renderer*)renderer;
     auto ctx = driver->GetImmediateContext();
 
     unsigned long vertices = dc->GetVerticesCount();
     ctx->Draw(vertices, 0);
+}
+
 }

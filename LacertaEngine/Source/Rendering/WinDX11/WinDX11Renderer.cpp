@@ -4,16 +4,21 @@
 #include "WinDX11RenderTarget.h"
 #include "../Drawcall.h"
 #include "../../Logger/Logger.h"
+
+namespace LacertaEngine
+{
     
-LacertaEngine::WinDX11Renderer::WinDX11Renderer()
+WinDX11Renderer::WinDX11Renderer()
 {
 }
 
-LacertaEngine::WinDX11Renderer::~WinDX11Renderer()
+WinDX11Renderer::~WinDX11Renderer()
 {
+    if(m_constantBuffer)
+        m_constantBuffer->Release();
 }
 
-void LacertaEngine::WinDX11Renderer::Initialize(int* context, int width, int height, int targetRefreshRate)
+void WinDX11Renderer::Initialize(int* context, int width, int height, int targetRefreshRate)
 {
     LOG(Debug, "WinDX11Renderer : Initialize");
 
@@ -63,6 +68,24 @@ void LacertaEngine::WinDX11Renderer::Initialize(int* context, int width, int hei
         throw std::exception("Failed SwapChain creation");
     }
 
+    ConstantBuffer cb;
+
+    D3D11_BUFFER_DESC bufferDesc = {};
+    bufferDesc.Usage = D3D11_USAGE_DEFAULT;
+    bufferDesc.ByteWidth = sizeof(ConstantBuffer);
+    bufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+    bufferDesc.CPUAccessFlags = 0;
+    bufferDesc.MiscFlags = 0;
+
+    D3D11_SUBRESOURCE_DATA initData = {};
+    initData.pSysMem = &cb;
+
+    if(FAILED(m_device->CreateBuffer(&bufferDesc, &initData, &m_constantBuffer)))
+    {
+        LOG(Error, "Create Constant Buffer failed");
+        throw std::exception("Create Constant Buffer failed");
+    }
+
     return; // TODO enable rasterizer 
 
     // Changing rasterizer properties & state 
@@ -84,7 +107,7 @@ void LacertaEngine::WinDX11Renderer::Initialize(int* context, int width, int hei
     m_deviceContext->RSSetState(rasterizerState);
 }
 
-void LacertaEngine::WinDX11Renderer::CreateRenderTarget(int width, int height, int depth)
+void WinDX11Renderer::CreateRenderTarget(int width, int height, int depth)
 {
     LOG(Debug, "WinDX11Renderer : Create Render Target");
 
@@ -105,7 +128,7 @@ void LacertaEngine::WinDX11Renderer::CreateRenderTarget(int width, int height, i
     m_drawcalls.push_back(dc);
 }
 
-void LacertaEngine::WinDX11Renderer::RenderFrame()
+void WinDX11Renderer::RenderFrame()
 {
     m_renderTarget->SetActive(this);
     m_renderTarget->Clear(this, Vector4(0.0f, 0.0f, 0.0f, 1.0f));
@@ -114,14 +137,20 @@ void LacertaEngine::WinDX11Renderer::RenderFrame()
         dc->Pass(this);
 }
 
-void LacertaEngine::WinDX11Renderer::PresentSwapChain()
+void WinDX11Renderer::PresentSwapChain()
 {
     m_dxgiSwapChain->Present(true, NULL);   
 }
 
-void LacertaEngine::WinDX11Renderer::OnResize(unsigned width, unsigned height)
+void WinDX11Renderer::OnResize(unsigned width, unsigned height)
 {
     WinDX11RenderTarget* rendTarg = (WinDX11RenderTarget*)m_renderTarget;
     rendTarg->Resize(this, width, height);
 }
 
+void WinDX11Renderer::UpdateConstantBuffer(void* buffer)
+{
+    m_deviceContext->UpdateSubresource(m_constantBuffer, NULL, NULL, buffer, NULL, NULL);
+}
+    
+}

@@ -21,10 +21,13 @@ void LacertaEditor::Start()
 {
     LOG(Debug, "Lacerta Editor : Start");
 
+    // ----------------------- Starting Global Timer -----------------
+
+    m_globalTimer = new Timer();
+
     // ----------------------- Window Creation ------------------------
 
     m_editorWindow = new EditorWindow(L"Lacerta Engine");
-    // m_editorWindow->Maximize();
 
     // ----------------------- Input System Creation ------------------------
 
@@ -56,6 +59,8 @@ void LacertaEditor::Start()
     ImGui_ImplWin32_Init(hwnd);
     WinDX11Renderer* Dx11Renderer = (WinDX11Renderer*)GraphicsEngine::Get()->GetRenderer(); // TODO remove direct reference to DX11
     ImGui_ImplDX11_Init((ID3D11Device*)Dx11Renderer->GetDriver(), Dx11Renderer->GetImmediateContext());
+
+    m_editorWindow->Maximize();
 }
 
 void LacertaEditor::Update()
@@ -70,6 +75,11 @@ void LacertaEditor::Update()
     int width = windowRect.right - windowRect.left;
     int height = windowRect.bottom - windowRect.top;
     Dx11RenderTarget->SetViewportSize(Dx11Renderer, width, height);
+
+    ConstantBuffer cc;
+    cc.Time = m_globalTimer->Elapsed();
+    // LOG(Warning, std::to_string(cc.Time));
+    GraphicsEngine::Get()->UpdateShaderConstants(&cc); // TODO add the cb inside shaders & verify it's usable 
 
     GraphicsEngine::Get()->Render();
 

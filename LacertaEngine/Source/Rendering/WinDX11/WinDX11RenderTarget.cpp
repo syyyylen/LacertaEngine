@@ -3,16 +3,19 @@
 #include "WinDX11Renderer.h"
 #include "../../Logger/Logger.h"
 
-LacertaEngine::WinDX11RenderTarget::WinDX11RenderTarget()
+namespace LacertaEngine
+{
+    
+WinDX11RenderTarget::WinDX11RenderTarget()
 {
 }
 
-LacertaEngine::WinDX11RenderTarget::~WinDX11RenderTarget()
+WinDX11RenderTarget::~WinDX11RenderTarget()
 {
     delete m_renderTarget;
 }
 
-void LacertaEngine::WinDX11RenderTarget::Initialize(Renderer* renderer, int width, int height, int depth)
+void WinDX11RenderTarget::Initialize(Renderer* renderer, int width, int height, int depth)
 {
     LOG(Debug, "WinDX11RenderTarget : Initialize");
     
@@ -20,13 +23,13 @@ void LacertaEngine::WinDX11RenderTarget::Initialize(Renderer* renderer, int widt
     SetViewportSize(renderer, width, height);
 }
 
-void LacertaEngine::WinDX11RenderTarget::SetActive(Renderer* renderer)
+void WinDX11RenderTarget::SetActive(Renderer* renderer)
 {
     WinDX11Renderer* localRenderer = (WinDX11Renderer*)renderer;
     localRenderer->GetImmediateContext()->OMSetRenderTargets(1, &m_renderTarget, nullptr);
 }
 
-void LacertaEngine::WinDX11RenderTarget::ReloadBuffers(Renderer* renderer, unsigned width, unsigned height)
+void WinDX11RenderTarget::ReloadBuffers(Renderer* renderer, unsigned width, unsigned height)
 {
     WinDX11Renderer* localRenderer = (WinDX11Renderer*)renderer;
     ID3D11Device* device = (ID3D11Device*)renderer->GetDriver();
@@ -49,7 +52,7 @@ void LacertaEngine::WinDX11RenderTarget::ReloadBuffers(Renderer* renderer, unsig
     buffer->Release();
 }
 
-void LacertaEngine::WinDX11RenderTarget::Resize(Renderer* renderer, unsigned width, unsigned height)
+void WinDX11RenderTarget::Resize(Renderer* renderer, unsigned width, unsigned height)
 {
     if(m_renderTarget)
         m_renderTarget->Release();
@@ -61,14 +64,14 @@ void LacertaEngine::WinDX11RenderTarget::Resize(Renderer* renderer, unsigned wid
     ReloadBuffers(renderer, width, height);
 }
 
-void LacertaEngine::WinDX11RenderTarget::Clear(Renderer* renderer, Vector4 color)
+void WinDX11RenderTarget::Clear(Renderer* renderer, Vector4 color)
 {
     ID3D11DeviceContext* ctx = ((WinDX11Renderer*)renderer)->GetImmediateContext();
     FLOAT clearColor[] = { color.X, color.Y, color.Z, color.W };
     ctx->ClearRenderTargetView(m_renderTarget, clearColor);
 }
 
-void LacertaEngine::WinDX11RenderTarget::SetViewportSize(Renderer* renderer, UINT width, UINT height)
+void WinDX11RenderTarget::SetViewportSize(Renderer* renderer, UINT width, UINT height)
 {
     WinDX11Renderer* localRenderer = (WinDX11Renderer*)renderer;
     D3D11_VIEWPORT vp = {};
@@ -77,4 +80,6 @@ void LacertaEngine::WinDX11RenderTarget::SetViewportSize(Renderer* renderer, UIN
     vp.MinDepth = 0.0f;
     vp.MaxDepth = 1.0f;
     localRenderer->GetImmediateContext()->RSSetViewports(1, &vp);
+}
+    
 }

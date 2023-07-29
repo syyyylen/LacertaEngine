@@ -18,6 +18,7 @@ public:
     virtual void RenderFrame() = 0;
     virtual void OnResize(unsigned width, unsigned height) = 0;
     virtual void PresentSwapChain() = 0;
+    virtual void UpdateConstantBuffer(void* buffer) = 0;
 
     virtual int* GetDriver() = 0;
     

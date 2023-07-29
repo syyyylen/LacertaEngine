@@ -8,6 +8,12 @@
 
 namespace LacertaEngine
 {
+
+__declspec(align(16))
+struct ConstantBuffer
+{
+    float Time = 0.0f;
+};
     
 class LACERTAENGINE_API WinDX11Renderer : public Renderer
 {
@@ -21,6 +27,7 @@ public:
     void RenderFrame() override;
     void PresentSwapChain() override;
     void OnResize(unsigned width, unsigned height) override;
+    void UpdateConstantBuffer(void* buffer) override;
 
     int* GetDriver() override { return (int*)m_device; }
 
@@ -32,6 +39,7 @@ private:
     ID3D11DeviceContext* m_deviceContext;
     IDXGISwapChain* m_dxgiSwapChain;
     D3D_FEATURE_LEVEL m_featureLevel;
+    ID3D11Buffer* m_constantBuffer; 
 };
 
 }

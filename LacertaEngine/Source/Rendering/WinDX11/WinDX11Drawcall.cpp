@@ -4,6 +4,9 @@
 #include "WinDX11Shader.h"
 #include "../../Logger/Logger.h"
 
+namespace LacertaEngine
+{
+    
 LacertaEngine::WinDX11Drawcall::WinDX11Drawcall()
 {
 }
@@ -20,7 +23,7 @@ LacertaEngine::WinDX11Drawcall::~WinDX11Drawcall()
 void LacertaEngine::WinDX11Drawcall::Setup(Renderer* renderer)
 {
     LOG(Debug, "WinDX11Shader : Setup");
-    
+
     auto shader = new WinDX11Shader();
     m_shader = (Shader*)shader;
 
@@ -51,9 +54,9 @@ void LacertaEngine::WinDX11Drawcall::CreateVBO(Renderer* renderer, void* data, u
 
     D3D11_SUBRESOURCE_DATA InitData;
     InitData.pSysMem = data;
-    
+
     ID3D11Device* dev = (ID3D11Device*)renderer->GetDriver();
-    
+
     HRESULT hr = dev->CreateBuffer(&desc, &InitData, &m_vbo);
 
     if (FAILED(hr))
@@ -63,4 +66,6 @@ void LacertaEngine::WinDX11Drawcall::CreateVBO(Renderer* renderer, void* data, u
     }
 
     m_verticesCount = size;
+}
+    
 }
