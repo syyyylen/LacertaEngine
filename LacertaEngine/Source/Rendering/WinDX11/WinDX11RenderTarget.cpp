@@ -60,7 +60,7 @@ void WinDX11RenderTarget::Resize(Renderer* renderer, unsigned width, unsigned he
     WinDX11Renderer* localRenderer = (WinDX11Renderer*)renderer;
     // carefull with the buffer count (curr : 2, set to 0 to preserve all)
     // see : https://learn.microsoft.com/en-us/windows/win32/api/dxgi/nf-dxgi-idxgiswapchain-resizebuffers
-    localRenderer->GetDXGISwapChain()->ResizeBuffers(0, width, height, DXGI_FORMAT_R8G8B8A8_UNORM, 0);
+    localRenderer->GetDXGISwapChain()->ResizeBuffers(2, width, height, DXGI_FORMAT_R8G8B8A8_UNORM, 0);
     ReloadBuffers(renderer, width, height);
 }
 

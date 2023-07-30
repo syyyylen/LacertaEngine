@@ -151,6 +151,8 @@ void WinDX11Renderer::OnResize(unsigned width, unsigned height)
 void WinDX11Renderer::UpdateConstantBuffer(void* buffer)
 {
     m_deviceContext->UpdateSubresource(m_constantBuffer, NULL, NULL, buffer, NULL, NULL);
+    m_deviceContext->VSSetConstantBuffers(0, 1, &m_constantBuffer);
+    m_deviceContext->PSSetConstantBuffers(0, 1, &m_constantBuffer);
 }
     
 }

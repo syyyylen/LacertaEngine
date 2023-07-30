@@ -3,6 +3,7 @@
 #include "ImGui/imgui_impl_dx11.h"
 #include "ImGui/imgui_impl_win32.h"
 #include "ImGui/imgui_src/imgui.h"
+#include "Rendering/Drawcall.h"
 #include "Rendering/WinDX11/WinDX11Renderer.h"
 #include "Rendering/WinDX11/WinDX11RenderTarget.h"
 
@@ -78,8 +79,7 @@ void LacertaEditor::Update()
 
     ConstantBuffer cc;
     cc.Time = m_globalTimer->Elapsed();
-    // LOG(Warning, std::to_string(cc.Time));
-    GraphicsEngine::Get()->UpdateShaderConstants(&cc); // TODO add the cb inside shaders & verify it's usable 
+    GraphicsEngine::Get()->UpdateShaderConstants(&cc);
 
     GraphicsEngine::Get()->Render();
 

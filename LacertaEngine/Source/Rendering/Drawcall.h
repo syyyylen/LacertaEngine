@@ -6,6 +6,12 @@
 namespace LacertaEngine
 {
 
+__declspec(align(16))
+struct ConstantBuffer
+{
+    float Time = 0.0f;
+};
+
 struct VertexDataScreen
 {
     Vector3 Position;

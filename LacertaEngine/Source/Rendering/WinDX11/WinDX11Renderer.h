@@ -9,12 +9,6 @@
 namespace LacertaEngine
 {
 
-__declspec(align(16))
-struct ConstantBuffer
-{
-    float Time = 0.0f;
-};
-    
 class LACERTAENGINE_API WinDX11Renderer : public Renderer
 {
 public:
