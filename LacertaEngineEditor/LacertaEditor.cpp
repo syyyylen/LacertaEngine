@@ -49,9 +49,9 @@ void LacertaEditor::Start()
 
     VertexDataScreen screenVertices[] =
     {
-        { Vector3(-0.5f, -0.5f, 0.0f) },
-        { Vector3(0.0f, 0.65f, 0.0f) },
-        { Vector3(0.5f, -0.5f, 0.0f) }
+        { Vector3(0.35f, 0.2f, 0.0f) },
+        { Vector3(0.85f, 0.2f, 0.0f) },
+        { Vector3(0.60f, 0.8f, 0.0f) }
     };
     
     DrawcallData dcData = {};
@@ -63,58 +63,64 @@ void LacertaEditor::Start()
     
     GraphicsEngine::Get()->AddDrawcall(&dcData);
     
-
     // ------------------------------- Debug Cube ------------------------------
 
-    // VertexWorld screenVertices[] = 
-    // {
-    //     //X - Y - Z
-    //     //FRONT FACE
-    //     {Vector3(-0.5f,-0.5f,-0.5f),    Vector3(1,0,0),  Vector3(0.2f,0,0) },
-    //     {Vector3(-0.5f,0.5f,-0.5f),    Vector3(1,1,0), Vector3(0.2f,0.2f,0) },
-    //     { Vector3(0.5f,0.5f,-0.5f),   Vector3(1,1,0),  Vector3(0.2f,0.2f,0) },
-    //     { Vector3(0.5f,-0.5f,-0.5f),     Vector3(1,0,0), Vector3(0.2f,0,0) },
-    //
-    //     //BACK FACE
-    //     { Vector3(0.5f,-0.5f,0.5f),    Vector3(0,1,0), Vector3(0,0.2f,0) },
-    //     { Vector3(0.5f,0.5f,0.5f),    Vector3(0,1,1), Vector3(0,0.2f,0.2f) },
-    //     { Vector3(-0.5f,0.5f,0.5f),   Vector3(0,1,1),  Vector3(0,0.2f,0.2f) },
-    //     { Vector3(-0.5f,-0.5f,0.5f),     Vector3(0,1,0), Vector3(0,0.2f,0) }
-    //
-    // };
-    //
-    // unsigned int indexList[]=
-    // {
-    //     //FRONT SIDE
-    //     0,1,2,  //FIRST TRIANGLE
-    //     2,3,0,  //SECOND TRIANGLE
-    //     //BACK SIDE
-    //     4,5,6,
-    //     6,7,4,
-    //     //TOP SIDE
-    //     1,6,5,
-    //     5,2,1,
-    //     //BOTTOM SIDE
-    //     7,0,3,
-    //     3,4,7,
-    //     //RIGHT SIDE
-    //     3,2,5,
-    //     5,4,3,
-    //     //LEFT SIDE
-    //     7,6,1,
-    //     1,0,7
-    // };
-    //
-    // DrawcallData dcData = {};
-    // dcData.Data = &screenVertices;
-    // dcData.Size = ARRAYSIZE(screenVertices);
-    // dcData.Type = DrawcallType::Mesh;
-    // dcData.VertexShaderPath = L"../LacertaEngine/Source/Rendering/Shaders/WorldVertex.hlsl";
-    // dcData.PixelShaderPath = L"../LacertaEngine/Source/Rendering/Shaders/SimpleColorPixelShader.hlsl";
-    // dcData.IndexesData = &indexList;
-    // dcData.IndexesSize = ARRAYSIZE(indexList);
-    //
-    // GraphicsEngine::Get()->AddDrawcall(&dcData);
+    // TODO load meshes
+
+    VertexWorld worldVertices[] = 
+    {
+        //X - Y - Z
+        //FRONT FACE
+        {Vector3(-0.5f,-0.5f,-0.5f),    Vector3(1,0,0),  Vector3(0.2f,0,0) },
+        {Vector3(-0.5f,0.5f,-0.5f),    Vector3(1,1,0), Vector3(0.2f,0.2f,0) },
+        { Vector3(0.5f,0.5f,-0.5f),   Vector3(1,1,0),  Vector3(0.2f,0.2f,0) },
+        { Vector3(0.5f,-0.5f,-0.5f),     Vector3(1,0,0), Vector3(0.2f,0,0) },
+    
+        //BACK FACE
+        { Vector3(0.5f,-0.5f,0.5f),    Vector3(0,1,0), Vector3(0,0.2f,0) },
+        { Vector3(0.5f,0.5f,0.5f),    Vector3(0,1,1), Vector3(0,0.2f,0.2f) },
+        { Vector3(-0.5f,0.5f,0.5f),   Vector3(0,1,1),  Vector3(0,0.2f,0.2f) },
+        { Vector3(-0.5f,-0.5f,0.5f),     Vector3(0,1,0), Vector3(0,0.2f,0) }
+    
+    };
+    
+    unsigned int indexList[]=
+    {
+        //FRONT SIDE
+        0,1,2,  //FIRST TRIANGLE
+        2,3,0,  //SECOND TRIANGLE
+        //BACK SIDE
+        4,5,6,
+        6,7,4,
+        //TOP SIDE
+        1,6,5,
+        5,2,1,
+        //BOTTOM SIDE
+        7,0,3,
+        3,4,7,
+        //RIGHT SIDE
+        3,2,5,
+        5,4,3,
+        //LEFT SIDE
+        7,6,1,
+        1,0,7
+    };
+    
+    DrawcallData worldDcData = {};
+    worldDcData.Data = &worldVertices;
+    worldDcData.Size = ARRAYSIZE(worldVertices);
+    worldDcData.Type = DrawcallType::Mesh;
+    worldDcData.VertexShaderPath = L"../LacertaEngine/Source/Rendering/Shaders/WorldVertex.hlsl";
+    worldDcData.PixelShaderPath = L"../LacertaEngine/Source/Rendering/Shaders/WorldColorPixelShader.hlsl";
+    worldDcData.IndexesData = &indexList;
+    worldDcData.IndexesSize = ARRAYSIZE(indexList);
+    
+    GraphicsEngine::Get()->AddDrawcall(&worldDcData);
+
+    // --------------------------- Camera Default Position ---------------------
+
+    // TODO handle cameras correctly 
+    m_camera.SetTranslation(Vector3(0.0f, 0.0f, -2.0f));
 
     // ----------------------------- UI Initialization  ------------------------
 
@@ -132,7 +138,7 @@ void LacertaEditor::Start()
     WinDX11Renderer* Dx11Renderer = (WinDX11Renderer*)GraphicsEngine::Get()->GetRenderer(); // TODO remove direct reference to DX11
     ImGui_ImplDX11_Init((ID3D11Device*)Dx11Renderer->GetDriver(), Dx11Renderer->GetImmediateContext());
 
-    m_editorWindow->Maximize();
+    // m_editorWindow->Maximize(); //TODO uncomment this
 }
 
 void LacertaEditor::Update()
@@ -148,8 +154,19 @@ void LacertaEditor::Update()
     int height = windowRect.bottom - windowRect.top;
     Dx11RenderTarget->SetViewportSize(Dx11Renderer, width, height);
 
+    // TODO remove debug logic 
     ConstantBuffer cc;
     cc.Time = m_globalTimer->Elapsed();
+    cc.WorldMatrix.SetIdentity();
+    cc.WorldMatrix.SetRotationX(12.0f);
+    Matrix4x4 worldCam;
+    worldCam.SetIdentity();
+    worldCam.SetTranslation(m_camera.GetTranslation());
+    worldCam.Inverse();
+    cc.ViewMatrix = worldCam;
+    cc.ProjectionMatrix.SetPerspectiveFovLH(1.57f, ((float)width / (float)height), 0.1f, 100.0f);
+    // TODO remove debug logic 
+    
     GraphicsEngine::Get()->UpdateShaderConstants(&cc);
 
     GraphicsEngine::Get()->Render();

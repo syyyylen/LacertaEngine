@@ -1,6 +1,6 @@
 struct VertexInput
 {
-    float3 vertex : POSITION;
+    float4 vertex : POSITION;
     float3 color : COLOR;
     float3 color1 : COLOR1;
 };

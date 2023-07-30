@@ -28,6 +28,9 @@ public:
 private:
     EditorWindow* m_editorWindow;
     Timer* m_globalTimer;
+
+    Matrix4x4 m_camera;
+    float m_delta;
 };
     
 }

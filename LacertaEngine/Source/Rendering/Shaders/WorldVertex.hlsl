@@ -8,6 +8,8 @@ VertexOutput main(VertexInput input)
     ret.position = mul(input.vertex, World);
     ret.position = mul(ret.position, View);
     ret.position = mul(ret.position, Projection);
+
+    // ret.position = float4(input.vertex, 1.0f);
     ret.color = input.color;
     ret.color1 = input.color1;
 
