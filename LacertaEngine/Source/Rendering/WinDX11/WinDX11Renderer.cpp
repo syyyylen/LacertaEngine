@@ -86,8 +86,6 @@ void WinDX11Renderer::Initialize(int* context, int width, int height, int target
         throw std::exception("Create Constant Buffer failed");
     }
 
-    return; // TODO enable rasterizer 
-
     // Changing rasterizer properties & state 
     D3D11_RASTERIZER_DESC rasterizerDesc;
     ZeroMemory(&rasterizerDesc, sizeof(D3D11_RASTERIZER_DESC));

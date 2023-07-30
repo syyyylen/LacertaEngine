@@ -26,17 +26,23 @@ struct DrawcallData
 __declspec(align(16))
 struct ConstantBuffer
 {
-    // Matrix4x4 WorldMatrix;
-    // Matrix4x4 ViewMatrix;
-    // Matrix4x4 ProjectionMatrix;
-    // Vector3 CameraPosition;
-    
+    Matrix4x4 WorldMatrix;
+    Matrix4x4 ViewMatrix;
+    Matrix4x4 ProjectionMatrix;
+    Vector3 CameraPosition;
     float Time = 0.0f;
 };
 
 struct VertexDataScreen
 {
     Vector3 Position;
+};
+
+struct VertexWorld
+{
+    Vector3 Position;
+    Vector3 Color;
+    Vector3 Color2;
 };
 
 class Shader;
@@ -56,6 +62,7 @@ public:
     virtual void* GetIBO() = 0;
     unsigned long GetVerticesCount() { return m_verticesCount; }
     unsigned long GetIndexListSize() { return m_indexCount; }
+    DrawcallType GetType() { return m_type; }
 
 protected:
     Shader* m_shader;

@@ -53,7 +53,7 @@ void LacertaEditor::Start()
         { Vector3(0.0f, 0.65f, 0.0f) },
         { Vector3(0.5f, -0.5f, 0.0f) }
     };
-
+    
     DrawcallData dcData = {};
     dcData.Data = &screenVertices;
     dcData.Size = ARRAYSIZE(screenVertices);
@@ -62,6 +62,59 @@ void LacertaEditor::Start()
     dcData.PixelShaderPath = L"../LacertaEngine/Source/Rendering/Shaders/SimpleColorPixelShader.hlsl";
     
     GraphicsEngine::Get()->AddDrawcall(&dcData);
+    
+
+    // ------------------------------- Debug Cube ------------------------------
+
+    // VertexWorld screenVertices[] = 
+    // {
+    //     //X - Y - Z
+    //     //FRONT FACE
+    //     {Vector3(-0.5f,-0.5f,-0.5f),    Vector3(1,0,0),  Vector3(0.2f,0,0) },
+    //     {Vector3(-0.5f,0.5f,-0.5f),    Vector3(1,1,0), Vector3(0.2f,0.2f,0) },
+    //     { Vector3(0.5f,0.5f,-0.5f),   Vector3(1,1,0),  Vector3(0.2f,0.2f,0) },
+    //     { Vector3(0.5f,-0.5f,-0.5f),     Vector3(1,0,0), Vector3(0.2f,0,0) },
+    //
+    //     //BACK FACE
+    //     { Vector3(0.5f,-0.5f,0.5f),    Vector3(0,1,0), Vector3(0,0.2f,0) },
+    //     { Vector3(0.5f,0.5f,0.5f),    Vector3(0,1,1), Vector3(0,0.2f,0.2f) },
+    //     { Vector3(-0.5f,0.5f,0.5f),   Vector3(0,1,1),  Vector3(0,0.2f,0.2f) },
+    //     { Vector3(-0.5f,-0.5f,0.5f),     Vector3(0,1,0), Vector3(0,0.2f,0) }
+    //
+    // };
+    //
+    // unsigned int indexList[]=
+    // {
+    //     //FRONT SIDE
+    //     0,1,2,  //FIRST TRIANGLE
+    //     2,3,0,  //SECOND TRIANGLE
+    //     //BACK SIDE
+    //     4,5,6,
+    //     6,7,4,
+    //     //TOP SIDE
+    //     1,6,5,
+    //     5,2,1,
+    //     //BOTTOM SIDE
+    //     7,0,3,
+    //     3,4,7,
+    //     //RIGHT SIDE
+    //     3,2,5,
+    //     5,4,3,
+    //     //LEFT SIDE
+    //     7,6,1,
+    //     1,0,7
+    // };
+    //
+    // DrawcallData dcData = {};
+    // dcData.Data = &screenVertices;
+    // dcData.Size = ARRAYSIZE(screenVertices);
+    // dcData.Type = DrawcallType::Mesh;
+    // dcData.VertexShaderPath = L"../LacertaEngine/Source/Rendering/Shaders/WorldVertex.hlsl";
+    // dcData.PixelShaderPath = L"../LacertaEngine/Source/Rendering/Shaders/SimpleColorPixelShader.hlsl";
+    // dcData.IndexesData = &indexList;
+    // dcData.IndexesSize = ARRAYSIZE(indexList);
+    //
+    // GraphicsEngine::Get()->AddDrawcall(&dcData);
 
     // ----------------------------- UI Initialization  ------------------------
 

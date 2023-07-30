@@ -28,7 +28,7 @@ void WinDX11Drawcall::Setup(Renderer* renderer, DrawcallType type, const wchar_t
     auto shader = new WinDX11Shader();
     m_shader = (Shader*)shader;
     
-    m_shader->Load(renderer, vertexShaderPath, pixelShaderPath);
+    m_shader->Load(renderer, type, vertexShaderPath, pixelShaderPath);
 }
 
 void WinDX11Drawcall::Pass(Renderer* renderer)
@@ -71,7 +71,32 @@ void WinDX11Drawcall::CreateVBO(Renderer* renderer, void* data, unsigned long si
 
 void WinDX11Drawcall::CreateIBO(Renderer* renderer, void* data, unsigned long size)
 {
-    // TODO create index buffer obj & store the size 
+    LOG(Debug, "WinDX11Shader : CreateIBO");
+
+    if(m_ibo)
+        m_ibo->Release();
+
+    D3D11_BUFFER_DESC desc = {};
+    desc.Usage = D3D11_USAGE_DEFAULT;
+    desc.ByteWidth = 4 * size;
+    desc.BindFlags = D3D11_BIND_INDEX_BUFFER;
+    desc.CPUAccessFlags = 0;
+    desc.MiscFlags = 0;
+
+    D3D11_SUBRESOURCE_DATA InitData;
+    InitData.pSysMem = data;
+
+    ID3D11Device* dev = (ID3D11Device*)renderer->GetDriver();
+
+    HRESULT hr = dev->CreateBuffer(&desc, &InitData, &m_ibo);
+
+    if (FAILED(hr))
+    {
+        LOG(Error, "WinDX11Drawcall : IBO object creation failed");
+        throw std::exception("IBO object creation failed");
+    }
+
+    m_indexCount = size;
 }
     
 }
