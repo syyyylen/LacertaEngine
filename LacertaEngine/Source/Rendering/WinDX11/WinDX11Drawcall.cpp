@@ -7,11 +7,11 @@
 namespace LacertaEngine
 {
     
-LacertaEngine::WinDX11Drawcall::WinDX11Drawcall()
+WinDX11Drawcall::WinDX11Drawcall()
 {
 }
 
-LacertaEngine::WinDX11Drawcall::~WinDX11Drawcall()
+WinDX11Drawcall::~WinDX11Drawcall()
 {
     if(m_vbo)
     {
@@ -20,23 +20,24 @@ LacertaEngine::WinDX11Drawcall::~WinDX11Drawcall()
     }
 }
 
-void LacertaEngine::WinDX11Drawcall::Setup(Renderer* renderer)
+void WinDX11Drawcall::Setup(Renderer* renderer, DrawcallType type, const wchar_t* vertexShaderPath, const wchar_t* pixelShaderPath)
 {
     LOG(Debug, "WinDX11Shader : Setup");
 
+    m_type = type;
     auto shader = new WinDX11Shader();
     m_shader = (Shader*)shader;
-
-    m_shader->Load(renderer, L"../LacertaEngine/Source/Rendering/Shaders/ScreenVertex.hlsl", L"../LacertaEngine/Source/Rendering/Shaders/SimpleColorPixelShader.hlsl");
+    
+    m_shader->Load(renderer, vertexShaderPath, pixelShaderPath);
 }
 
-void LacertaEngine::WinDX11Drawcall::Pass(Renderer* renderer)
+void WinDX11Drawcall::Pass(Renderer* renderer)
 {
     m_shader->PreparePass(renderer, this);
     m_shader->Pass(renderer, this);
 }
 
-void LacertaEngine::WinDX11Drawcall::CreateVBO(Renderer* renderer, void* data, unsigned long size)
+void WinDX11Drawcall::CreateVBO(Renderer* renderer, void* data, unsigned long size)
 {
     LOG(Debug, "WinDX11Shader : CreateVBO");
 
@@ -66,6 +67,11 @@ void LacertaEngine::WinDX11Drawcall::CreateVBO(Renderer* renderer, void* data, u
     }
 
     m_verticesCount = size;
+}
+
+void WinDX11Drawcall::CreateIBO(Renderer* renderer, void* data, unsigned long size)
+{
+    // TODO create index buffer obj & store the size 
 }
     
 }

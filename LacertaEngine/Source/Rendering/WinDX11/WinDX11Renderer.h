@@ -22,6 +22,7 @@ public:
     void PresentSwapChain() override;
     void OnResize(unsigned width, unsigned height) override;
     void UpdateConstantBuffer(void* buffer) override;
+    void AddDrawcall(DrawcallData* dcData) override;
 
     int* GetDriver() override { return (int*)m_device; }
 

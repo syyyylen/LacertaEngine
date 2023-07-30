@@ -3,8 +3,9 @@
 
 namespace LacertaEngine
 {
-
+    
 class Drawcall;
+struct DrawcallData;
 class RenderTarget;
 
 class LACERTAENGINE_API Renderer
@@ -19,6 +20,7 @@ public:
     virtual void OnResize(unsigned width, unsigned height) = 0;
     virtual void PresentSwapChain() = 0;
     virtual void UpdateConstantBuffer(void* buffer) = 0;
+    virtual void AddDrawcall(DrawcallData* dcData) = 0;
 
     virtual int* GetDriver() = 0;
     

@@ -113,18 +113,21 @@ void WinDX11Renderer::CreateRenderTarget(int width, int height, int depth)
 
     m_renderTarget = new WinDX11RenderTarget();
     m_renderTarget->Initialize(this, width, height, depth);
-    
+}
+
+void WinDX11Renderer::AddDrawcall(DrawcallData* dcData)
+{
+    LOG(Debug, "WinDX11Renderer : Adding a drawcall");
+
     WinDX11Drawcall* dc = new WinDX11Drawcall();
-    dc->Setup(this);
+    
+    dc->Setup(this, dcData->Type, dcData->VertexShaderPath, dcData->PixelShaderPath);
 
-    VertexDataScreen screenVertices[] =
-    {
-        { Vector3(-0.5f, -0.5f, 0.0f) },
-        { Vector3(0.0f, 0.65f, 0.0f) },
-        { Vector3(0.5f, -0.5f, 0.0f) }
-    };
+    dc->CreateVBO(this, dcData->Data, dcData->Size);
 
-    dc->CreateVBO(this, &screenVertices, ARRAYSIZE(screenVertices));
+    if(dcData->Type == DrawcallType::Mesh)
+        dc->CreateIBO(this, dcData->IndexesData, dcData->IndexesSize);
+    
     m_drawcalls.push_back(dc);
 }
 
@@ -154,5 +157,4 @@ void WinDX11Renderer::UpdateConstantBuffer(void* buffer)
     m_deviceContext->VSSetConstantBuffers(0, 1, &m_constantBuffer);
     m_deviceContext->PSSetConstantBuffers(0, 1, &m_constantBuffer);
 }
-    
 }

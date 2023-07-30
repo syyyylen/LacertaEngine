@@ -45,6 +45,24 @@ void LacertaEditor::Start()
     
     GraphicsEngine::Get()->InitializeRenderer((int*)hwnd, RendererType::RENDERER_WIN_DX11, width, height, 24, 60);
 
+    // ------------------------------- Debug Drawcall ------------------------------
+
+    VertexDataScreen screenVertices[] =
+    {
+        { Vector3(-0.5f, -0.5f, 0.0f) },
+        { Vector3(0.0f, 0.65f, 0.0f) },
+        { Vector3(0.5f, -0.5f, 0.0f) }
+    };
+
+    DrawcallData dcData = {};
+    dcData.Data = &screenVertices;
+    dcData.Size = ARRAYSIZE(screenVertices);
+    dcData.Type = DrawcallType::Screen;
+    dcData.VertexShaderPath = L"../LacertaEngine/Source/Rendering/Shaders/ScreenVertex.hlsl";
+    dcData.PixelShaderPath = L"../LacertaEngine/Source/Rendering/Shaders/SimpleColorPixelShader.hlsl";
+    
+    GraphicsEngine::Get()->AddDrawcall(&dcData);
+
     // ----------------------------- UI Initialization  ------------------------
 
     // Setup Dear ImGui context

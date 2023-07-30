@@ -2,6 +2,7 @@
 
 #include "../Logger/Logger.h"
 #include "WinDX11/WinDX11Renderer.h"
+#include "Drawcall.h"
 
 namespace LacertaEngine
 {
@@ -48,6 +49,12 @@ void GraphicsEngine::InitializeRenderer(int* context, RendererType type, int wid
         m_renderer->Initialize(context, width, height, targetRefreshRate);
         m_renderer->CreateRenderTarget(width, height, depth);
     }
+}
+
+void GraphicsEngine::AddDrawcall(DrawcallData* dcData)
+{
+    if(m_renderer)
+        m_renderer->AddDrawcall(dcData);
 }
 
 void GraphicsEngine::Render()
