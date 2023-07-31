@@ -26,7 +26,7 @@ void WinDX11RenderTarget::Initialize(Renderer* renderer, int width, int height, 
 void WinDX11RenderTarget::SetActive(Renderer* renderer)
 {
     WinDX11Renderer* localRenderer = (WinDX11Renderer*)renderer;
-    localRenderer->GetImmediateContext()->OMSetRenderTargets(1, &m_renderTarget, nullptr);
+    localRenderer->GetImmediateContext()->OMSetRenderTargets(1, &m_renderTarget, m_depthStencil);
 }
 
 void WinDX11RenderTarget::ReloadBuffers(Renderer* renderer, unsigned width, unsigned height)
@@ -50,6 +50,36 @@ void WinDX11RenderTarget::ReloadBuffers(Renderer* renderer, unsigned width, unsi
     }
 
     buffer->Release();
+
+    // Depth buffer 
+    D3D11_TEXTURE2D_DESC tex_desc = {};
+    tex_desc.Width = width;
+    tex_desc.Height = height;
+    tex_desc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+    tex_desc.Usage = D3D11_USAGE_DEFAULT;
+    tex_desc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
+    tex_desc.MipLevels = 1;
+    tex_desc.SampleDesc.Count = 1;
+    tex_desc.SampleDesc.Quality = 0;
+    tex_desc.MiscFlags = 0;
+    tex_desc.ArraySize = 1;
+    tex_desc.CPUAccessFlags = 0;
+
+    hr = device->CreateTexture2D(&tex_desc, nullptr, &buffer);
+    if(FAILED(hr))
+    {
+        LOG(Error, "Failed depth buffer creation");
+        throw std::exception("Failed depth buffer creation");
+    }
+
+    hr = device->CreateDepthStencilView(buffer, NULL, &m_depthStencil);
+    if(FAILED(hr))
+    {
+        LOG(Error, "Failed depth buffer creation");
+        throw std::exception("Failed depth buffer creation");
+    }
+
+    buffer->Release();
 }
 
 void WinDX11RenderTarget::Resize(Renderer* renderer, unsigned width, unsigned height)
@@ -69,6 +99,7 @@ void WinDX11RenderTarget::Clear(Renderer* renderer, Vector4 color)
     ID3D11DeviceContext* ctx = ((WinDX11Renderer*)renderer)->GetImmediateContext();
     FLOAT clearColor[] = { color.X, color.Y, color.Z, color.W };
     ctx->ClearRenderTargetView(m_renderTarget, clearColor);
+    ctx->ClearDepthStencilView(m_depthStencil, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1, 0);
 }
 
 void WinDX11RenderTarget::SetViewportSize(Renderer* renderer, UINT width, UINT height)

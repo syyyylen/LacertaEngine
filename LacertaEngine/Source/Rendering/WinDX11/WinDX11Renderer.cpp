@@ -111,7 +111,7 @@ void WinDX11Renderer::Initialize(int* context, int width, int height, int target
     D3D11_RASTERIZER_DESC rasterizerDesc;
     ZeroMemory(&rasterizerDesc, sizeof(D3D11_RASTERIZER_DESC));
     rasterizerDesc.FillMode = D3D11_FILL_SOLID;
-    rasterizerDesc.CullMode = D3D11_CULL_NONE; // D3D11_CULL_NONE = Disable culling of face with counterclockwise vertices indexes. Curr activated // TODO D3D11_CULL_BACK
+    rasterizerDesc.CullMode = D3D11_CULL_BACK; // D3D11_CULL_NONE = Disable culling of face with counterclockwise vertices indexes
     rasterizerDesc.FrontCounterClockwise = false;
     rasterizerDesc.DepthBias = 0;
     rasterizerDesc.SlopeScaledDepthBias = 0.0f;

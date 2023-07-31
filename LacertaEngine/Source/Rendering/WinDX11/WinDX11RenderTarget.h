@@ -23,6 +23,7 @@ public:
 
 private:
     ID3D11RenderTargetView* m_renderTarget;
+    ID3D11DepthStencilView* m_depthStencil;
 };
 
 }
