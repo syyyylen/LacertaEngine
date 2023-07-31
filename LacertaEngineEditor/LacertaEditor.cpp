@@ -1,5 +1,7 @@
 ﻿#include "LacertaEditor.h"
 
+#include <execution>
+
 #include "ImGui/imgui_impl_dx11.h"
 #include "ImGui/imgui_impl_win32.h"
 #include "ImGui/imgui_src/imgui.h"
@@ -56,100 +58,64 @@ void LacertaEditor::Start()
     HWND hwnd = m_editorWindow->GetHWND();
     GraphicsEngine::Get()->InitializeRenderer((int*)hwnd, RendererType::RENDERER_WIN_DX11, width, height, 24, 60);
 
-    // ------------------------------- Debug Drawcall ------------------------------
-
-    VertexDataScreen screenVertices[] =
-    {
-        { Vector3(0.45f, 0.4f, 0.0f) },
-        { Vector3(0.80f, 0.4f, 0.0f) },
-        { Vector3(0.60f, 0.8f, 0.0f) }
-    };
-    
-    DrawcallData dcData = {};
-    dcData.Data = &screenVertices;
-    dcData.Size = ARRAYSIZE(screenVertices);
-    dcData.Type = DrawcallType::dcScreen;
-    dcData.VertexShaderPath = L"../LacertaEngine/Source/Rendering/Shaders/ScreenVertex.hlsl";
-    dcData.PixelShaderPath = L"../LacertaEngine/Source/Rendering/Shaders/SimpleColorPixelShader.hlsl";
-    
-    GraphicsEngine::Get()->AddDrawcall(&dcData);
-    
-    // ------------------------------- Debug Mesh ------------------------------
-
-    VertexMesh meshVertices[] = 
-    {
-        //X - Y - Z
-        //FRONT FACE
-        {Vector3(-0.5f,-0.5f,-0.5f),    Vector2(0, 0),  Vector3(0,0,0) },
-        {Vector3(-0.5f,0.5f,-0.5f),    Vector2(0, 0), Vector3(0,0,0) },
-        { Vector3(0.5f,0.5f,-0.5f),   Vector2(0, 0),  Vector3(0,0,0) },
-        { Vector3(0.5f,-0.5f,-0.5f),     Vector2(0, 0), Vector3(0,0,0) },
-    
-        //BACK FACE
-        { Vector3(0.5f,-0.5f,0.5f),    Vector2(0, 0), Vector3(0,0,0) },
-        { Vector3(0.5f,0.5f,0.5f),    Vector2(0, 0), Vector3(0,0,0) },
-        { Vector3(-0.5f,0.5f,0.5f),   Vector2(0, 0),  Vector3(0,0,0) },
-        { Vector3(-0.5f,-0.5f,0.5f),     Vector2(0, 0), Vector3(0,0,0) }
-    
-    };
-    
-    unsigned int meshIndexList[]=
-    {
-        //FRONT SIDE
-        0,1,2,  //FIRST TRIANGLE
-        2,3,0,  //SECOND TRIANGLE
-        //BACK SIDE
-        4,5,6,
-        6,7,4,
-        //TOP SIDE
-        1,6,5,
-        5,2,1,
-        //BOTTOM SIDE
-        7,0,3,
-        3,4,7,
-        //RIGHT SIDE
-        3,2,5,
-        5,4,3,
-        //LEFT SIDE
-        7,6,1,
-        1,0,7
-    };
-    
-    DrawcallData meshDcData = {};
-    meshDcData.Data = &meshVertices;
-    meshDcData.Size = ARRAYSIZE(meshIndexList);
-    meshDcData.Type = DrawcallType::dcMesh;
-    meshDcData.VertexShaderPath = L"../LacertaEngine/Source/Rendering/Shaders/MeshVertex.hlsl";
-    meshDcData.PixelShaderPath = L"../LacertaEngine/Source/Rendering/Shaders/MeshPixelShader.hlsl";
-    meshDcData.IndexesData = &meshIndexList;
-    meshDcData.IndexesSize = ARRAYSIZE(meshIndexList);
-    Matrix4x4 meshMatrix;
-    meshMatrix.SetIdentity();
-    meshMatrix.SetTranslation(Vector3(0.85f, 0.0f, 0.0f));
-    meshDcData.LocalMatrix = meshMatrix;
-    
-    GraphicsEngine::Get()->AddDrawcall(&meshDcData);
-
     // ----------------------------- Debug Asset Loading -----------------------
 
-    Mesh* teaPot = ResourceManager::Get()->CreateResource<Mesh>(L"Assets/Meshes/teapot.obj");
+    // TODO remove this wonderfull MT version that is slower than the main thread one
+    // float rdmDist = 10.0f;
+    //
+    // std::vector<int> nbrs(36);
+    // std::for_each(std::execution::par, nbrs.begin(), nbrs.end(), [rdmDist](int num)
+    // {
+    //     Mesh* teaPot = ResourceManager::Get()->CreateResource<Mesh>(L"Assets/Meshes/teapot.obj");
+    //
+    //     DrawcallData teapotDcData = {};
+    //     std::vector<VertexMesh> teapotVertData = teaPot->GetVertices();
+    //     std::vector<unsigned int> teapotIndices = teaPot->GetIndices();
+    //     teapotDcData.Data = &teapotVertData[0];
+    //     teapotDcData.Size = teapotVertData.size();
+    //     teapotDcData.Type = DrawcallType::dcMesh;
+    //     teapotDcData.VertexShaderPath = L"../LacertaEngine/Source/Rendering/Shaders/MeshVertex.hlsl";
+    //     teapotDcData.PixelShaderPath = L"../LacertaEngine/Source/Rendering/Shaders/MeshPixelShader.hlsl";
+    //     teapotDcData.IndexesData = &teapotIndices[0];
+    //     teapotDcData.IndexesSize = teapotIndices.size();
+    //     Matrix4x4 teapotMatrix;
+    //     teapotMatrix.SetIdentity();
+    //     teapotMatrix.SetTranslation(Vector3(Random::RandomFloatRange(-rdmDist, rdmDist),
+    //                                             Random::RandomFloatRange(-rdmDist, rdmDist),
+    //                                             Random::RandomFloatRange(-rdmDist, rdmDist)));
+    //     teapotMatrix.SetRotationY(Random::RandomFloatRange(-6.2f, 6.2f));
+    //     teapotDcData.LocalMatrix = teapotMatrix;
+    //
+    //     GraphicsEngine::Get()->AddDrawcall(&teapotDcData);
+    // });
 
-    DrawcallData teapotDcData = {};
-    std::vector<VertexMesh> teapotVertData = teaPot->GetVertices();
-    std::vector<unsigned int> teapotIndices = teaPot->GetIndices();
-    teapotDcData.Data = &teapotVertData[0];
-    teapotDcData.Size = teapotVertData.size();
-    teapotDcData.Type = DrawcallType::dcMesh;
-    teapotDcData.VertexShaderPath = L"../LacertaEngine/Source/Rendering/Shaders/MeshVertex.hlsl";
-    teapotDcData.PixelShaderPath = L"../LacertaEngine/Source/Rendering/Shaders/MeshPixelShader.hlsl";
-    teapotDcData.IndexesData = &teapotIndices[0];
-    teapotDcData.IndexesSize = teapotIndices.size();
-    Matrix4x4 teapotMatrix;
-    teapotMatrix.SetIdentity();
-    teapotMatrix.SetTranslation(Vector3(-0.85f, 0.0f, 0.0f));
-    teapotDcData.LocalMatrix = teapotMatrix;
+    // TODO remove this process from Editor Start
+    float rdmDist = 12.5f;
+    for(int i = 0; i < 50; i++)
+    {
+        Mesh* teaPot = ResourceManager::Get()->CreateResource<Mesh>(L"Assets/Meshes/teapot.obj");
 
-    GraphicsEngine::Get()->AddDrawcall(&teapotDcData);
+        DrawcallData teapotDcData = {};
+        std::vector<VertexMesh> teapotVertData = teaPot->GetVertices();
+        std::vector<unsigned int> teapotIndices = teaPot->GetIndices();
+        teapotDcData.Data = &teapotVertData[0];
+        teapotDcData.Size = teapotVertData.size();
+        teapotDcData.Type = DrawcallType::dcMesh;
+        teapotDcData.VertexShaderPath = L"../LacertaEngine/Source/Rendering/Shaders/MeshVertex.hlsl";
+        teapotDcData.PixelShaderPath = L"../LacertaEngine/Source/Rendering/Shaders/MeshPixelShader.hlsl";
+        teapotDcData.IndexesData = &teapotIndices[0];
+        teapotDcData.IndexesSize = teapotIndices.size();
+        Matrix4x4 teapotMatrix;
+        teapotMatrix.SetIdentity();
+        teapotMatrix.SetTranslation(Vector3(Random::RandomFloatRange(-rdmDist, rdmDist),
+                                                Random::RandomFloatRange(-rdmDist, rdmDist),
+                                                Random::RandomFloatRange(-rdmDist, rdmDist)));
+        teapotMatrix.SetRotationY(Random::RandomFloatRange(-6.2f, 6.2f));
+        teapotDcData.LocalMatrix = teapotMatrix;
+
+        GraphicsEngine::Get()->AddDrawcall(&teapotDcData);
+    }
+    // TODO remove this process from Editor Start
 
     // --------------------------- Camera Default Position ---------------------
 

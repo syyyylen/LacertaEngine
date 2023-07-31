@@ -21,8 +21,6 @@ public:
     template <typename T>
     T* CreateResource(const wchar_t* filePath)
     {
-        LOG(Debug, "Resource Manager : Create Resource");
-
         for(auto* resource : m_resources)
         {
             if(filePath == resource->GetFilePath())
@@ -37,6 +35,8 @@ public:
             return nullptr;
         }
         res->CreateResource(filePath);
+
+        m_resources.push_back(res);
 
         return resource;
     }

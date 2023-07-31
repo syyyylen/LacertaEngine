@@ -22,8 +22,6 @@ WinDX11Drawcall::~WinDX11Drawcall()
 
 void WinDX11Drawcall::Setup(Renderer* renderer, DrawcallData* dcData)
 {
-    LOG(Debug, "WinDX11Shader : Setup");
-
     m_type = dcData->Type;
     if(dcData->Type == DrawcallType::dcMesh)
         m_localMatrix = dcData->LocalMatrix;
@@ -41,8 +39,6 @@ void WinDX11Drawcall::Pass(Renderer* renderer)
 
 void WinDX11Drawcall::CreateVBO(Renderer* renderer, void* data, unsigned long size)
 {
-    LOG(Debug, "WinDX11Shader : CreateVBO");
-
     if(m_vbo)
         m_vbo->Release();
 
@@ -73,8 +69,6 @@ void WinDX11Drawcall::CreateVBO(Renderer* renderer, void* data, unsigned long si
 
 void WinDX11Drawcall::CreateIBO(Renderer* renderer, void* data, unsigned long size)
 {
-    LOG(Debug, "WinDX11Shader : CreateIBO");
-
     if(m_ibo)
         m_ibo->Release();
 

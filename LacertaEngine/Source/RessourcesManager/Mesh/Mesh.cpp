@@ -20,8 +20,6 @@ Mesh::~Mesh()
 
 void Mesh::CreateResource(const wchar_t* filePath)
 {
-    LOG(Debug, "Mesh : Create Resource");
-    
     SetFilePath(filePath);
 
     tinyobj::attrib_t attributes;
@@ -33,7 +31,6 @@ void Mesh::CreateResource(const wchar_t* filePath)
     int utf8StrLen = WideCharToMultiByte(CP_UTF8, 0, filePath, -1, nullptr, 0, nullptr, nullptr);
     std::string inputfile;
     WideCharToMultiByte(CP_UTF8, 0, filePath, -1, &inputfile[0], utf8StrLen, nullptr, nullptr);
-    // std::string inputfile = std::wstring_convert<std::codecvt_utf8<wchar_t>>().to_bytes(filePath);
 
     bool res = tinyobj::LoadObj(&attributes, &shapes, &materials, &warn, &error, inputfile.c_str());
 

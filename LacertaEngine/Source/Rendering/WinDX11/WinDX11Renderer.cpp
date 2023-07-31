@@ -136,8 +136,6 @@ void WinDX11Renderer::CreateRenderTarget(int width, int height, int depth)
 
 void WinDX11Renderer::AddDrawcall(DrawcallData* dcData)
 {
-    LOG(Debug, "WinDX11Renderer : Adding a drawcall");
-
     WinDX11Drawcall* dc = new WinDX11Drawcall();
     
     dc->Setup(this, dcData);

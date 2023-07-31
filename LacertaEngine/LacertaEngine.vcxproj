@@ -108,6 +108,7 @@
     <ClCompile Include="Source\InputSystem\InputSystem.cpp" />
     <ClCompile Include="Source\LacertaEngine.cpp" />
     <ClCompile Include="Source\Logger\Logger.cpp" />
+    <ClCompile Include="Source\Maths\Random.cpp" />
     <ClCompile Include="Source\Rendering\Drawcall.cpp" />
     <ClCompile Include="Source\Rendering\GraphicsEngine.cpp" />
     <ClCompile Include="Source\Rendering\Renderer.cpp" />
@@ -133,6 +134,7 @@
     <ClInclude Include="Source\Logger\Logger.h" />
     <ClInclude Include="Source\Maths\Maths.h" />
     <ClInclude Include="Source\Maths\Matrix4x4.h" />
+    <ClInclude Include="Source\Maths\Random.h" />
     <ClInclude Include="Source\Maths\Timer.h" />
     <ClInclude Include="Source\Maths\Vector4.h" />
     <ClInclude Include="Source\Maths\Vector2.h" />

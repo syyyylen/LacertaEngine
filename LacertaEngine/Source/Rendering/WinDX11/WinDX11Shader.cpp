@@ -47,8 +47,6 @@ WinDX11Shader::~WinDX11Shader()
 
 void WinDX11Shader::Load(Renderer* renderer, DrawcallType Type, const wchar_t* vertexShaderName, const wchar_t* pixelShaderName)
 {
-    LOG(Debug, "WinDX11Shader : Load");
-
     // Compiling & Creating Vertex Shader
     ID3DBlob* vertexErrorBlob = nullptr;
     ID3DBlob* vertexBlob;
