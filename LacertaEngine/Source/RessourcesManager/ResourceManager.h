@@ -31,6 +31,11 @@ public:
 
         T* resource = new T();
         Resource* res = static_cast<Resource*>(resource);
+        if(!res)
+        {
+            LOG(Error, "Resource Manager : Wrong template argument in CreateResource");
+            return nullptr;
+        }
         res->CreateResource(filePath);
 
         return resource;

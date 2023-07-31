@@ -125,6 +125,7 @@
     <ClCompile Include="Source\Window\Window.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Libs\TinyObjLoader\include\tiny_obj_loader.h" />
     <ClInclude Include="Source\Core.h" />
     <ClInclude Include="Source\InputSystem\InputListener.h" />
     <ClInclude Include="Source\InputSystem\InputSystem.h" />
@@ -156,6 +157,7 @@
     <ClInclude Include="Source\Window\Window.h" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Libs\TinyObjLoader\LICENSE" />
     <Content Include="Source\Rendering\Shaders\ScreenShadersLayouts.hlsli" />
     <Content Include="Source\Rendering\Shaders\ScreenVertex.hlsl">
       <RuntimeLibrary>MultiThreadedDebugDll</RuntimeLibrary>

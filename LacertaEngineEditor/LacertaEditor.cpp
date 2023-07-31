@@ -132,9 +132,24 @@ void LacertaEditor::Start()
 
     // ----------------------------- Debug Asset Loading -----------------------
 
-    // TODO load meshes using tinyObjLoader lib
-    Mesh* someMesh = ResourceManager::Get()->CreateResource<Mesh>(L"IdcForNow");
-    LOG(Warning, someMesh->GetSomeString());
+    Mesh* teaPot = ResourceManager::Get()->CreateResource<Mesh>(L"Assets/Meshes/teapot.obj");
+
+    DrawcallData teapotDcData = {};
+    std::vector<VertexMesh> teapotVertData = teaPot->GetVertices();
+    std::vector<unsigned int> teapotIndices = teaPot->GetIndices();
+    teapotDcData.Data = &teapotVertData[0];
+    teapotDcData.Size = teapotVertData.size();
+    teapotDcData.Type = DrawcallType::dcMesh;
+    teapotDcData.VertexShaderPath = L"../LacertaEngine/Source/Rendering/Shaders/MeshVertex.hlsl";
+    teapotDcData.PixelShaderPath = L"../LacertaEngine/Source/Rendering/Shaders/MeshPixelShader.hlsl";
+    teapotDcData.IndexesData = &teapotIndices[0];
+    teapotDcData.IndexesSize = teapotIndices.size();
+    Matrix4x4 teapotMatrix;
+    teapotMatrix.SetIdentity();
+    teapotMatrix.SetTranslation(Vector3(-0.85f, 0.0f, 0.0f));
+    teapotDcData.LocalMatrix = teapotMatrix;
+
+    GraphicsEngine::Get()->AddDrawcall(&teapotDcData);
 
     // --------------------------- Camera Default Position ---------------------
 
