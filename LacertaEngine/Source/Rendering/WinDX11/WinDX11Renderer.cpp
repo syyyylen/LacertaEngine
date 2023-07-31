@@ -16,6 +16,9 @@ WinDX11Renderer::~WinDX11Renderer()
 {
     if(m_constantBuffer)
         m_constantBuffer->Release();
+
+    if(m_meshConstantBuffer)
+        m_meshConstantBuffer->Release();
 }
 
 void WinDX11Renderer::Initialize(int* context, int width, int height, int targetRefreshRate)
@@ -86,6 +89,24 @@ void WinDX11Renderer::Initialize(int* context, int width, int height, int target
         throw std::exception("Create Constant Buffer failed");
     }
 
+    MeshConstantBuffer meshCb;
+
+    D3D11_BUFFER_DESC meshBufferDesc = {};
+    meshBufferDesc.Usage = D3D11_USAGE_DEFAULT;
+    meshBufferDesc.ByteWidth = sizeof(MeshConstantBuffer);
+    meshBufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+    meshBufferDesc.CPUAccessFlags = 0;
+    meshBufferDesc.MiscFlags = 0;
+
+    D3D11_SUBRESOURCE_DATA meshInitData = {};
+    meshInitData.pSysMem = &meshCb;
+
+    if(FAILED(m_device->CreateBuffer(&meshBufferDesc, &meshInitData, &m_meshConstantBuffer)))
+    {
+        LOG(Error, "Create Mesh Constant Buffer failed");
+        throw std::exception("Create Mesh Constant Buffer failed");
+    }
+
     // Changing rasterizer properties & state 
     D3D11_RASTERIZER_DESC rasterizerDesc;
     ZeroMemory(&rasterizerDesc, sizeof(D3D11_RASTERIZER_DESC));
@@ -119,7 +140,7 @@ void WinDX11Renderer::AddDrawcall(DrawcallData* dcData)
 
     WinDX11Drawcall* dc = new WinDX11Drawcall();
     
-    dc->Setup(this, dcData->Type, dcData->VertexShaderPath, dcData->PixelShaderPath);
+    dc->Setup(this, dcData);
 
     dc->CreateVBO(this, dcData->Data, dcData->Size);
 
@@ -155,4 +176,12 @@ void WinDX11Renderer::UpdateConstantBuffer(void* buffer)
     m_deviceContext->VSSetConstantBuffers(0, 1, &m_constantBuffer);
     m_deviceContext->PSSetConstantBuffers(0, 1, &m_constantBuffer);
 }
+
+void WinDX11Renderer::UpdateMeshConstantBuffer(void* buffer)
+{
+    m_deviceContext->UpdateSubresource(m_meshConstantBuffer, NULL, NULL, buffer, NULL, NULL);
+    m_deviceContext->VSSetConstantBuffers(1, 1, &m_meshConstantBuffer);
+    m_deviceContext->PSSetConstantBuffers(1, 1, &m_meshConstantBuffer);
+}
+    
 }

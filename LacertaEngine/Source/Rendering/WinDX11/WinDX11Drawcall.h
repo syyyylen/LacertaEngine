@@ -13,7 +13,7 @@ public:
     WinDX11Drawcall();
     ~WinDX11Drawcall();
 
-    void Setup(Renderer* renderer, DrawcallType type, const wchar_t* vertexShaderPath, const wchar_t* pixelShaderPath) override;
+    void Setup(Renderer* renderer, DrawcallData* dcData) override;
     void Pass(Renderer* renderer) override;
     void CreateVBO(Renderer* renderer, void* data, unsigned long size) override;
     void CreateIBO(Renderer* renderer, void* data, unsigned long size) override;

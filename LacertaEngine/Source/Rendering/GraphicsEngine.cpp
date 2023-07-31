@@ -81,6 +81,12 @@ void GraphicsEngine::UpdateShaderConstants(void* buffer)
         m_renderer->UpdateConstantBuffer(buffer);
 }
 
+void GraphicsEngine::UpdateMeshConstants(void* buffer)
+{
+    if(m_renderer)
+        m_renderer->UpdateMeshConstantBuffer(buffer);
+}
+
 void GraphicsEngine::Shutdown()
 {
     LOG(Debug, "GraphicsEngine : Shutdown");

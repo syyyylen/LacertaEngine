@@ -56,8 +56,8 @@ void LacertaEditor::Start()
 
     VertexDataScreen screenVertices[] =
     {
-        { Vector3(0.35f, 0.2f, 0.0f) },
-        { Vector3(0.85f, 0.2f, 0.0f) },
+        { Vector3(0.45f, 0.4f, 0.0f) },
+        { Vector3(0.80f, 0.4f, 0.0f) },
         { Vector3(0.60f, 0.8f, 0.0f) }
     };
     
@@ -119,6 +119,10 @@ void LacertaEditor::Start()
     worldDcData.PixelShaderPath = L"../LacertaEngine/Source/Rendering/Shaders/WorldColorPixelShader.hlsl";
     worldDcData.IndexesData = &indexList;
     worldDcData.IndexesSize = ARRAYSIZE(indexList);
+    Matrix4x4 cubeMatrix;
+    cubeMatrix.SetIdentity();
+    cubeMatrix.SetTranslation(Vector3(-0.75f, 0.0f, 0.0f));
+    worldDcData.LocalMatrix = cubeMatrix;
     
     GraphicsEngine::Get()->AddDrawcall(&worldDcData);
 

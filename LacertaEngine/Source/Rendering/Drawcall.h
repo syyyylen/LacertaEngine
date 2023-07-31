@@ -21,6 +21,7 @@ struct DrawcallData
     DrawcallType Type;
     void* IndexesData;
     unsigned long IndexesSize;
+    Matrix4x4 LocalMatrix;
 };
 
 __declspec(align(16))
@@ -31,6 +32,12 @@ struct ConstantBuffer
     Matrix4x4 ProjectionMatrix;
     Vector3 CameraPosition;
     float Time = 0.0f;
+};
+
+__declspec(align(16))
+struct MeshConstantBuffer
+{
+    Matrix4x4 LocalMatrix;
 };
 
 struct VertexDataScreen
@@ -53,7 +60,7 @@ public:
     Drawcall();
     virtual ~Drawcall();
 
-    virtual void Setup(Renderer* renderer, DrawcallType type, const wchar_t* vertexShaderPath, const wchar_t* pixelShaderPath) = 0;
+    virtual void Setup(Renderer* renderer, DrawcallData* dcData) = 0;
     virtual void Pass(Renderer* renderer) = 0;
     virtual void CreateVBO(Renderer* renderer, void* data, unsigned long size) = 0;
     virtual void CreateIBO(Renderer* renderer, void* data, unsigned long size) = 0;
@@ -63,12 +70,14 @@ public:
     unsigned long GetVerticesCount() { return m_verticesCount; }
     unsigned long GetIndexListSize() { return m_indexCount; }
     DrawcallType GetType() { return m_type; }
+    Matrix4x4 LocalMatrix() { return m_localMatrix; }
 
 protected:
     Shader* m_shader;
     unsigned long m_verticesCount;
     unsigned long m_indexCount;
     DrawcallType m_type;
+    Matrix4x4 m_localMatrix;
 };
 
 }

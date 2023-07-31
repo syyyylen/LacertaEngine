@@ -28,6 +28,7 @@ public:
     void Resize(unsigned width, unsigned height);
     void PresentSwapChain();
     void UpdateShaderConstants(void* buffer);
+    void UpdateMeshConstants(void* buffer);
     Renderer* GetRenderer() { return m_renderer; }
     
 private:

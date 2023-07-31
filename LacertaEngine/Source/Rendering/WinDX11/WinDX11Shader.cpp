@@ -9,6 +9,8 @@
 
 #include <d3dcompiler.h>
 
+#include "../GraphicsEngine.h"
+
 namespace LacertaEngine
 {
 
@@ -161,7 +163,12 @@ void WinDX11Shader::PreparePass(Renderer* renderer, Drawcall* dc)
     ctx->IASetVertexBuffers(0, 1, &vbo, &m_vertexLayoutStride, &offsets);
 
     if(dc->GetType() == DrawcallType::Mesh)
+    {
+        MeshConstantBuffer meshCb;
+        meshCb.LocalMatrix = dc->LocalMatrix();
+        GraphicsEngine::Get()->UpdateMeshConstants(&meshCb);
         ctx->IASetIndexBuffer((ID3D11Buffer*)dc->GetIBO(), DXGI_FORMAT_R32_UINT, 0);
+    }
     
     ctx->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 

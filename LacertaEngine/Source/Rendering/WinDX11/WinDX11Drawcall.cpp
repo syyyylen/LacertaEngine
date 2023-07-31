@@ -20,15 +20,17 @@ WinDX11Drawcall::~WinDX11Drawcall()
     }
 }
 
-void WinDX11Drawcall::Setup(Renderer* renderer, DrawcallType type, const wchar_t* vertexShaderPath, const wchar_t* pixelShaderPath)
+void WinDX11Drawcall::Setup(Renderer* renderer, DrawcallData* dcData)
 {
     LOG(Debug, "WinDX11Shader : Setup");
 
-    m_type = type;
+    m_type = dcData->Type;
+    if(dcData->Type == DrawcallType::Mesh)
+        m_localMatrix = dcData->LocalMatrix;
+    
     auto shader = new WinDX11Shader();
     m_shader = (Shader*)shader;
-    
-    m_shader->Load(renderer, type, vertexShaderPath, pixelShaderPath);
+    m_shader->Load(renderer, dcData->Type, dcData->VertexShaderPath, dcData->PixelShaderPath);
 }
 
 void WinDX11Drawcall::Pass(Renderer* renderer)

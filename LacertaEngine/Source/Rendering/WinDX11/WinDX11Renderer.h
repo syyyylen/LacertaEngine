@@ -22,6 +22,7 @@ public:
     void PresentSwapChain() override;
     void OnResize(unsigned width, unsigned height) override;
     void UpdateConstantBuffer(void* buffer) override;
+    void UpdateMeshConstantBuffer(void* buffer) override;
     void AddDrawcall(DrawcallData* dcData) override;
 
     int* GetDriver() override { return (int*)m_device; }
@@ -35,6 +36,7 @@ private:
     IDXGISwapChain* m_dxgiSwapChain;
     D3D_FEATURE_LEVEL m_featureLevel;
     ID3D11Buffer* m_constantBuffer; 
+    ID3D11Buffer* m_meshConstantBuffer; 
 };
 
 }
