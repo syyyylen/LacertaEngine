@@ -8,21 +8,11 @@ namespace LacertaEngineEditor
 /**
  * \brief Handle the main Editor Window that will contain the scene viewport, ImGui menus etc...
  */
-class EditorWindow : public Window, public InputListener
+class EditorWindow : public Window
 {
 public:
     EditorWindow(LPCWSTR windowName);
     ~EditorWindow();
-
-    // InputListener interface
-    void OnKeyDown(int key) override;
-    void OnKeyUp(int key) override;
-    void OnMouseMove(const Vector2& mousePosition) override;
-    virtual void OnLeftMouseDown(const Vector2& mousePos) override;
-    virtual void OnRightMouseDown(const Vector2& mousePos) override;
-    virtual void OnLeftMouseUp(const Vector2& mousePos) override;
-    virtual void OnRightMouseUp(const Vector2& mousePos) override;
-    // end InputListener interface
 
     // Window overrides
     virtual void OnCreate() override;

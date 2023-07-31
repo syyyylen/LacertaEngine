@@ -10,6 +10,11 @@
 namespace LacertaEngineEditor
 {
 
+static float s_mouseSensivity = 3.0f;
+static float s_moveSpeed = 2.5f;
+static float s_strafeMoveSpeed = 2.5f;
+static float s_inputDownScalar = 0.03f;
+
 LacertaEditor::LacertaEditor()
 {
 }
@@ -33,16 +38,18 @@ void LacertaEditor::Start()
     // ----------------------- Input System Creation ------------------------
 
     InputSystem::Create();
-
-    // ----------------------- Graphics Engine Creation & Renderer Initialization  ------------------------
-    
-    GraphicsEngine::Create();
+    InputSystem::Get()->AddListener(this);
+    InputSystem::Get()->ShowCursor(false);
     
     RECT windowRect = m_editorWindow->GetClientWindowRect();
     int width = windowRect.right - windowRect.left;
     int height = windowRect.bottom - windowRect.top;
-    HWND hwnd = m_editorWindow->GetHWND();
+    InputSystem::Get()->SetCursorPosition(Vector2(width/2.0f, height/2.0f));
+
+    // ----------------------- Graphics Engine Creation & Renderer Initialization  ------------------------
     
+    GraphicsEngine::Create();
+    HWND hwnd = m_editorWindow->GetHWND();
     GraphicsEngine::Get()->InitializeRenderer((int*)hwnd, RendererType::RENDERER_WIN_DX11, width, height, 24, 60);
 
     // ------------------------------- Debug Drawcall ------------------------------
@@ -64,8 +71,6 @@ void LacertaEditor::Start()
     GraphicsEngine::Get()->AddDrawcall(&dcData);
     
     // ------------------------------- Debug Cube ------------------------------
-
-    // TODO load meshes
 
     VertexWorld worldVertices[] = 
     {
@@ -119,8 +124,7 @@ void LacertaEditor::Start()
 
     // --------------------------- Camera Default Position ---------------------
 
-    // TODO handle cameras correctly 
-    m_camera.SetTranslation(Vector3(0.0f, 0.0f, -2.0f));
+    m_sceneCamera.SetTranslation(Vector3(0.0f, 0.0f, -2.5f));
 
     // ----------------------------- UI Initialization  ------------------------
 
@@ -138,12 +142,17 @@ void LacertaEditor::Start()
     WinDX11Renderer* Dx11Renderer = (WinDX11Renderer*)GraphicsEngine::Get()->GetRenderer(); // TODO remove direct reference to DX11
     ImGui_ImplDX11_Init((ID3D11Device*)Dx11Renderer->GetDriver(), Dx11Renderer->GetImmediateContext());
 
-    // m_editorWindow->Maximize(); //TODO uncomment this
+    m_editorWindow->Maximize();
 }
 
 void LacertaEditor::Update()
 {
     InputSystem::Get()->Update();
+
+    // ----------------------------- DeltaTime Update  --------------------------
+    unsigned long oldDeltaTime = m_previousTickCount;
+    m_previousTickCount = GetTickCount();
+    m_deltaTime = oldDeltaTime ? (m_previousTickCount - oldDeltaTime) / 1000.0f : 0;
 
     // ----------------------------- Rendering Update  --------------------------
 
@@ -154,18 +163,33 @@ void LacertaEditor::Update()
     int height = windowRect.bottom - windowRect.top;
     Dx11RenderTarget->SetViewportSize(Dx11Renderer, width, height);
 
-    // TODO remove debug logic 
+    // Constant Buffer Update 
     ConstantBuffer cc;
-    cc.Time = m_globalTimer->Elapsed();
+    cc.Time = m_globalTimer->Elapsed(); 
+    
     cc.WorldMatrix.SetIdentity();
-    cc.WorldMatrix.SetRotationX(12.0f);
+    
     Matrix4x4 worldCam;
+    Matrix4x4 temp;
+    
     worldCam.SetIdentity();
-    worldCam.SetTranslation(m_camera.GetTranslation());
+    temp.SetIdentity();
+    temp.SetRotationX(m_cameraRotationX);
+    
+    worldCam *= temp;
+    temp.SetIdentity();
+    temp.SetRotationY(m_cameraRotationY);
+    worldCam *= temp;
+
+    Vector3 newCamPos = m_sceneCamera.GetTranslation() + worldCam.GetZDirection() * (m_cameraForward * (s_moveSpeed * s_inputDownScalar));
+    newCamPos = newCamPos + worldCam.GetXDirection() * (m_cameraRight * (s_strafeMoveSpeed * s_inputDownScalar));
+    worldCam.SetTranslation(newCamPos);
+    cc.CameraPosition = newCamPos;
+    m_sceneCamera = worldCam;
     worldCam.Inverse();
     cc.ViewMatrix = worldCam;
+    
     cc.ProjectionMatrix.SetPerspectiveFovLH(1.57f, ((float)width / (float)height), 0.1f, 100.0f);
-    // TODO remove debug logic 
     
     GraphicsEngine::Get()->UpdateShaderConstants(&cc);
 
@@ -181,6 +205,14 @@ void LacertaEditor::Update()
     { // My imgui test window
         ImGui::Begin("FrameRate");                  
         ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+        ImGui::End();
+    }
+
+    {
+        ImGui::Begin("Debugging");
+        ImGui::SliderFloat("Sensivity", &s_mouseSensivity, 0.1f, 10.0f);   
+        ImGui::SliderFloat("MoveSpeed", &s_moveSpeed, 0.1f, 10.0f);
+        ImGui::SliderFloat("StrafeMoveSpeed", &s_strafeMoveSpeed, 0.1f, 10.0f);
         ImGui::End();
     }
 
@@ -203,6 +235,7 @@ void LacertaEditor::Quit()
 
     GraphicsEngine::Shutdown();
     
+    InputSystem::Get()->RemoveListener(this);
     InputSystem::Release();
 
     LOG(Debug, "Lacerta Editor : Quit");
@@ -218,6 +251,69 @@ bool LacertaEditor::IsRunning()
 EditorWindow* LacertaEditor::GetEditorWindow()
 {
     return m_editorWindow;
+}
+
+void LacertaEditor::OnKeyDown(int key)
+{
+    if(key == 'Z')
+    {
+        m_cameraForward = 1.0f;
+    }
+    else if(key == 'S')
+    {
+        m_cameraForward = -1.0f;
+    }
+    else if(key == 'Q')
+    {
+        m_cameraRight = -1.0f;
+    }
+    else if(key == 'D')
+    {
+        m_cameraRight = 1.0f;
+    }
+}
+
+void LacertaEditor::OnKeyUp(int key)
+{
+    m_cameraForward = 0.0f;
+    m_cameraRight = 0.0f;
+
+    if(key == 'E')
+    {
+        m_isMouseLocked = m_isMouseLocked ? false : true;
+        InputSystem::Get()->ShowCursor(!m_isMouseLocked);
+    }
+}
+
+void LacertaEditor::OnMouseMove(const Vector2& mousePosition)
+{
+    if(!m_isMouseLocked)
+        return;
+    
+    RECT windowRect = m_editorWindow->GetClientWindowRect();
+    int width = windowRect.right - windowRect.left;
+    int height = windowRect.bottom - windowRect.top;
+    
+    m_cameraRotationX += (mousePosition.Y - (height / 2.0f)) * m_deltaTime * (s_mouseSensivity * s_inputDownScalar);
+    m_cameraRotationY += (mousePosition.X - (width / 2.0f)) * m_deltaTime * (s_mouseSensivity * s_inputDownScalar);
+
+    InputSystem::Get()->SetCursorPosition(Vector2(width/2.0f, height/2.0f));
+}
+
+void LacertaEditor::OnLeftMouseDown(const Vector2& mousePos)
+{
+}
+
+void LacertaEditor::OnRightMouseDown(const Vector2& mousePos)
+{
+}
+
+void LacertaEditor::OnLeftMouseUp(const Vector2& mousePos)
+{
+}
+
+void LacertaEditor::OnRightMouseUp(const Vector2& mousePos)
+{
 }
     
 }

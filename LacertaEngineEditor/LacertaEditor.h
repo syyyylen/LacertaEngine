@@ -11,7 +11,7 @@ using namespace LacertaEngine; // This is making the code less explicit. Might r
  * \brief Handle core logic for the Editor, such as Update Loops for entities etc...
  * 
  */
-class LacertaEditor
+class LacertaEditor : public InputListener
 {
 public:
     LacertaEditor();
@@ -25,12 +25,30 @@ public:
 
     EditorWindow* GetEditorWindow();
 
+    // InputListener interface
+    void OnKeyDown(int key) override;
+    void OnKeyUp(int key) override;
+    void OnMouseMove(const Vector2& mousePosition) override;
+    virtual void OnLeftMouseDown(const Vector2& mousePos) override;
+    virtual void OnRightMouseDown(const Vector2& mousePos) override;
+    virtual void OnLeftMouseUp(const Vector2& mousePos) override;
+    virtual void OnRightMouseUp(const Vector2& mousePos) override;
+    // end InputListener interface
+
 private:
     EditorWindow* m_editorWindow;
     Timer* m_globalTimer;
 
-    Matrix4x4 m_camera;
-    float m_delta;
+    unsigned long m_previousTickCount;
+    float m_deltaTime;
+
+    // TODO handle scene Camera
+    bool m_isMouseLocked = true;
+    Matrix4x4 m_sceneCamera;
+    float m_cameraForward;
+    float m_cameraRight;
+    float m_cameraRotationX;
+    float m_cameraRotationY;
 };
     
 }

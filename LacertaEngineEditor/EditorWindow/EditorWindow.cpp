@@ -16,44 +16,9 @@ EditorWindow::~EditorWindow()
 {
 }
 
-void EditorWindow::OnKeyDown(int key)
-{
-}
-
-void EditorWindow::OnKeyUp(int key)
-{
-}
-
-void EditorWindow::OnMouseMove(const Vector2& mousePos)
-{
-    return;
-    
-    int width = GetClientWindowRect().right - GetClientWindowRect().left;
-    int height = GetClientWindowRect().bottom - GetClientWindowRect().top;
-
-    InputSystem::Get()->SetCursorPosition(Vector2(width/2.0f, height/2.0f));
-}
-
-void EditorWindow::OnLeftMouseDown(const Vector2& mousePos)
-{
-}
-
-void EditorWindow::OnRightMouseDown(const Vector2& mousePos)
-{
-}
-
-void EditorWindow::OnLeftMouseUp(const Vector2& mousePos)
-{
-}
-
-void EditorWindow::OnRightMouseUp(const Vector2& mousePos)
-{
-}
-
 void EditorWindow::OnCreate()
 {
     Window::OnCreate();
-    InputSystem::Get()->AddListener(this);
 }
 
 void EditorWindow::OnUpdate()
@@ -64,7 +29,6 @@ void EditorWindow::OnUpdate()
 void EditorWindow::OnDestroy()
 {
     Window::OnDestroy();
-    InputSystem::Get()->RemoveListener(this);
 }
 
 void EditorWindow::OnFocus()
