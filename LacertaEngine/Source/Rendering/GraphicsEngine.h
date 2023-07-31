@@ -23,9 +23,12 @@ public:
     static void Shutdown();
     
     void InitializeRenderer(int* context, RendererType type, int width, int height, int depth, int targetRefreshRate);
+    void AddDrawcall(DrawcallData* dcData);
     void Render();
     void Resize(unsigned width, unsigned height);
     void PresentSwapChain();
+    void UpdateShaderConstants(void* buffer);
+    void UpdateMeshConstants(void* buffer);
     Renderer* GetRenderer() { return m_renderer; }
     
 private:

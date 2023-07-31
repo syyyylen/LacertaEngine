@@ -8,7 +8,7 @@
 
 namespace LacertaEngine
 {
-    
+
 class LACERTAENGINE_API WinDX11Renderer : public Renderer
 {
 public:
@@ -21,6 +21,9 @@ public:
     void RenderFrame() override;
     void PresentSwapChain() override;
     void OnResize(unsigned width, unsigned height) override;
+    void UpdateConstantBuffer(void* buffer) override;
+    void UpdateMeshConstantBuffer(void* buffer) override;
+    void AddDrawcall(DrawcallData* dcData) override;
 
     int* GetDriver() override { return (int*)m_device; }
 
@@ -32,6 +35,8 @@ private:
     ID3D11DeviceContext* m_deviceContext;
     IDXGISwapChain* m_dxgiSwapChain;
     D3D_FEATURE_LEVEL m_featureLevel;
+    ID3D11Buffer* m_constantBuffer; 
+    ID3D11Buffer* m_meshConstantBuffer; 
 };
 
 }

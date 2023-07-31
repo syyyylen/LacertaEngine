@@ -1,9 +1,10 @@
 #pragma once
+#include "../Core.h"
 #include <cmath>
 
 namespace LacertaEngine
 {
-    
+
 class LACERTAENGINE_API Vector3
 {
 public:
@@ -61,7 +62,6 @@ public:
 
 public:
     float X, Y, Z;
-    
 };
 
 }

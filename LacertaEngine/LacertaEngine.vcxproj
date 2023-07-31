@@ -106,40 +106,60 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Source\InputSystem\InputSystem.cpp" />
+    <ClCompile Include="Source\LacertaEngine.cpp" />
     <ClCompile Include="Source\Logger\Logger.cpp" />
+    <ClCompile Include="Source\Maths\Random.cpp" />
     <ClCompile Include="Source\Rendering\Drawcall.cpp" />
     <ClCompile Include="Source\Rendering\GraphicsEngine.cpp" />
     <ClCompile Include="Source\Rendering\Renderer.cpp" />
     <ClCompile Include="Source\Rendering\RenderTarget.cpp" />
     <ClCompile Include="Source\Rendering\Shader.cpp" />
+    <AdditionalFiles Include="Source\Rendering\Shaders\MeshVertex.hlsl" />
+    <AdditionalFiles Include="Source\Rendering\Shaders\MeshPixelShader.hlsl" />
     <ClCompile Include="Source\Rendering\WinDX11\WinDX11Drawcall.cpp" />
     <ClCompile Include="Source\Rendering\WinDX11\WinDX11Renderer.cpp" />
     <ClCompile Include="Source\Rendering\WinDX11\WinDX11RenderTarget.cpp" />
     <ClCompile Include="Source\Rendering\WinDX11\WinDX11Shader.cpp" />
+    <ClCompile Include="Source\RessourcesManager\Mesh\Mesh.cpp" />
+    <ClCompile Include="Source\RessourcesManager\Resource.cpp" />
+    <ClCompile Include="Source\RessourcesManager\ResourceManager.cpp" />
     <ClCompile Include="Source\Window\Window.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Libs\TinyObjLoader\include\tiny_obj_loader.h" />
     <ClInclude Include="Source\Core.h" />
     <ClInclude Include="Source\InputSystem\InputListener.h" />
     <ClInclude Include="Source\InputSystem\InputSystem.h" />
     <ClInclude Include="Source\LacertaEngine.h" />
     <ClInclude Include="Source\Logger\Logger.h" />
-    <ClInclude Include="Source\Maths\Color.h" />
-    <ClInclude Include="Source\Maths\Point.h" />
+    <ClInclude Include="Source\Maths\Maths.h" />
+    <ClInclude Include="Source\Maths\Matrix4x4.h" />
+    <ClInclude Include="Source\Maths\Random.h" />
+    <ClInclude Include="Source\Maths\Timer.h" />
+    <ClInclude Include="Source\Maths\Vector4.h" />
+    <ClInclude Include="Source\Maths\Vector2.h" />
     <ClInclude Include="Source\Maths\Vector3.h" />
     <ClInclude Include="Source\Rendering\Drawcall.h" />
     <ClInclude Include="Source\Rendering\GraphicsEngine.h" />
     <ClInclude Include="Source\Rendering\Renderer.h" />
     <ClInclude Include="Source\Rendering\RenderTarget.h" />
     <ClInclude Include="Source\Rendering\Shader.h" />
+    <ClInclude Include="Source\Rendering\Shaders\ConstantBuffer.hlsli" />
+    <AdditionalFiles Include="Source\Rendering\Shaders\MeshConstantBuffer.hlsli" />
+    <AdditionalFiles Include="Source\Rendering\Shaders\MeshShadersLayouts.hlsli" />
     <ClInclude Include="Source\Rendering\WinDX11\WinDX11Drawcall.h" />
     <ClInclude Include="Source\Rendering\WinDX11\WinDX11Renderer.h" />
     <ClInclude Include="Source\Rendering\WinDX11\WinDX11RenderTarget.h" />
     <ClInclude Include="Source\Rendering\WinDX11\WinDX11Shader.h" />
+    <ClInclude Include="Source\RessourcesManager\Mesh\Mesh.h" />
+    <ClInclude Include="Source\RessourcesManager\Resource.h" />
+    <ClInclude Include="Source\RessourcesManager\ResourceManager.h" />
+    <ClInclude Include="Source\RessourcesManager\Resources.h" />
     <ClInclude Include="Source\Utilities.h" />
     <ClInclude Include="Source\Window\Window.h" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Libs\TinyObjLoader\LICENSE" />
     <Content Include="Source\Rendering\Shaders\ScreenShadersLayouts.hlsli" />
     <Content Include="Source\Rendering\Shaders\ScreenVertex.hlsl">
       <RuntimeLibrary>MultiThreadedDebugDll</RuntimeLibrary>

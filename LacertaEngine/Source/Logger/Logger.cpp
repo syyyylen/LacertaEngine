@@ -31,6 +31,11 @@ void Logger::Log(LogType logType, const std::string& content)
 
     std::cout << logPrefix << content << std::endl;
     m_logMessages.push_back(logPrefix + content);
+
+    if(logType == LogType::Error)
+    {
+        WriteLogsToFile();
+    }
 }
 
 void Logger::WriteLogsToFile()

@@ -1,7 +1,7 @@
 ﻿#pragma once
 #include "../Core.h"
 #include "Renderer.h"
-#include "../Maths/Color.h"
+#include "../Maths/Vector4.h"
 
 namespace LacertaEngine
 {
@@ -14,7 +14,7 @@ public:
 
     virtual void Initialize(Renderer* renderer, int width, int height, int depth) = 0;
     virtual void SetActive(Renderer* renderer) = 0;
-    virtual void Clear(Renderer* renderer, Color color) = 0;
+    virtual void Clear(Renderer* renderer, Vector4 color) = 0;
     virtual void SetViewportSize(Renderer* renderer, UINT width, UINT height) = 0;
 
 

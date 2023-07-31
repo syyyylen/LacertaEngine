@@ -9,11 +9,28 @@
 
 #include <d3dcompiler.h>
 
-LacertaEngine::WinDX11Shader::WinDX11Shader()
+#include "../GraphicsEngine.h"
+
+namespace LacertaEngine
+{
+
+D3D11_INPUT_ELEMENT_DESC screenLayout[]=
+{
+    {"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
+};
+
+D3D11_INPUT_ELEMENT_DESC meshLayout[]=
+{
+    {"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
+    { "TEXCOORD", 0,  DXGI_FORMAT_R32G32_FLOAT, 0, 12,D3D11_INPUT_PER_VERTEX_DATA ,0 },
+    { "NORMAL", 0,  DXGI_FORMAT_R32G32B32_FLOAT, 0, 20,D3D11_INPUT_PER_VERTEX_DATA ,0 }
+};
+    
+WinDX11Shader::WinDX11Shader()
 {
 }
 
-LacertaEngine::WinDX11Shader::~WinDX11Shader()
+WinDX11Shader::~WinDX11Shader()
 {
     if (m_vertexShader)
     {
@@ -28,10 +45,8 @@ LacertaEngine::WinDX11Shader::~WinDX11Shader()
     }
 }
 
-void LacertaEngine::WinDX11Shader::Load(Renderer* renderer, const wchar_t* vertexShaderName, const wchar_t* pixelShaderName)
+void WinDX11Shader::Load(Renderer* renderer, DrawcallType Type, const wchar_t* vertexShaderName, const wchar_t* pixelShaderName)
 {
-    LOG(Debug, "WinDX11Shader : Load");
-
     // Compiling & Creating Vertex Shader
     ID3DBlob* vertexErrorBlob = nullptr;
     ID3DBlob* vertexBlob;
@@ -89,31 +104,50 @@ void LacertaEngine::WinDX11Shader::Load(Renderer* renderer, const wchar_t* verte
         LOG(Error, "WinDX11Shader : Failed pixel shader creation !");
     }
 
-    D3D11_INPUT_ELEMENT_DESC layout[]=
+    switch (Type)
     {
-        {"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
-    };
+        case dcScreen:
+        {
+            UINT layoutSize = ARRAYSIZE(screenLayout);
 
-    UINT layoutSize = ARRAYSIZE(layout);
+            WinDX11Renderer* localDriver = (WinDX11Renderer*)renderer;
+            hr = ((ID3D11Device*)(localDriver->GetDriver()))->CreateInputLayout(
+                screenLayout,
+                layoutSize,
+                vertexShaderByteCode,
+                vertexByteCodeSize,
+                &m_vertexLayout);
 
-    WinDX11Renderer* localDriver = (WinDX11Renderer*)renderer;
-    hr = ((ID3D11Device*)(localDriver->GetDriver()))->CreateInputLayout(
-        layout,
-        layoutSize,
-        vertexShaderByteCode,
-        vertexByteCodeSize,
-        &m_vertexLayout);
+            m_vertexLayoutStride  = sizeof(VertexDataScreen);
+
+            break;
+        }
+        case dcMesh:
+        {
+            UINT layoutSize = ARRAYSIZE(meshLayout);
+
+            WinDX11Renderer* localDriver = (WinDX11Renderer*)renderer;
+            hr = ((ID3D11Device*)(localDriver->GetDriver()))->CreateInputLayout(
+                meshLayout,
+                layoutSize,
+                vertexShaderByteCode,
+                vertexByteCodeSize,
+                &m_vertexLayout);
+
+            m_vertexLayoutStride  = sizeof(VertexMesh);
+
+            break;
+        }
+    }
 
     if(FAILED(hr))
     {
         LOG(Error, "WinDX11Shader : Failed input layout creation !");
         throw std::exception("Create Input Layout failed");
     }
-
-    m_vertexLayoutStride  = sizeof(VertexDataScreen);
 }
 
-void LacertaEngine::WinDX11Shader::PreparePass(Renderer* renderer, Drawcall* dc)
+void WinDX11Shader::PreparePass(Renderer* renderer, Drawcall* dc)
 {
     WinDX11Renderer* driver = (WinDX11Renderer*)renderer;
     auto ctx = driver->GetImmediateContext();
@@ -126,17 +160,42 @@ void LacertaEngine::WinDX11Shader::PreparePass(Renderer* renderer, Drawcall* dc)
 
     ctx->IASetVertexBuffers(0, 1, &vbo, &m_vertexLayoutStride, &offsets);
 
+    if(dc->GetType() == DrawcallType::dcMesh)
+    {
+        MeshConstantBuffer meshCb;
+        meshCb.LocalMatrix = dc->LocalMatrix();
+        GraphicsEngine::Get()->UpdateMeshConstants(&meshCb);
+        ctx->IASetIndexBuffer((ID3D11Buffer*)dc->GetIBO(), DXGI_FORMAT_R32_UINT, 0);
+    }
+    
     ctx->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
     ctx->VSSetShader(m_vertexShader, nullptr, 0);
     ctx->PSSetShader(m_fragmentShader, nullptr, 0);
 }
 
-void LacertaEngine::WinDX11Shader::Pass(Renderer* renderer, Drawcall* dc)
+void WinDX11Shader::Pass(Renderer* renderer, Drawcall* dc)
 {
     WinDX11Renderer* driver = (WinDX11Renderer*)renderer;
     auto ctx = driver->GetImmediateContext();
 
     unsigned long vertices = dc->GetVerticesCount();
-    ctx->Draw(vertices, 0);
+
+    DrawcallType dcType = dc->GetType();
+    switch(dcType)
+    {
+        case DrawcallType::dcScreen:
+        {
+            ctx->Draw(vertices, 0);
+            break;
+        }
+        
+        case DrawcallType::dcMesh:
+        {
+            ctx->DrawIndexed(dc->GetIndexListSize(), 0, 0);
+            break;  
+        }
+    }
+}
+
 }

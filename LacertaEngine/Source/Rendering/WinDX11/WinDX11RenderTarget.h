@@ -16,13 +16,14 @@ public:
     void SetActive(Renderer* renderer) override;
     void ReloadBuffers(Renderer* renderer, unsigned width, unsigned height);
     void Resize(Renderer* renderer, unsigned width, unsigned height);
-    void Clear(Renderer* renderer, Color color) override;
+    void Clear(Renderer* renderer, Vector4 color) override;
     void SetViewportSize(Renderer* renderer, UINT width, UINT height) override;
 
     ID3D11RenderTargetView* GetRtv() { return m_renderTarget; }
 
 private:
     ID3D11RenderTargetView* m_renderTarget;
+    ID3D11DepthStencilView* m_depthStencil;
 };
 
 }

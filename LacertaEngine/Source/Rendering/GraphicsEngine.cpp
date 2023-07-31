@@ -2,6 +2,7 @@
 
 #include "../Logger/Logger.h"
 #include "WinDX11/WinDX11Renderer.h"
+#include "Drawcall.h"
 
 namespace LacertaEngine
 {
@@ -50,19 +51,40 @@ void GraphicsEngine::InitializeRenderer(int* context, RendererType type, int wid
     }
 }
 
+void GraphicsEngine::AddDrawcall(DrawcallData* dcData)
+{
+    if(m_renderer)
+        m_renderer->AddDrawcall(dcData);
+}
+
 void GraphicsEngine::Render()
 {
-    m_renderer->RenderFrame();
+    if(m_renderer)
+        m_renderer->RenderFrame();
 }
 
 void GraphicsEngine::Resize(unsigned width, unsigned height)
 {
-    m_renderer->OnResize(width, height);
+    if(m_renderer)
+        m_renderer->OnResize(width, height);
 }
 
 void GraphicsEngine::PresentSwapChain()
 {
-    m_renderer->PresentSwapChain();
+    if(m_renderer)
+        m_renderer->PresentSwapChain();
+}
+
+void GraphicsEngine::UpdateShaderConstants(void* buffer)
+{
+    if(m_renderer)
+        m_renderer->UpdateConstantBuffer(buffer);
+}
+
+void GraphicsEngine::UpdateMeshConstants(void* buffer)
+{
+    if(m_renderer)
+        m_renderer->UpdateMeshConstantBuffer(buffer);
 }
 
 void GraphicsEngine::Shutdown()

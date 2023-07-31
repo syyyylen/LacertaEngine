@@ -13,7 +13,7 @@ public:
     WinDX11Shader();
     ~WinDX11Shader();
 
-    void Load(Renderer* renderer, const wchar_t* vertexShaderName, const wchar_t* pixelShaderName) override;
+    void Load(Renderer* renderer, DrawcallType Type, const wchar_t* vertexShaderName, const wchar_t* pixelShaderName) override;
     void PreparePass(Renderer* renderer, Drawcall* dc) override;
     void Pass(Renderer* renderer, Drawcall* dc) override;
 

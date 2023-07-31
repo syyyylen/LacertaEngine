@@ -5,5 +5,5 @@ struct VertexInput
 
 struct VertexOutput
 {
-    float4 position : SV_POSITION; 
+    float4 position : SV_POSITION;
 };

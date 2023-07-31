@@ -4,16 +4,24 @@
 #include "WinDX11RenderTarget.h"
 #include "../Drawcall.h"
 #include "../../Logger/Logger.h"
+
+namespace LacertaEngine
+{
     
-LacertaEngine::WinDX11Renderer::WinDX11Renderer()
+WinDX11Renderer::WinDX11Renderer()
 {
 }
 
-LacertaEngine::WinDX11Renderer::~WinDX11Renderer()
+WinDX11Renderer::~WinDX11Renderer()
 {
+    if(m_constantBuffer)
+        m_constantBuffer->Release();
+
+    if(m_meshConstantBuffer)
+        m_meshConstantBuffer->Release();
 }
 
-void LacertaEngine::WinDX11Renderer::Initialize(int* context, int width, int height, int targetRefreshRate)
+void WinDX11Renderer::Initialize(int* context, int width, int height, int targetRefreshRate)
 {
     LOG(Debug, "WinDX11Renderer : Initialize");
 
@@ -63,13 +71,47 @@ void LacertaEngine::WinDX11Renderer::Initialize(int* context, int width, int hei
         throw std::exception("Failed SwapChain creation");
     }
 
-    return; // TODO enable rasterizer 
+    ConstantBuffer cb;
+
+    D3D11_BUFFER_DESC bufferDesc = {};
+    bufferDesc.Usage = D3D11_USAGE_DEFAULT;
+    bufferDesc.ByteWidth = sizeof(ConstantBuffer);
+    bufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+    bufferDesc.CPUAccessFlags = 0;
+    bufferDesc.MiscFlags = 0;
+
+    D3D11_SUBRESOURCE_DATA initData = {};
+    initData.pSysMem = &cb;
+
+    if(FAILED(m_device->CreateBuffer(&bufferDesc, &initData, &m_constantBuffer)))
+    {
+        LOG(Error, "Create Constant Buffer failed");
+        throw std::exception("Create Constant Buffer failed");
+    }
+
+    MeshConstantBuffer meshCb;
+
+    D3D11_BUFFER_DESC meshBufferDesc = {};
+    meshBufferDesc.Usage = D3D11_USAGE_DEFAULT;
+    meshBufferDesc.ByteWidth = sizeof(MeshConstantBuffer);
+    meshBufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+    meshBufferDesc.CPUAccessFlags = 0;
+    meshBufferDesc.MiscFlags = 0;
+
+    D3D11_SUBRESOURCE_DATA meshInitData = {};
+    meshInitData.pSysMem = &meshCb;
+
+    if(FAILED(m_device->CreateBuffer(&meshBufferDesc, &meshInitData, &m_meshConstantBuffer)))
+    {
+        LOG(Error, "Create Mesh Constant Buffer failed");
+        throw std::exception("Create Mesh Constant Buffer failed");
+    }
 
     // Changing rasterizer properties & state 
     D3D11_RASTERIZER_DESC rasterizerDesc;
     ZeroMemory(&rasterizerDesc, sizeof(D3D11_RASTERIZER_DESC));
     rasterizerDesc.FillMode = D3D11_FILL_SOLID;
-    rasterizerDesc.CullMode = D3D11_CULL_NONE; // D3D11_CULL_NONE = Disable culling of face with counterclockwise vertices indexes. Curr activated // TODO D3D11_CULL_BACK
+    rasterizerDesc.CullMode = D3D11_CULL_BACK; // D3D11_CULL_NONE = Disable culling of face with counterclockwise vertices indexes
     rasterizerDesc.FrontCounterClockwise = false;
     rasterizerDesc.DepthBias = 0;
     rasterizerDesc.SlopeScaledDepthBias = 0.0f;
@@ -84,44 +126,60 @@ void LacertaEngine::WinDX11Renderer::Initialize(int* context, int width, int hei
     m_deviceContext->RSSetState(rasterizerState);
 }
 
-void LacertaEngine::WinDX11Renderer::CreateRenderTarget(int width, int height, int depth)
+void WinDX11Renderer::CreateRenderTarget(int width, int height, int depth)
 {
     LOG(Debug, "WinDX11Renderer : Create Render Target");
 
     m_renderTarget = new WinDX11RenderTarget();
     m_renderTarget->Initialize(this, width, height, depth);
-    
+}
+
+void WinDX11Renderer::AddDrawcall(DrawcallData* dcData)
+{
     WinDX11Drawcall* dc = new WinDX11Drawcall();
-    dc->Setup(this);
+    
+    dc->Setup(this, dcData);
 
-    VertexDataScreen screenVertices[] =
-    {
-        { Vector3(-0.5f, -0.5f, 0.0f) },
-        { Vector3(0.0f, 0.65f, 0.0f) },
-        { Vector3(0.5f, -0.5f, 0.0f) }
-    };
+    dc->CreateVBO(this, dcData->Data, dcData->Size);
 
-    dc->CreateVBO(this, &screenVertices, ARRAYSIZE(screenVertices));
+    if(dcData->Type == DrawcallType::dcMesh)
+        dc->CreateIBO(this, dcData->IndexesData, dcData->IndexesSize);
+    
     m_drawcalls.push_back(dc);
 }
 
-void LacertaEngine::WinDX11Renderer::RenderFrame()
+void WinDX11Renderer::RenderFrame()
 {
     m_renderTarget->SetActive(this);
-    m_renderTarget->Clear(this, Color(0.0f, 0.0f, 0.0f, 1.0f));
+    m_renderTarget->Clear(this, Vector4(0.0f, 0.0f, 0.0f, 1.0f));
 
     for(auto dc : m_drawcalls)
         dc->Pass(this);
 }
 
-void LacertaEngine::WinDX11Renderer::PresentSwapChain()
+void WinDX11Renderer::PresentSwapChain()
 {
     m_dxgiSwapChain->Present(true, NULL);   
 }
 
-void LacertaEngine::WinDX11Renderer::OnResize(unsigned width, unsigned height)
+void WinDX11Renderer::OnResize(unsigned width, unsigned height)
 {
     WinDX11RenderTarget* rendTarg = (WinDX11RenderTarget*)m_renderTarget;
     rendTarg->Resize(this, width, height);
 }
 
+void WinDX11Renderer::UpdateConstantBuffer(void* buffer)
+{
+    m_deviceContext->UpdateSubresource(m_constantBuffer, NULL, NULL, buffer, NULL, NULL);
+    m_deviceContext->VSSetConstantBuffers(0, 1, &m_constantBuffer);
+    m_deviceContext->PSSetConstantBuffers(0, 1, &m_constantBuffer);
+}
+
+void WinDX11Renderer::UpdateMeshConstantBuffer(void* buffer)
+{
+    m_deviceContext->UpdateSubresource(m_meshConstantBuffer, NULL, NULL, buffer, NULL, NULL);
+    m_deviceContext->VSSetConstantBuffers(1, 1, &m_meshConstantBuffer);
+    m_deviceContext->PSSetConstantBuffers(1, 1, &m_meshConstantBuffer);
+}
+    
+}
