@@ -19,11 +19,11 @@ D3D11_INPUT_ELEMENT_DESC screenLayout[]=
     {"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
 };
 
-D3D11_INPUT_ELEMENT_DESC worldLayout[]=
+D3D11_INPUT_ELEMENT_DESC meshLayout[]=
 {
     {"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
-    { "COLOR", 0,  DXGI_FORMAT_R32G32B32_FLOAT, 0, 12,D3D11_INPUT_PER_VERTEX_DATA ,0 },
-    { "COLOR", 1,  DXGI_FORMAT_R32G32B32_FLOAT, 0, 24,D3D11_INPUT_PER_VERTEX_DATA ,0 }
+    { "TEXCOORD", 0,  DXGI_FORMAT_R32G32_FLOAT, 0, 12,D3D11_INPUT_PER_VERTEX_DATA ,0 },
+    { "NORMAL", 0,  DXGI_FORMAT_R32G32B32_FLOAT, 0, 20,D3D11_INPUT_PER_VERTEX_DATA ,0 }
 };
     
 WinDX11Shader::WinDX11Shader()
@@ -126,17 +126,17 @@ void WinDX11Shader::Load(Renderer* renderer, DrawcallType Type, const wchar_t* v
         }
         case Mesh:
         {
-            UINT layoutSize = ARRAYSIZE(worldLayout);
+            UINT layoutSize = ARRAYSIZE(meshLayout);
 
             WinDX11Renderer* localDriver = (WinDX11Renderer*)renderer;
             hr = ((ID3D11Device*)(localDriver->GetDriver()))->CreateInputLayout(
-                worldLayout,
+                meshLayout,
                 layoutSize,
                 vertexShaderByteCode,
                 vertexByteCodeSize,
                 &m_vertexLayout);
 
-            m_vertexLayoutStride  = sizeof(VertexWorld);
+            m_vertexLayoutStride  = sizeof(VertexMesh);
 
             break;
         }

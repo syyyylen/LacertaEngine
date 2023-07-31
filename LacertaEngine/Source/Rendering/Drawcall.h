@@ -45,11 +45,11 @@ struct VertexDataScreen
     Vector3 Position;
 };
 
-struct VertexWorld
+struct VertexMesh
 {
     Vector3 Position;
-    Vector3 Color;
-    Vector3 Color2;
+    Vector2 Texcoord;
+    Vector3 Normal;
 };
 
 class Shader;

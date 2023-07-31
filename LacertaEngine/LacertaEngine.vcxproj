@@ -113,8 +113,8 @@
     <ClCompile Include="Source\Rendering\Renderer.cpp" />
     <ClCompile Include="Source\Rendering\RenderTarget.cpp" />
     <ClCompile Include="Source\Rendering\Shader.cpp" />
-    <AdditionalFiles Include="Source\Rendering\Shaders\WorldVertex.hlsl" />
-    <AdditionalFiles Include="Source\Rendering\Shaders\WorldColorPixelShader.hlsl" />
+    <AdditionalFiles Include="Source\Rendering\Shaders\MeshVertex.hlsl" />
+    <AdditionalFiles Include="Source\Rendering\Shaders\MeshPixelShader.hlsl" />
     <ClCompile Include="Source\Rendering\WinDX11\WinDX11Drawcall.cpp" />
     <ClCompile Include="Source\Rendering\WinDX11\WinDX11Renderer.cpp" />
     <ClCompile Include="Source\Rendering\WinDX11\WinDX11RenderTarget.cpp" />
@@ -139,8 +139,8 @@
     <ClInclude Include="Source\Rendering\RenderTarget.h" />
     <ClInclude Include="Source\Rendering\Shader.h" />
     <ClInclude Include="Source\Rendering\Shaders\ConstantBuffer.hlsli" />
-    <AdditionalFiles Include="Source\Rendering\Shaders\WorldShadersLayouts.hlsli" />
     <AdditionalFiles Include="Source\Rendering\Shaders\MeshConstantBuffer.hlsli" />
+    <AdditionalFiles Include="Source\Rendering\Shaders\MeshShadersLayouts.hlsli" />
     <ClInclude Include="Source\Rendering\WinDX11\WinDX11Drawcall.h" />
     <ClInclude Include="Source\Rendering\WinDX11\WinDX11Renderer.h" />
     <ClInclude Include="Source\Rendering\WinDX11\WinDX11RenderTarget.h" />
