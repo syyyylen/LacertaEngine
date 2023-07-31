@@ -108,7 +108,7 @@ void WinDX11Shader::Load(Renderer* renderer, DrawcallType Type, const wchar_t* v
 
     switch (Type)
     {
-        case Screen:
+        case dcScreen:
         {
             UINT layoutSize = ARRAYSIZE(screenLayout);
 
@@ -124,7 +124,7 @@ void WinDX11Shader::Load(Renderer* renderer, DrawcallType Type, const wchar_t* v
 
             break;
         }
-        case Mesh:
+        case dcMesh:
         {
             UINT layoutSize = ARRAYSIZE(meshLayout);
 
@@ -162,7 +162,7 @@ void WinDX11Shader::PreparePass(Renderer* renderer, Drawcall* dc)
 
     ctx->IASetVertexBuffers(0, 1, &vbo, &m_vertexLayoutStride, &offsets);
 
-    if(dc->GetType() == DrawcallType::Mesh)
+    if(dc->GetType() == DrawcallType::dcMesh)
     {
         MeshConstantBuffer meshCb;
         meshCb.LocalMatrix = dc->LocalMatrix();
@@ -186,13 +186,13 @@ void WinDX11Shader::Pass(Renderer* renderer, Drawcall* dc)
     DrawcallType dcType = dc->GetType();
     switch(dcType)
     {
-        case DrawcallType::Screen:
+        case DrawcallType::dcScreen:
         {
             ctx->Draw(vertices, 0);
             break;
         }
         
-        case DrawcallType::Mesh:
+        case DrawcallType::dcMesh:
         {
             ctx->DrawIndexed(dc->GetIndexListSize(), 0, 0);
             break;  

@@ -25,7 +25,7 @@ void WinDX11Drawcall::Setup(Renderer* renderer, DrawcallData* dcData)
     LOG(Debug, "WinDX11Shader : Setup");
 
     m_type = dcData->Type;
-    if(dcData->Type == DrawcallType::Mesh)
+    if(dcData->Type == DrawcallType::dcMesh)
         m_localMatrix = dcData->LocalMatrix;
     
     auto shader = new WinDX11Shader();

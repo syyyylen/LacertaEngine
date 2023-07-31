@@ -144,7 +144,7 @@ void WinDX11Renderer::AddDrawcall(DrawcallData* dcData)
 
     dc->CreateVBO(this, dcData->Data, dcData->Size);
 
-    if(dcData->Type == DrawcallType::Mesh)
+    if(dcData->Type == DrawcallType::dcMesh)
         dc->CreateIBO(this, dcData->IndexesData, dcData->IndexesSize);
     
     m_drawcalls.push_back(dc);

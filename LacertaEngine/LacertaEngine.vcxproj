@@ -119,6 +119,9 @@
     <ClCompile Include="Source\Rendering\WinDX11\WinDX11Renderer.cpp" />
     <ClCompile Include="Source\Rendering\WinDX11\WinDX11RenderTarget.cpp" />
     <ClCompile Include="Source\Rendering\WinDX11\WinDX11Shader.cpp" />
+    <ClCompile Include="Source\RessourcesManager\Mesh\Mesh.cpp" />
+    <ClCompile Include="Source\RessourcesManager\Resource.cpp" />
+    <ClCompile Include="Source\RessourcesManager\ResourceManager.cpp" />
     <ClCompile Include="Source\Window\Window.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -145,6 +148,10 @@
     <ClInclude Include="Source\Rendering\WinDX11\WinDX11Renderer.h" />
     <ClInclude Include="Source\Rendering\WinDX11\WinDX11RenderTarget.h" />
     <ClInclude Include="Source\Rendering\WinDX11\WinDX11Shader.h" />
+    <ClInclude Include="Source\RessourcesManager\Mesh\Mesh.h" />
+    <ClInclude Include="Source\RessourcesManager\Resource.h" />
+    <ClInclude Include="Source\RessourcesManager\ResourceManager.h" />
+    <ClInclude Include="Source\RessourcesManager\Resources.h" />
     <ClInclude Include="Source\Utilities.h" />
     <ClInclude Include="Source\Window\Window.h" />
   </ItemGroup>

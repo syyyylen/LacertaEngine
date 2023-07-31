@@ -31,6 +31,10 @@ void LacertaEditor::Start()
 
     m_globalTimer = new Timer();
 
+    // ----------------------- Asset Mgr Creation ------------------------
+
+    ResourceManager::Create();
+
     // ----------------------- Window Creation ------------------------
 
     m_editorWindow = new EditorWindow(L"Lacerta Engine");
@@ -64,7 +68,7 @@ void LacertaEditor::Start()
     DrawcallData dcData = {};
     dcData.Data = &screenVertices;
     dcData.Size = ARRAYSIZE(screenVertices);
-    dcData.Type = DrawcallType::Screen;
+    dcData.Type = DrawcallType::dcScreen;
     dcData.VertexShaderPath = L"../LacertaEngine/Source/Rendering/Shaders/ScreenVertex.hlsl";
     dcData.PixelShaderPath = L"../LacertaEngine/Source/Rendering/Shaders/SimpleColorPixelShader.hlsl";
     
@@ -114,7 +118,7 @@ void LacertaEditor::Start()
     DrawcallData meshDcData = {};
     meshDcData.Data = &meshVertices;
     meshDcData.Size = ARRAYSIZE(meshIndexList);
-    meshDcData.Type = DrawcallType::Mesh;
+    meshDcData.Type = DrawcallType::dcMesh;
     meshDcData.VertexShaderPath = L"../LacertaEngine/Source/Rendering/Shaders/MeshVertex.hlsl";
     meshDcData.PixelShaderPath = L"../LacertaEngine/Source/Rendering/Shaders/MeshPixelShader.hlsl";
     meshDcData.IndexesData = &meshIndexList;
@@ -125,6 +129,12 @@ void LacertaEditor::Start()
     meshDcData.LocalMatrix = meshMatrix;
     
     GraphicsEngine::Get()->AddDrawcall(&meshDcData);
+
+    // ----------------------------- Debug Asset Loading -----------------------
+
+    // TODO load meshes using tinyObjLoader lib
+    Mesh* someMesh = ResourceManager::Get()->CreateResource<Mesh>(L"IdcForNow");
+    LOG(Warning, someMesh->GetSomeString());
 
     // --------------------------- Camera Default Position ---------------------
 
@@ -146,7 +156,7 @@ void LacertaEditor::Start()
     WinDX11Renderer* Dx11Renderer = (WinDX11Renderer*)GraphicsEngine::Get()->GetRenderer(); // TODO remove direct reference to DX11
     ImGui_ImplDX11_Init((ID3D11Device*)Dx11Renderer->GetDriver(), Dx11Renderer->GetImmediateContext());
 
-    m_editorWindow->Maximize();
+    // m_editorWindow->Maximize();
 }
 
 void LacertaEditor::Update()
@@ -243,6 +253,8 @@ void LacertaEditor::Quit()
     
     InputSystem::Get()->RemoveListener(this);
     InputSystem::Release();
+
+    ResourceManager::Shutdown();
 
     LOG(Debug, "Lacerta Editor : Quit");
     

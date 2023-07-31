@@ -8,8 +8,8 @@ namespace LacertaEngine
 
 enum DrawcallType
 {
-    Screen,
-    Mesh
+    dcScreen,
+    dcMesh
 };
 
 struct DrawcallData
