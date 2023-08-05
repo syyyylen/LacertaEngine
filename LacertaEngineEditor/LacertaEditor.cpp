@@ -62,7 +62,8 @@ void LacertaEditor::Start()
     
     Mesh* teaPotMesh = ResourceManager::Get()->CreateResource<Mesh>(L"Assets/Meshes/teapot.obj");
 
-    float rdmDist = 12.5f;
+    float rdmDist = 20.0f;
+    float maxScaleMult = 4.0f;
     for(int i = 0; i < 50; i++)
     {
         GameObject* teapotGo = new GameObject(); // Every single scene obj heap allocated just feels bad
@@ -74,15 +75,13 @@ void LacertaEditor::Start()
 
         teapotGo->AddComponent(teapotMeshComp);
 
-        // TODO create proper methods to set GO position / rotation etc... 
-        Matrix4x4 mat;
-        mat.SetIdentity();
-        mat.SetTranslation(Vector3(Random::RandomFloatRange(-rdmDist, rdmDist),
-                                                            Random::RandomFloatRange(-rdmDist, rdmDist),
-                                                            Random::RandomFloatRange(-rdmDist, rdmDist)));
-        mat.SetRotationY(Random::RandomFloatRange(-6.2f, 6.2f));
-        teapotGo->GetObjectTransform()->SetTransformMatrix(mat);
+        teapotGo->SetPosition(Vector3(Random::RandomFloatRange(-rdmDist, rdmDist),
+                                        Random::RandomFloatRange(-rdmDist, rdmDist),
+                                        Random::RandomFloatRange(-rdmDist, rdmDist)));
 
+        float rdmScale = Random::RandomFloatRange(0.5f, maxScaleMult);
+        teapotGo->SetScale(Vector3(rdmScale, rdmScale, rdmScale));
+        
         m_sceneGameObjects.push_back(teapotGo);
     }
 
@@ -110,7 +109,7 @@ void LacertaEditor::Start()
                     dcData.PixelShaderPath = meshComp->PixelShaderPath;
                     dcData.IndexesData = &meshIndices[0];
                     dcData.IndexesSize = meshIndices.size();
-                    dcData.LocalMatrix = go->GetObjectTransform()->GetTransformMatrix();
+                    dcData.LocalMatrix = go->GetTransform()->GetTransformMatrix();
 
                     GraphicsEngine::Get()->AddDrawcall(&dcData);
                 }

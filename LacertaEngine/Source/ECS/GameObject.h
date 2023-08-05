@@ -11,10 +11,15 @@ class LACERTAENGINE_API GameObject
 public:
     GameObject();
     ~GameObject();
-    
-    Transform* GetObjectTransform() { return m_transform; }
+
+    void SetPosition(Vector3 position);
+    void SetScale(Vector3 scale);
+    // TODO SetRotation
+
+    Transform* GetTransform() { return m_transform; }
 
     void AddComponent(Component* comp);
+    
     std::list<Component*> GetComponentsList() { return m_components; }
     
 private:
