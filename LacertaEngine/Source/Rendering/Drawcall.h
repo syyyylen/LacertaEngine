@@ -70,7 +70,7 @@ public:
     unsigned long GetVerticesCount() { return m_verticesCount; }
     unsigned long GetIndexListSize() { return m_indexCount; }
     DrawcallType GetType() { return m_type; }
-    Matrix4x4 LocalMatrix() { return m_localMatrix; }
+    Matrix4x4 LocalMatrix() { return m_localMatrix; } // TODO relocate this
 
 protected:
     Shader* m_shader;
