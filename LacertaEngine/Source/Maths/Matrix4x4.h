@@ -1,5 +1,4 @@
 #pragma once
-#include <memory>
 
 #include "../Core.h"
 #include "Vector3.h"
@@ -141,6 +140,44 @@ public:
         this->SetMatrix(out);
     }
 
+    Vector3 GetZDirection() 
+    {
+        return Vector3(m_mat[2][0], m_mat[2][1], m_mat[2][2]);
+    }
+    Vector3 GetXDirection() 
+    {
+        return Vector3(m_mat[0][0], m_mat[0][1], m_mat[0][2]);
+    }
+    Vector3 GetTranslation() 
+    {
+        return Vector3(m_mat[3][0], m_mat[3][1], m_mat[3][2]);
+    }
+
+    Vector3 GetScale() 
+    {
+        return Vector3(
+            Vector3(m_mat[0][0], m_mat[0][1], m_mat[0][2]).Length(),
+            Vector3(m_mat[1][0], m_mat[1][1], m_mat[1][2]).Length(),
+            Vector3(m_mat[2][0], m_mat[2][1], m_mat[2][2]).Length()
+        );
+    }
+
+    // Matrix4x4 operator*(const Matrix4x4& other)
+    // {
+    //     Matrix4x4 result;
+    //
+    //     for (int i = 0; i < 4; ++i) {
+    //         for (int j = 0; j < 4; ++j) {
+    //             result.m_mat[i][j] = 0.0f;
+    //             for (int k = 0; k < 4; ++k) {
+    //                 result.m_mat[i][j] += m_mat[i][k] * other.m_mat[k][j];
+    //             }
+    //         }
+    //     }
+    //
+    //     return result;
+    // }
+
     void operator *=(const Matrix4x4& matrix)
     {
         Matrix4x4 out;
@@ -156,17 +193,14 @@ public:
         memcpy(m_mat, out.m_mat, sizeof(float) * 16);
     }
 
-    Vector3 GetZDirection()
+    Vector4 operator*(const Vector4& vector) const
     {
-        return Vector3(m_mat[2][0], m_mat[2][1], m_mat[2][2]);
-    }
-    Vector3 GetXDirection()
-    {
-        return Vector3(m_mat[0][0], m_mat[0][1], m_mat[0][2]);
-    }
-    Vector3 GetTranslation()
-    {
-        return Vector3(m_mat[3][0], m_mat[3][1], m_mat[3][2]);
+        return Vector4(
+            m_mat[0][0] * vector.X + m_mat[0][1] * vector.Y + m_mat[0][2] * vector.Z + m_mat[0][3] * vector.W,
+            m_mat[1][0] * vector.X + m_mat[1][1] * vector.Y + m_mat[1][2] * vector.Z + m_mat[1][3] * vector.W,
+            m_mat[2][0] * vector.X + m_mat[2][1] * vector.Y + m_mat[2][2] * vector.Z + m_mat[2][3] * vector.W,
+            m_mat[3][0] * vector.X + m_mat[3][1] * vector.Y + m_mat[3][2] * vector.Z + m_mat[3][3] * vector.W
+        );
     }
 
 private:

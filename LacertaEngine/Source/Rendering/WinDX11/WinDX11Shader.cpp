@@ -1,14 +1,9 @@
 ﻿#include "WinDX11Shader.h"
-
 #include <codecvt>
-
 #include <Windows.h>
-
 #include "WinDX11Renderer.h"
 #include "../../Logger/Logger.h"
-
 #include <d3dcompiler.h>
-
 #include "../GraphicsEngine.h"
 
 namespace LacertaEngine
@@ -45,60 +40,19 @@ WinDX11Shader::~WinDX11Shader()
     }
 }
 
-void WinDX11Shader::Load(Renderer* renderer, DrawcallType Type, const wchar_t* vertexShaderName, const wchar_t* pixelShaderName)
+void WinDX11Shader::Load(Renderer* renderer, DrawcallType Type)
 {
-    // Compiling & Creating Vertex Shader
-    ID3DBlob* vertexErrorBlob = nullptr;
-    ID3DBlob* vertexBlob;
-    
-    HRESULT hr = D3DCompileFromFile(vertexShaderName, nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, "main", "vs_5_0", 0, 0, &vertexBlob, &vertexErrorBlob);
-    if(FAILED(hr))
-    {
-        LOG(Error, "WinDX11Shader : Failed vertex shader compilation !");
-        std::string errorMsg = std::system_category().message(hr);
-        LOG(Error, errorMsg);
-
-        if (vertexErrorBlob) 
-        {
-            std::string errorMessage(static_cast<const char*>(vertexErrorBlob->GetBufferPointer()), vertexErrorBlob->GetBufferSize());
-            LOG(Error, errorMessage);
-            vertexErrorBlob->Release();
-        }
-    }
-
-    void* vertexShaderByteCode = vertexBlob->GetBufferPointer();
-    size_t vertexByteCodeSize = vertexBlob->GetBufferSize();
+    if(m_loaded)
+        return;
 
     ID3D11Device* localDev = (ID3D11Device*)renderer->GetDriver();
-    hr = localDev->CreateVertexShader(vertexShaderByteCode, vertexByteCodeSize, nullptr, &m_vertexShader);
+    HRESULT hr = localDev->CreateVertexShader(m_vertexShaderByteCode, m_vertexByteCodeSize, nullptr, &m_vertexShader);
     if(FAILED(hr))
     {
         LOG(Error, "WinDX11Shader : Failed vertex shader creation !");
     }
 
-    // Compiling & Creating Pixel Shader
-    ID3DBlob* pixelErrorBlob = nullptr;
-    ID3DBlob* pixelBlob;
-    
-    hr = D3DCompileFromFile(pixelShaderName, nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, "main", "ps_5_0", 0, 0, &pixelBlob, &pixelErrorBlob);
-    if(FAILED(hr))
-    {
-        LOG(Error, "WinDX11Shader : Failed pixel shader compilation !");
-        std::string errorMsg = std::system_category().message(hr);
-        LOG(Error, errorMsg);
-
-        if (vertexErrorBlob) 
-        {
-            std::string errorMessage(static_cast<const char*>(pixelErrorBlob->GetBufferPointer()), pixelErrorBlob->GetBufferSize());
-            LOG(Error, errorMessage);
-            pixelErrorBlob->Release();
-        }
-    }
-
-    void* pixelShaderByteCode = pixelBlob->GetBufferPointer();
-    size_t pixelByteCodeSize = pixelBlob->GetBufferSize();
-
-    hr = localDev->CreatePixelShader(pixelShaderByteCode, pixelByteCodeSize, nullptr, &m_fragmentShader);
+    hr = localDev->CreatePixelShader(m_pixelShaderByteCode, m_pixelByteCodeSize, nullptr, &m_fragmentShader);
     if(FAILED(hr))
     {
         LOG(Error, "WinDX11Shader : Failed pixel shader creation !");
@@ -114,8 +68,8 @@ void WinDX11Shader::Load(Renderer* renderer, DrawcallType Type, const wchar_t* v
             hr = ((ID3D11Device*)(localDriver->GetDriver()))->CreateInputLayout(
                 screenLayout,
                 layoutSize,
-                vertexShaderByteCode,
-                vertexByteCodeSize,
+                m_vertexShaderByteCode,
+                m_vertexByteCodeSize,
                 &m_vertexLayout);
 
             m_vertexLayoutStride  = sizeof(VertexDataScreen);
@@ -130,8 +84,8 @@ void WinDX11Shader::Load(Renderer* renderer, DrawcallType Type, const wchar_t* v
             hr = ((ID3D11Device*)(localDriver->GetDriver()))->CreateInputLayout(
                 meshLayout,
                 layoutSize,
-                vertexShaderByteCode,
-                vertexByteCodeSize,
+                m_vertexShaderByteCode,
+                m_vertexByteCodeSize,
                 &m_vertexLayout);
 
             m_vertexLayoutStride  = sizeof(VertexMesh);
@@ -145,6 +99,8 @@ void WinDX11Shader::Load(Renderer* renderer, DrawcallType Type, const wchar_t* v
         LOG(Error, "WinDX11Shader : Failed input layout creation !");
         throw std::exception("Create Input Layout failed");
     }
+
+    m_loaded = true;
 }
 
 void WinDX11Shader::PreparePass(Renderer* renderer, Drawcall* dc)

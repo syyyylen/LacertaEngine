@@ -14,21 +14,28 @@ WinDX11Drawcall::WinDX11Drawcall()
 WinDX11Drawcall::~WinDX11Drawcall()
 {
     if(m_vbo)
-    {
         m_vbo->Release();
-        delete m_vbo;
-    }
 }
 
 void WinDX11Drawcall::Setup(Renderer* renderer, DrawcallData* dcData)
 {
+    m_vbo = (ID3D11Buffer*)dcData->VBO;
+    m_verticesCount = dcData->VerticesCount;
+    m_ibo = (ID3D11Buffer*)dcData->IBO;
+    m_indexCount = dcData->IndicesCount;
+    
     m_type = dcData->Type;
     if(dcData->Type == DrawcallType::dcMesh)
         m_localMatrix = dcData->LocalMatrix;
+
+    if(!renderer->HasShader(dcData->ShaderName))
+    {
+        LOG(Error, "Invalid Shader Name, not contained in the current renderer");
+        return;
+    }
     
-    auto shader = new WinDX11Shader();
-    m_shader = (Shader*)shader;
-    m_shader->Load(renderer, dcData->Type, dcData->VertexShaderPath, dcData->PixelShaderPath);
+    m_shader = renderer->GetShader(dcData->ShaderName);
+    m_shader->Load(renderer, dcData->Type);
 }
 
 void WinDX11Drawcall::Pass(Renderer* renderer)

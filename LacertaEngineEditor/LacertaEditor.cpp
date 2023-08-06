@@ -58,64 +58,34 @@ void LacertaEditor::Start()
     HWND hwnd = m_editorWindow->GetHWND();
     GraphicsEngine::Get()->InitializeRenderer((int*)hwnd, RendererType::RENDERER_WIN_DX11, width, height, 24, 60);
 
-    // ----------------------------- Debug Asset Loading -----------------------
+    // ---------------------------- Debug Scene Creation --------------------
 
-    // TODO remove this wonderfull MT version that is slower than the main thread one
-    // float rdmDist = 10.0f;
-    //
-    // std::vector<int> nbrs(36);
-    // std::for_each(std::execution::par, nbrs.begin(), nbrs.end(), [rdmDist](int num)
-    // {
-    //     Mesh* teaPot = ResourceManager::Get()->CreateResource<Mesh>(L"Assets/Meshes/teapot.obj");
-    //
-    //     DrawcallData teapotDcData = {};
-    //     std::vector<VertexMesh> teapotVertData = teaPot->GetVertices();
-    //     std::vector<unsigned int> teapotIndices = teaPot->GetIndices();
-    //     teapotDcData.Data = &teapotVertData[0];
-    //     teapotDcData.Size = teapotVertData.size();
-    //     teapotDcData.Type = DrawcallType::dcMesh;
-    //     teapotDcData.VertexShaderPath = L"../LacertaEngine/Source/Rendering/Shaders/MeshVertex.hlsl";
-    //     teapotDcData.PixelShaderPath = L"../LacertaEngine/Source/Rendering/Shaders/MeshPixelShader.hlsl";
-    //     teapotDcData.IndexesData = &teapotIndices[0];
-    //     teapotDcData.IndexesSize = teapotIndices.size();
-    //     Matrix4x4 teapotMatrix;
-    //     teapotMatrix.SetIdentity();
-    //     teapotMatrix.SetTranslation(Vector3(Random::RandomFloatRange(-rdmDist, rdmDist),
-    //                                             Random::RandomFloatRange(-rdmDist, rdmDist),
-    //                                             Random::RandomFloatRange(-rdmDist, rdmDist)));
-    //     teapotMatrix.SetRotationY(Random::RandomFloatRange(-6.2f, 6.2f));
-    //     teapotDcData.LocalMatrix = teapotMatrix;
-    //
-    //     GraphicsEngine::Get()->AddDrawcall(&teapotDcData);
-    // });
+    m_activeScene = new Scene();
 
-    // TODO remove this process from Editor Start
-    float rdmDist = 12.5f;
-    for(int i = 0; i < 50; i++)
+    // ----------------------------- Debug GO Creation -----------------------
+    
+    Mesh* teaPotMesh = ResourceManager::Get()->CreateResource<Mesh>(L"Assets/Meshes/teapot.obj");
+
+    float rdmDist = 20.0f;
+    float maxScaleMult = 6.0f;
+    for(int i = 0; i < 25; i++)
     {
-        Mesh* teaPot = ResourceManager::Get()->CreateResource<Mesh>(L"Assets/Meshes/teapot.obj");
+        GameObject* teapotGo = m_activeScene->CreateGameObject("TeapotGo");
+        
+        MeshComponent& meshComp = teapotGo->AddComponent<MeshComponent>();
+        meshComp.SetMesh(teaPotMesh);
+        meshComp.m_shaderName = "MeshShader";
 
-        DrawcallData teapotDcData = {};
-        std::vector<VertexMesh> teapotVertData = teaPot->GetVertices();
-        std::vector<unsigned int> teapotIndices = teaPot->GetIndices();
-        teapotDcData.Data = &teapotVertData[0];
-        teapotDcData.Size = teapotVertData.size();
-        teapotDcData.Type = DrawcallType::dcMesh;
-        teapotDcData.VertexShaderPath = L"../LacertaEngine/Source/Rendering/Shaders/MeshVertex.hlsl";
-        teapotDcData.PixelShaderPath = L"../LacertaEngine/Source/Rendering/Shaders/MeshPixelShader.hlsl";
-        teapotDcData.IndexesData = &teapotIndices[0];
-        teapotDcData.IndexesSize = teapotIndices.size();
-        Matrix4x4 teapotMatrix;
-        teapotMatrix.SetIdentity();
-        teapotMatrix.SetTranslation(Vector3(Random::RandomFloatRange(-rdmDist, rdmDist),
-                                                Random::RandomFloatRange(-rdmDist, rdmDist),
-                                                Random::RandomFloatRange(-rdmDist, rdmDist)));
-        teapotMatrix.SetRotationY(Random::RandomFloatRange(-6.2f, 6.2f));
-        teapotDcData.LocalMatrix = teapotMatrix;
+        TransformComponent& tf = teapotGo->GetComponent<TransformComponent>();
+        tf.SetPosition(Vector3(Random::RandomFloatRange(-rdmDist, rdmDist),
+                                        Random::RandomFloatRange(-rdmDist, rdmDist),
+                                        Random::RandomFloatRange(-rdmDist, rdmDist)));
 
-        GraphicsEngine::Get()->AddDrawcall(&teapotDcData);
+        float rdmScale = Random::RandomFloatRange(0.6f, maxScaleMult);
+        tf.SetScale(Vector3(rdmScale, rdmScale, rdmScale));
+        
+        m_sceneGameObjects.push_back(teapotGo);
     }
-    // TODO remove this process from Editor Start
 
     // --------------------------- Camera Default Position ---------------------
 
@@ -137,7 +107,7 @@ void LacertaEditor::Start()
     WinDX11Renderer* Dx11Renderer = (WinDX11Renderer*)GraphicsEngine::Get()->GetRenderer(); // TODO remove direct reference to DX11
     ImGui_ImplDX11_Init((ID3D11Device*)Dx11Renderer->GetDriver(), Dx11Renderer->GetImmediateContext());
 
-    // m_editorWindow->Maximize();
+    m_editorWindow->Maximize();
 }
 
 void LacertaEditor::Update()
@@ -148,6 +118,36 @@ void LacertaEditor::Update()
     unsigned long oldDeltaTime = m_previousTickCount;
     m_previousTickCount = GetTickCount();
     m_deltaTime = oldDeltaTime ? (m_previousTickCount - oldDeltaTime) / 1000.0f : 0;
+
+    // ----------------------------- Debug Scene Draw Objects -----------------------
+
+    GraphicsEngine::Get()->ClearDrawcalls();
+
+    float frequency = 0.3f;
+    float scaleMultiplier = MathUtilities::Remap(0.5f + 0.5f * std::sin(2 * 3.14 * frequency * m_globalTimer->Elapsed()),
+                                                    0.0f, 1.0f, 1.0f, 5.0f);
+
+    auto tfMeshesGroup = m_activeScene->m_registry.group<TransformComponent>(entt::get<MeshComponent>);
+    for(auto go : tfMeshesGroup)
+    {
+        auto[transform, meshComponent] = tfMeshesGroup.get<TransformComponent, MeshComponent>(go);
+
+        // Performing some scale modifications
+        transform.SetScale(Vector3(scaleMultiplier, scaleMultiplier, scaleMultiplier));
+
+        // Adding DC
+        Mesh* mesh = meshComponent.GetMesh();
+        DrawcallData dcData = {};
+        dcData.VBO = mesh->GetVBO();
+        dcData.VerticesCount = mesh->GetVerticesSize();
+        dcData.IBO = mesh->GetIBO();
+        dcData.IndicesCount = mesh->GetIndicesSize();
+        dcData.Type = DrawcallType::dcMesh;
+        dcData.ShaderName = meshComponent.m_shaderName;
+        dcData.LocalMatrix = transform.GetTransformMatrix();
+
+        GraphicsEngine::Get()->AddDrawcall(&dcData);
+    }
 
     // ----------------------------- Rendering Update  --------------------------
 

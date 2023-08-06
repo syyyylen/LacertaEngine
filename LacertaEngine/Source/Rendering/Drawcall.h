@@ -14,13 +14,12 @@ enum DrawcallType
 
 struct DrawcallData
 {
-    void* Data;
-    unsigned long Size;
-    const wchar_t* VertexShaderPath;
-    const wchar_t* PixelShaderPath;
+    void* VBO;
+    unsigned long VerticesCount;
+    void* IBO;
+    unsigned long IndicesCount;
+    std::string ShaderName;
     DrawcallType Type;
-    void* IndexesData;
-    unsigned long IndexesSize;
     Matrix4x4 LocalMatrix;
 };
 
@@ -70,7 +69,7 @@ public:
     unsigned long GetVerticesCount() { return m_verticesCount; }
     unsigned long GetIndexListSize() { return m_indexCount; }
     DrawcallType GetType() { return m_type; }
-    Matrix4x4 LocalMatrix() { return m_localMatrix; }
+    Matrix4x4 LocalMatrix() { return m_localMatrix; } // TODO relocate this
 
 protected:
     Shader* m_shader;

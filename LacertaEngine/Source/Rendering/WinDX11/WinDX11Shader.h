@@ -13,12 +13,15 @@ public:
     WinDX11Shader();
     ~WinDX11Shader();
 
-    void Load(Renderer* renderer, DrawcallType Type, const wchar_t* vertexShaderName, const wchar_t* pixelShaderName) override;
+    void Load(Renderer* renderer, DrawcallType Type) override;
     void PreparePass(Renderer* renderer, Drawcall* dc) override;
     void Pass(Renderer* renderer, Drawcall* dc) override;
 
     unsigned int GetVerticesStride() { return m_vertexLayoutStride; }
 
+protected:
+    bool m_loaded;
+    
 private:
     ID3D11VertexShader* m_vertexShader;
     ID3D11PixelShader* m_fragmentShader;

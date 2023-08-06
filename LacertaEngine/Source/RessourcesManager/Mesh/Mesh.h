@@ -13,12 +13,22 @@ public:
     
     void CreateResource(const wchar_t* filePath) override;
 
-    std::vector<VertexMesh> GetVertices() { return m_verticesList; }
-    std::vector<unsigned int> GetIndices() { return m_indicesList; }
+    void SetBuffersData(void* vbo, void* ibo)
+    {
+        m_vbo = vbo;
+        m_ibo = ibo;
+    }
+
+    void* GetVBO() { return m_vbo; }
+    unsigned long GetVerticesSize() { return m_verticesSize; }
+    void* GetIBO() { return m_ibo; }
+    unsigned long GetIndicesSize() { return m_indexesSize; }
 
 private:
-    std::vector<VertexMesh> m_verticesList;
-    std::vector<unsigned int> m_indicesList;
+    void* m_vbo;
+    unsigned long m_verticesSize;
+    void* m_ibo;
+    unsigned long m_indexesSize;
 };
     
 }

@@ -6,6 +6,7 @@
 #include <codecvt>
 
 #include "../../Logger/Logger.h"
+#include "../../Rendering/GraphicsEngine.h"
 
 namespace LacertaEngine
 {
@@ -46,11 +47,14 @@ void Mesh::CreateResource(const wchar_t* filePath)
         throw std::exception("Mesh has multiple shapes!");
     }
 
+    std::vector<VertexMesh> verticesList;
+    std::vector<unsigned int> indicesList;
+
     for(size_t s = 0; s < shapes.size(); s++)
     {
         size_t indexOffset = 0;
-        m_verticesList.reserve(shapes[s].mesh.indices.size());
-        m_indicesList.reserve(shapes[s].mesh.indices.size());
+        verticesList.reserve(shapes[s].mesh.indices.size());
+        indicesList.reserve(shapes[s].mesh.indices.size());
         
         for(size_t f = 0; f < shapes[s].mesh.num_face_vertices.size(); f++)
         {
@@ -75,14 +79,18 @@ void Mesh::CreateResource(const wchar_t* filePath)
                 vertex.Position = Vector3(vx, vy, vz);
                 vertex.Texcoord = Vector2(tx, ty);
                 vertex.Normal = Vector3(nx, ny, nz);
-                m_verticesList.push_back(vertex);
+                verticesList.push_back(vertex);
 
-                m_indicesList.push_back((unsigned int)indexOffset + v);
+                indicesList.push_back((unsigned int)indexOffset + v);
             }
 
             indexOffset += numFaceVerts;
         }
     }
+
+    m_verticesSize = verticesList.size();
+    m_indexesSize = indicesList.size();
+    GraphicsEngine::Get()->CreateBuffers(this, verticesList, indicesList);
 }
     
 }

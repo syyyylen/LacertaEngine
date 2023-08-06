@@ -5,6 +5,9 @@
 
 namespace LacertaEngine
 {
+
+struct VertexMesh;
+class Mesh;
     
 enum RendererType
 {
@@ -24,11 +27,15 @@ public:
     
     void InitializeRenderer(int* context, RendererType type, int width, int height, int depth, int targetRefreshRate);
     void AddDrawcall(DrawcallData* dcData);
+    void ClearDrawcalls();
     void Render();
     void Resize(unsigned width, unsigned height);
     void PresentSwapChain();
     void UpdateShaderConstants(void* buffer);
     void UpdateMeshConstants(void* buffer);
+
+    void CreateBuffers(Mesh* mesh, std::vector<VertexMesh> vertices, std::vector<unsigned int> indices);
+    
     Renderer* GetRenderer() { return m_renderer; }
     
 private:

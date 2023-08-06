@@ -1,9 +1,13 @@
 ﻿#include "WinDX11Renderer.h"
 
+#include <d3dcompiler.h>
+
 #include "WinDX11Drawcall.h"
 #include "WinDX11RenderTarget.h"
+#include "WinDX11Shader.h"
 #include "../Drawcall.h"
 #include "../../Logger/Logger.h"
+#include "../../RessourcesManager/Mesh/Mesh.h"
 
 namespace LacertaEngine
 {
@@ -134,18 +138,110 @@ void WinDX11Renderer::CreateRenderTarget(int width, int height, int depth)
     m_renderTarget->Initialize(this, width, height, depth);
 }
 
+void WinDX11Renderer::LoadShaders()
+{
+    //TODO load procedurally all the shaders instead of hard coding this compilation
+
+    LOG(Debug, "Loading Shaders");
+    
+    WinDX11Shader* MeshShader = new WinDX11Shader();
+
+    // Compiling & Creating Vertex Shader
+    ID3DBlob* vertexErrorBlob = nullptr;
+    ID3DBlob* vertexBlob;
+    
+    HRESULT hr = D3DCompileFromFile(L"../LacertaEngine/Source/Rendering/Shaders/MeshVertex.hlsl", nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, "main", "vs_5_0", 0, 0, &vertexBlob, &vertexErrorBlob);
+    if(FAILED(hr))
+    {
+        LOG(Error, "WinDX11Shader : Failed vertex shader compilation !");
+        std::string errorMsg = std::system_category().message(hr);
+        LOG(Error, errorMsg);
+
+        if (vertexErrorBlob) 
+        {
+            std::string errorMessage(static_cast<const char*>(vertexErrorBlob->GetBufferPointer()), vertexErrorBlob->GetBufferSize());
+            LOG(Error, errorMessage);
+            vertexErrorBlob->Release();
+        }
+    }
+
+    MeshShader->SetVSData(vertexBlob->GetBufferPointer(), vertexBlob->GetBufferSize());
+
+    // Compiling & Creating Pixel Shader
+    ID3DBlob* pixelErrorBlob = nullptr;
+    ID3DBlob* pixelBlob;
+    
+    hr = D3DCompileFromFile(L"../LacertaEngine/Source/Rendering/Shaders/MeshPixelShader.hlsl", nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, "main", "ps_5_0", 0, 0, &pixelBlob, &pixelErrorBlob);
+    if(FAILED(hr))
+    {
+        LOG(Error, "WinDX11Shader : Failed pixel shader compilation !");
+        std::string errorMsg = std::system_category().message(hr);
+        LOG(Error, errorMsg);
+
+        if (vertexErrorBlob) 
+        {
+            std::string errorMessage(static_cast<const char*>(pixelErrorBlob->GetBufferPointer()), pixelErrorBlob->GetBufferSize());
+            LOG(Error, errorMessage);
+            pixelErrorBlob->Release();
+        }
+    }
+
+    MeshShader->SetPSData(pixelBlob->GetBufferPointer(), pixelBlob->GetBufferSize());
+
+    m_shaders.emplace("MeshShader", MeshShader);
+}
+
 void WinDX11Renderer::AddDrawcall(DrawcallData* dcData)
 {
     WinDX11Drawcall* dc = new WinDX11Drawcall();
-    
     dc->Setup(this, dcData);
-
-    dc->CreateVBO(this, dcData->Data, dcData->Size);
-
-    if(dcData->Type == DrawcallType::dcMesh)
-        dc->CreateIBO(this, dcData->IndexesData, dcData->IndexesSize);
     
     m_drawcalls.push_back(dc);
+}
+
+void WinDX11Renderer::CreateBuffers(Mesh* mesh, std::vector<VertexMesh> vertices, std::vector<unsigned> indices)
+{
+    unsigned long dataLength = vertices.size() * (unsigned long)sizeof(VertexMesh);
+
+    D3D11_BUFFER_DESC vboDesc = {};
+    vboDesc.Usage = D3D11_USAGE_DEFAULT;
+    vboDesc.ByteWidth = dataLength;
+    vboDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+    vboDesc.CPUAccessFlags = 0;
+    vboDesc.MiscFlags = 0;
+
+    D3D11_SUBRESOURCE_DATA vboInitData;
+    vboInitData.pSysMem = &vertices[0];
+
+    ID3D11Buffer* vbo;
+    HRESULT hr = m_device->CreateBuffer(&vboDesc, &vboInitData, &vbo);
+
+    if (FAILED(hr))
+    {
+        LOG(Error, "WinDX11Drawcall : VBO object creation failed");
+        throw std::exception("VBO object creation failed");
+    }
+
+    D3D11_BUFFER_DESC iboDesc = {};
+    iboDesc.Usage = D3D11_USAGE_DEFAULT;
+    iboDesc.ByteWidth = 4 * indices.size();
+    iboDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
+    iboDesc.CPUAccessFlags = 0;
+    iboDesc.MiscFlags = 0;
+
+    D3D11_SUBRESOURCE_DATA iboInitData;
+    iboInitData.pSysMem = &indices[0];
+
+    ID3D11Buffer* ibo;
+    hr = m_device->CreateBuffer(&iboDesc, &iboInitData, &ibo);
+
+    if (FAILED(hr))
+    {
+        LOG(Error, "WinDX11Drawcall : IBO object creation failed");
+        throw std::exception("IBO object creation failed");
+    }
+
+    mesh->SetBuffersData(vbo, ibo);
 }
 
 void WinDX11Renderer::RenderFrame()

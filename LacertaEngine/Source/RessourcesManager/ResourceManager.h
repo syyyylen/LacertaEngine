@@ -36,6 +36,8 @@ public:
         }
         res->CreateResource(filePath);
 
+        LOG(Debug, "Resource Manager : Resource newly created!");
+
         m_resources.push_back(res);
 
         return resource;
