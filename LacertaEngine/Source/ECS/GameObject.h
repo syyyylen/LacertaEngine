@@ -30,6 +30,12 @@ public:
     {
         return m_scene->m_registry.all_of<T>(m_entityHandle);
     }
+
+    template<typename T>
+    void RemoveComponent()
+    {
+        m_scene->m_registry.remove<T>(m_entityHandle);
+    }
     
 private:
     entt::entity m_entityHandle;
