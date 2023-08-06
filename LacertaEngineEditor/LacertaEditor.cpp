@@ -123,13 +123,16 @@ void LacertaEditor::Update()
 
     GraphicsEngine::Get()->ClearDrawcalls();
 
+    float frequency = 0.3f;
+    float scaleMultiplier = MathUtilities::Remap(0.5f + 0.5f * std::sin(2 * 3.14 * frequency * m_globalTimer->Elapsed()),
+                                                    0.0f, 1.0f, 1.0f, 5.0f);
+
     auto tfMeshesGroup = m_activeScene->m_registry.group<TransformComponent>(entt::get<MeshComponent>);
     for(auto go : tfMeshesGroup)
     {
         auto[transform, meshComponent] = tfMeshesGroup.get<TransformComponent, MeshComponent>(go);
 
         // Performing some scale modifications
-        float scaleMultiplier = 1.0f;
         transform.SetScale(Vector3(scaleMultiplier, scaleMultiplier, scaleMultiplier));
 
         // Adding DC
