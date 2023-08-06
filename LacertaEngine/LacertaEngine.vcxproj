@@ -108,6 +108,7 @@
     <ClCompile Include="Source\ECS\Component.cpp" />
     <ClCompile Include="Source\ECS\Components\MeshComponent.cpp" />
     <ClCompile Include="Source\ECS\GameObject.cpp" />
+    <ClCompile Include="Source\ECS\Scene.cpp" />
     <ClCompile Include="Source\ECS\Transform.cpp">
       <RuntimeLibrary>MultiThreadedDebugDll</RuntimeLibrary>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
@@ -208,7 +209,9 @@
     <ClInclude Include="Source\ECS\Component.h" />
     <ClInclude Include="Source\ECS\Components\MeshComponent.h" />
     <ClInclude Include="Source\ECS\ECS.h" />
+    <ClInclude Include="Source\ECS\Entt\entt.hpp" />
     <ClInclude Include="Source\ECS\GameObject.h" />
+    <ClInclude Include="Source\ECS\Scene.h" />
     <ClInclude Include="Source\ECS\Transform.h" />
     <ClInclude Include="Source\InputSystem\InputListener.h" />
     <ClInclude Include="Source\InputSystem\InputSystem.h" />
@@ -242,6 +245,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Libs\TinyObjLoader\LICENSE" />
+    <AdditionalFiles Include="Source\ECS\Entt\Entt_LICENCE.txt" />
     <Content Include="Source\Rendering\Shaders\ScreenShadersLayouts.hlsli" />
     <Content Include="Source\Rendering\Shaders\ScreenVertex.hlsl">
       <RuntimeLibrary>MultiThreadedDebugDll</RuntimeLibrary>

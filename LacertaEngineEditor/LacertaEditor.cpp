@@ -88,6 +88,7 @@ void LacertaEditor::Start()
     // ----------------------------- Debug Scene Draw Objects -----------------------
 
     // TODO move this into a proper Scene system, and into the Update function
+    // TODO store the Components continuously in memory and let the GO become an ID to retrieve components
     for(auto go : m_sceneGameObjects)
     {
         std::list<Component*> components = go->GetComponentsList();
