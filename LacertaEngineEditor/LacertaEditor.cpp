@@ -12,10 +12,14 @@
 namespace LacertaEngineEditor
 {
 
-static float s_mouseSensivity = 3.0f;
-static float s_moveSpeed = 2.5f;
-static float s_strafeMoveSpeed = 2.5f;
+static float s_mouseSensivity = 3.0;
+static float s_moveSpeed = 6.5f;
 static float s_inputDownScalar = 0.03f;
+
+static float s_moveOffset = 10.0f;
+static float s_moveFrequency = 0.6f;
+static float s_scaleFrequency = 0.1f;
+static float s_maxScaleMultiplier = 5.0f;
 
 LacertaEditor::LacertaEditor()
 {
@@ -66,24 +70,18 @@ void LacertaEditor::Start()
     
     Mesh* teaPotMesh = ResourceManager::Get()->CreateResource<Mesh>(L"Assets/Meshes/teapot.obj");
 
-    float rdmDist = 20.0f;
-    float maxScaleMult = 6.0f;
-    for(int i = 0; i < 25; i++)
+    float rdmDist = 30.0f;
+    Vector3 offset = Vector3(40.0f, 0.0f, 0.0f);
+    for(int i = 0; i < 60; i++)
     {
-        GameObject* teapotGo = m_activeScene->CreateGameObject("TeapotGo");
+        GameObject* teapotGo = m_activeScene->CreateGameObject("TeapotGo", offset + Vector3(Random::RandomFloatRange(-rdmDist, rdmDist),
+                                                                                            Random::RandomFloatRange(-rdmDist, rdmDist),
+                                                                                            Random::RandomFloatRange(-rdmDist, rdmDist)));
         
         MeshComponent& meshComp = teapotGo->AddComponent<MeshComponent>();
         meshComp.SetMesh(teaPotMesh);
         meshComp.m_shaderName = "MeshShader";
 
-        TransformComponent& tf = teapotGo->GetComponent<TransformComponent>();
-        tf.SetPosition(Vector3(Random::RandomFloatRange(-rdmDist, rdmDist),
-                                        Random::RandomFloatRange(-rdmDist, rdmDist),
-                                        Random::RandomFloatRange(-rdmDist, rdmDist)));
-
-        float rdmScale = Random::RandomFloatRange(0.6f, maxScaleMult);
-        tf.SetScale(Vector3(rdmScale, rdmScale, rdmScale));
-        
         m_sceneGameObjects.push_back(teapotGo);
     }
 
@@ -123,18 +121,20 @@ void LacertaEditor::Update()
 
     GraphicsEngine::Get()->ClearDrawcalls();
 
-    float frequency = 0.3f;
-    float scaleMultiplier = MathUtilities::Remap(0.5f + 0.5f * std::sin(2 * 3.14 * frequency * m_globalTimer->Elapsed()),
-                                                    0.0f, 1.0f, 1.0f, 5.0f);
+    float f = 0.5f + 0.5f * std::sin(2 * 3.14 * s_scaleFrequency * m_globalTimer->Elapsed());
+    float f2 = 0.5f + 0.5f * std::sin(2 * 3.14 * s_moveFrequency * m_globalTimer->Elapsed());
+    float scaleMultiplier = MathUtilities::Remap(f, 0.0f, 1.0f, 1.0f, s_maxScaleMultiplier);
 
     auto tfMeshesGroup = m_activeScene->m_registry.group<TransformComponent>(entt::get<MeshComponent>);
     for(auto go : tfMeshesGroup)
     {
         auto[transform, meshComponent] = tfMeshesGroup.get<TransformComponent, MeshComponent>(go);
 
-        // Performing some scale modifications
+        // Performing some transformations
         transform.SetScale(Vector3(scaleMultiplier, scaleMultiplier, scaleMultiplier));
-
+        Vector3 destination = Vector3(transform.GetStartPosition().X, transform.GetStartPosition().Y + s_moveOffset, transform.GetStartPosition().Z);
+        transform.SetPosition(Vector3::Lerp(transform.GetStartPosition(), destination, f2));
+        
         // Adding DC
         Mesh* mesh = meshComponent.GetMesh();
         DrawcallData dcData = {};
@@ -179,14 +179,14 @@ void LacertaEditor::Update()
     worldCam *= temp;
 
     Vector3 newCamPos = m_sceneCamera.GetTranslation() + worldCam.GetZDirection() * (m_cameraForward * (s_moveSpeed * s_inputDownScalar));
-    newCamPos = newCamPos + worldCam.GetXDirection() * (m_cameraRight * (s_strafeMoveSpeed * s_inputDownScalar));
+    newCamPos = newCamPos + worldCam.GetXDirection() * (m_cameraRight * (s_moveSpeed * s_inputDownScalar));
     worldCam.SetTranslation(newCamPos);
     cc.CameraPosition = newCamPos;
     m_sceneCamera = worldCam;
     worldCam.Inverse();
     cc.ViewMatrix = worldCam;
     
-    cc.ProjectionMatrix.SetPerspectiveFovLH(1.57f, ((float)width / (float)height), 0.1f, 100.0f);
+    cc.ProjectionMatrix.SetPerspectiveFovLH(1.57f, ((float)width / (float)height), 0.1f, 1000.0f);
     
     GraphicsEngine::Get()->UpdateShaderConstants(&cc);
 
@@ -208,8 +208,16 @@ void LacertaEditor::Update()
     {
         ImGui::Begin("Debugging");
         ImGui::SliderFloat("Sensivity", &s_mouseSensivity, 0.1f, 10.0f);   
-        ImGui::SliderFloat("MoveSpeed", &s_moveSpeed, 0.1f, 10.0f);
-        ImGui::SliderFloat("StrafeMoveSpeed", &s_strafeMoveSpeed, 0.1f, 10.0f);
+        ImGui::SliderFloat("MoveSpeed", &s_moveSpeed, 0.1f, 25.0f);
+        ImGui::End();
+    }
+
+    {
+        ImGui::Begin("C'est n'imp");
+        ImGui::SliderFloat("offset", &s_moveOffset, -20.0f, 20.0f);   
+        ImGui::SliderFloat("move frequency", &s_moveFrequency, 0.01f, 1.0f);
+        ImGui::SliderFloat("scale frequency", &s_scaleFrequency, 0.01f, 1.0f);
+        ImGui::SliderFloat("max scale mult", &s_maxScaleMultiplier, 1.0f, 20.0f);
         ImGui::End();
     }
 

@@ -20,11 +20,17 @@ public:
     Vector3 InverseTransformPosition(Vector3 position);
     Vector3 GetForwardVector();
 
+     // TODO remove and use constructor
+    void SetStartPosition(Vector3 position) { m_startPosition = position; }
+    
+    Vector3 GetStartPosition() { return m_startPosition; }
+
     void SetTransformMatrix(Matrix4x4 mat) { m_transformMatrix = mat; }
     Matrix4x4 GetTransformMatrix() { return m_transformMatrix; }
 
 private:
     Matrix4x4 m_transformMatrix;
+    Vector3 m_startPosition;
 };
     
 }

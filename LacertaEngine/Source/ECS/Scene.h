@@ -4,8 +4,9 @@
 
 namespace LacertaEngine
 {
+    class Vector3;
 
-class GameObject;
+    class GameObject;
 
 class LACERTAENGINE_API Scene
 {
@@ -13,7 +14,7 @@ public:
     Scene();
     ~Scene();
 
-    GameObject* CreateGameObject(std::string name);
+    GameObject* CreateGameObject(std::string name, Vector3 position);
 
 public:
     entt::registry m_registry;

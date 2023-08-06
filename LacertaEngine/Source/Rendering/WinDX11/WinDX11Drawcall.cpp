@@ -19,9 +19,9 @@ WinDX11Drawcall::~WinDX11Drawcall()
 
 void WinDX11Drawcall::Setup(Renderer* renderer, DrawcallData* dcData)
 {
-    m_vbo = (ID3D11Buffer*)dcData->VBO;
+    m_vbo = static_cast<ID3D11Buffer*>(dcData->VBO);
     m_verticesCount = dcData->VerticesCount;
-    m_ibo = (ID3D11Buffer*)dcData->IBO;
+    m_ibo = static_cast<ID3D11Buffer*>(dcData->IBO);
     m_indexCount = dcData->IndicesCount;
     
     m_type = dcData->Type;
