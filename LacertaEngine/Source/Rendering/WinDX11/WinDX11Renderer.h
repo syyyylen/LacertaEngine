@@ -5,6 +5,7 @@
 
 #include <d3d11.h>
 #include <dxgi1_3.h>
+#include <map>
 
 namespace LacertaEngine
 {
@@ -17,7 +18,8 @@ public:
 
     void Initialize(int* context, int width, int height, int targetRefreshRate) override;
     void CreateRenderTarget(int width, int height, int depth) override;
-
+    void LoadShaders() override;
+    
     void RenderFrame() override;
     void PresentSwapChain() override;
     void OnResize(unsigned width, unsigned height) override;
@@ -36,7 +38,7 @@ private:
     IDXGISwapChain* m_dxgiSwapChain;
     D3D_FEATURE_LEVEL m_featureLevel;
     ID3D11Buffer* m_constantBuffer; 
-    ID3D11Buffer* m_meshConstantBuffer; 
+    ID3D11Buffer* m_meshConstantBuffer;
 };
 
 }

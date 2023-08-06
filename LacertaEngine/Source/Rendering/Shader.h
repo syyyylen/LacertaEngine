@@ -12,9 +12,27 @@ public:
     Shader();
     virtual ~Shader();
 
-    virtual void Load(Renderer* renderer, DrawcallType Type, const wchar_t* vertexShaderName, const wchar_t* pixelShaderName) = 0;
+    virtual void Load(Renderer* renderer, DrawcallType Type) = 0;
     virtual void PreparePass(Renderer* renderer, Drawcall* dc) = 0;
     virtual void Pass(Renderer* renderer, Drawcall* dc) = 0;
+
+    void SetVSData(void* vsByteCode, size_t vsByteCodeSize)
+    {
+        m_vertexShaderByteCode = vsByteCode;
+        m_vertexByteCodeSize = vsByteCodeSize;
+    }
+
+    void SetPSData(void* psByteCode, size_t psByteCodeSize)
+    {
+        m_pixelShaderByteCode = psByteCode;
+        m_pixelByteCodeSize = psByteCodeSize;
+    }
+
+protected:
+    void* m_vertexShaderByteCode;
+    size_t m_vertexByteCodeSize;
+    void* m_pixelShaderByteCode;
+    size_t m_pixelByteCodeSize;
 };
 
 }

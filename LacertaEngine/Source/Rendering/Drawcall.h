@@ -16,8 +16,7 @@ struct DrawcallData
 {
     void* Data;
     unsigned long Size;
-    const wchar_t* VertexShaderPath;
-    const wchar_t* PixelShaderPath;
+    std::string ShaderName;
     DrawcallType Type;
     void* IndexesData;
     unsigned long IndexesSize;

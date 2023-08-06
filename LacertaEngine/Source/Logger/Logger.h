@@ -25,4 +25,6 @@ private:
 
 #define LOG(type, content) LacertaEngine::Logger::Get()->Log(LacertaEngine::LogType::type, content)
 
+#define STARTTIME() 
+
 }

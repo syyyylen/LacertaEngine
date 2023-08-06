@@ -67,33 +67,33 @@ void LacertaEditor::Start()
     Mesh* teaPotMesh = ResourceManager::Get()->CreateResource<Mesh>(L"Assets/Meshes/teapot.obj");
 
     float rdmDist = 20.0f;
-    float maxScaleMult = 4.0f;
-    for(int i = 0; i < 50; i++)
+    float maxScaleMult = 6.0f;
+    for(int i = 0; i < 25; i++)
     {
         GameObject* teapotGo = m_activeScene->CreateGameObject("TeapotGo");
         
         MeshComponent& meshComp = teapotGo->AddComponent<MeshComponent>();
         meshComp.SetMesh(teaPotMesh);
-        meshComp.VertexShaderPath = L"../LacertaEngine/Source/Rendering/Shaders/MeshVertex.hlsl"; // TODO material system
-        meshComp.PixelShaderPath = L"../LacertaEngine/Source/Rendering/Shaders/MeshPixelShader.hlsl"; // TODO material system
+        meshComp.m_shaderName = "MeshShader";
 
         TransformComponent& tf = teapotGo->GetComponent<TransformComponent>();
         tf.SetPosition(Vector3(Random::RandomFloatRange(-rdmDist, rdmDist),
                                         Random::RandomFloatRange(-rdmDist, rdmDist),
                                         Random::RandomFloatRange(-rdmDist, rdmDist)));
 
-        float rdmScale = Random::RandomFloatRange(0.5f, maxScaleMult);
+        float rdmScale = Random::RandomFloatRange(0.6f, maxScaleMult);
         tf.SetScale(Vector3(rdmScale, rdmScale, rdmScale));
         
         m_sceneGameObjects.push_back(teapotGo);
     }
 
-    // ----------------------------- Debug Scene Draw Objects -----------------------
-
+    /*
     auto tfMeshesGroup = m_activeScene->m_registry.group<TransformComponent>(entt::get<MeshComponent>);
     for(auto go : tfMeshesGroup)
     {
         auto[transform, meshComponent] = tfMeshesGroup.get<TransformComponent, MeshComponent>(go);
+
+        // Adding DC
         Mesh* mesh = meshComponent.GetMesh();
         std::vector<VertexMesh> meshVertData = mesh->GetVertices();
         std::vector<unsigned int> meshIndices = mesh->GetIndices();
@@ -101,15 +101,15 @@ void LacertaEditor::Start()
         dcData.Data = &meshVertData[0];
         dcData.Size = meshVertData.size();
         dcData.Type = DrawcallType::dcMesh;
-        dcData.VertexShaderPath = meshComponent.VertexShaderPath;
-        dcData.PixelShaderPath = meshComponent.PixelShaderPath;
+        dcData.ShaderName = meshComponent.m_shaderName;
         dcData.IndexesData = &meshIndices[0];
         dcData.IndexesSize = meshIndices.size();
         dcData.LocalMatrix = transform.GetTransformMatrix();
 
         GraphicsEngine::Get()->AddDrawcall(&dcData);
     }
-    
+    */
+
     // --------------------------- Camera Default Position ---------------------
 
     m_sceneCamera.SetTranslation(Vector3(0.0f, 0.0f, -2.5f));
@@ -141,6 +141,35 @@ void LacertaEditor::Update()
     unsigned long oldDeltaTime = m_previousTickCount;
     m_previousTickCount = GetTickCount();
     m_deltaTime = oldDeltaTime ? (m_previousTickCount - oldDeltaTime) / 1000.0f : 0;
+
+    // ----------------------------- Debug Scene Draw Objects -----------------------
+
+    GraphicsEngine::Get()->ClearDrawcalls();
+
+    auto tfMeshesGroup = m_activeScene->m_registry.group<TransformComponent>(entt::get<MeshComponent>);
+    for(auto go : tfMeshesGroup)
+    {
+        auto[transform, meshComponent] = tfMeshesGroup.get<TransformComponent, MeshComponent>(go);
+
+        // Performing some scale modifications
+        float scaleMultiplier = 1.0f;
+        transform.SetScale(Vector3(scaleMultiplier, scaleMultiplier, scaleMultiplier));
+
+        // Adding DC
+        Mesh* mesh = meshComponent.GetMesh();
+        std::vector<VertexMesh> meshVertData = mesh->GetVertices();
+        std::vector<unsigned int> meshIndices = mesh->GetIndices();
+        DrawcallData dcData = {};
+        dcData.Data = &meshVertData[0];
+        dcData.Size = meshVertData.size();
+        dcData.Type = DrawcallType::dcMesh;
+        dcData.ShaderName = meshComponent.m_shaderName;
+        dcData.IndexesData = &meshIndices[0];
+        dcData.IndexesSize = meshIndices.size();
+        dcData.LocalMatrix = transform.GetTransformMatrix();
+
+        GraphicsEngine::Get()->AddDrawcall(&dcData);
+    }
 
     // ----------------------------- Rendering Update  --------------------------
 

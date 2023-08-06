@@ -24,6 +24,7 @@ public:
     
     void InitializeRenderer(int* context, RendererType type, int width, int height, int depth, int targetRefreshRate);
     void AddDrawcall(DrawcallData* dcData);
+    void ClearDrawcalls();
     void Render();
     void Resize(unsigned width, unsigned height);
     void PresentSwapChain();

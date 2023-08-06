@@ -19,8 +19,7 @@ private:
 
 public:
     // TODO add a Material class that stores Shader / Data (which differs in every mat instance)
-    const wchar_t* VertexShaderPath;
-    const wchar_t* PixelShaderPath;
+    std::string m_shaderName;
 };
     
 }

@@ -1,7 +1,10 @@
 ﻿#include "WinDX11Renderer.h"
 
+#include <d3dcompiler.h>
+
 #include "WinDX11Drawcall.h"
 #include "WinDX11RenderTarget.h"
+#include "WinDX11Shader.h"
 #include "../Drawcall.h"
 #include "../../Logger/Logger.h"
 
@@ -132,6 +135,59 @@ void WinDX11Renderer::CreateRenderTarget(int width, int height, int depth)
 
     m_renderTarget = new WinDX11RenderTarget();
     m_renderTarget->Initialize(this, width, height, depth);
+}
+
+void WinDX11Renderer::LoadShaders()
+{
+    //TODO load procedurally all the shaders instead of hard coding this compilation
+
+    LOG(Debug, "Loading Shaders");
+    
+    WinDX11Shader* MeshShader = new WinDX11Shader();
+
+    // Compiling & Creating Vertex Shader
+    ID3DBlob* vertexErrorBlob = nullptr;
+    ID3DBlob* vertexBlob;
+    
+    HRESULT hr = D3DCompileFromFile(L"../LacertaEngine/Source/Rendering/Shaders/MeshVertex.hlsl", nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, "main", "vs_5_0", 0, 0, &vertexBlob, &vertexErrorBlob);
+    if(FAILED(hr))
+    {
+        LOG(Error, "WinDX11Shader : Failed vertex shader compilation !");
+        std::string errorMsg = std::system_category().message(hr);
+        LOG(Error, errorMsg);
+
+        if (vertexErrorBlob) 
+        {
+            std::string errorMessage(static_cast<const char*>(vertexErrorBlob->GetBufferPointer()), vertexErrorBlob->GetBufferSize());
+            LOG(Error, errorMessage);
+            vertexErrorBlob->Release();
+        }
+    }
+
+    MeshShader->SetVSData(vertexBlob->GetBufferPointer(), vertexBlob->GetBufferSize());
+
+    // Compiling & Creating Pixel Shader
+    ID3DBlob* pixelErrorBlob = nullptr;
+    ID3DBlob* pixelBlob;
+    
+    hr = D3DCompileFromFile(L"../LacertaEngine/Source/Rendering/Shaders/MeshPixelShader.hlsl", nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, "main", "ps_5_0", 0, 0, &pixelBlob, &pixelErrorBlob);
+    if(FAILED(hr))
+    {
+        LOG(Error, "WinDX11Shader : Failed pixel shader compilation !");
+        std::string errorMsg = std::system_category().message(hr);
+        LOG(Error, errorMsg);
+
+        if (vertexErrorBlob) 
+        {
+            std::string errorMessage(static_cast<const char*>(pixelErrorBlob->GetBufferPointer()), pixelErrorBlob->GetBufferSize());
+            LOG(Error, errorMessage);
+            pixelErrorBlob->Release();
+        }
+    }
+
+    MeshShader->SetPSData(pixelBlob->GetBufferPointer(), pixelBlob->GetBufferSize());
+
+    m_shaders.emplace("MeshShader", MeshShader);
 }
 
 void WinDX11Renderer::AddDrawcall(DrawcallData* dcData)
