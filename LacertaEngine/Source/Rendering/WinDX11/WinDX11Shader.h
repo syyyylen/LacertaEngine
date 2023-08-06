@@ -19,6 +19,9 @@ public:
 
     unsigned int GetVerticesStride() { return m_vertexLayoutStride; }
 
+protected:
+    bool m_loaded;
+    
 private:
     ID3D11VertexShader* m_vertexShader;
     ID3D11PixelShader* m_fragmentShader;

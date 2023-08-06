@@ -28,7 +28,7 @@ void WinDX11Drawcall::Setup(Renderer* renderer, DrawcallData* dcData)
         LOG(Error, "Invalid Shader Name, not contained in the current renderer");
         return;
     }
-
+    
     m_shader = renderer->GetShader(dcData->ShaderName);
     m_shader->Load(renderer, dcData->Type);
 }

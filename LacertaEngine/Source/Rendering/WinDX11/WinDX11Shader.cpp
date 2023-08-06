@@ -42,6 +42,9 @@ WinDX11Shader::~WinDX11Shader()
 
 void WinDX11Shader::Load(Renderer* renderer, DrawcallType Type)
 {
+    if(m_loaded)
+        return;
+
     ID3D11Device* localDev = (ID3D11Device*)renderer->GetDriver();
     HRESULT hr = localDev->CreateVertexShader(m_vertexShaderByteCode, m_vertexByteCodeSize, nullptr, &m_vertexShader);
     if(FAILED(hr))
@@ -96,6 +99,8 @@ void WinDX11Shader::Load(Renderer* renderer, DrawcallType Type)
         LOG(Error, "WinDX11Shader : Failed input layout creation !");
         throw std::exception("Create Input Layout failed");
     }
+
+    m_loaded = true;
 }
 
 void WinDX11Shader::PreparePass(Renderer* renderer, Drawcall* dc)
