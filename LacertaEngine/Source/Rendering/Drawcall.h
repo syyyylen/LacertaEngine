@@ -14,12 +14,12 @@ enum DrawcallType
 
 struct DrawcallData
 {
-    void* Data;
-    unsigned long Size;
+    void* VBO;
+    unsigned long VerticesCount;
+    void* IBO;
+    unsigned long IndicesCount;
     std::string ShaderName;
     DrawcallType Type;
-    void* IndexesData;
-    unsigned long IndexesSize;
     Matrix4x4 LocalMatrix;
 };
 

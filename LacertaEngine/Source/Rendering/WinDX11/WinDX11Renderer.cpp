@@ -7,6 +7,7 @@
 #include "WinDX11Shader.h"
 #include "../Drawcall.h"
 #include "../../Logger/Logger.h"
+#include "../../RessourcesManager/Mesh/Mesh.h"
 
 namespace LacertaEngine
 {
@@ -193,15 +194,54 @@ void WinDX11Renderer::LoadShaders()
 void WinDX11Renderer::AddDrawcall(DrawcallData* dcData)
 {
     WinDX11Drawcall* dc = new WinDX11Drawcall();
-    
     dc->Setup(this, dcData);
-
-    dc->CreateVBO(this, dcData->Data, dcData->Size);
-
-    if(dcData->Type == DrawcallType::dcMesh)
-        dc->CreateIBO(this, dcData->IndexesData, dcData->IndexesSize);
-
+    
     m_drawcalls.push_back(dc);
+}
+
+void WinDX11Renderer::CreateBuffers(Mesh* mesh, std::vector<VertexMesh> vertices, std::vector<unsigned> indices)
+{
+    unsigned long dataLength = vertices.size() * (unsigned long)sizeof(VertexMesh);
+
+    D3D11_BUFFER_DESC vboDesc = {};
+    vboDesc.Usage = D3D11_USAGE_DEFAULT;
+    vboDesc.ByteWidth = dataLength;
+    vboDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+    vboDesc.CPUAccessFlags = 0;
+    vboDesc.MiscFlags = 0;
+
+    D3D11_SUBRESOURCE_DATA vboInitData;
+    vboInitData.pSysMem = &vertices[0];
+
+    ID3D11Buffer* vbo;
+    HRESULT hr = m_device->CreateBuffer(&vboDesc, &vboInitData, &vbo);
+
+    if (FAILED(hr))
+    {
+        LOG(Error, "WinDX11Drawcall : VBO object creation failed");
+        throw std::exception("VBO object creation failed");
+    }
+
+    D3D11_BUFFER_DESC iboDesc = {};
+    iboDesc.Usage = D3D11_USAGE_DEFAULT;
+    iboDesc.ByteWidth = 4 * indices.size();
+    iboDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
+    iboDesc.CPUAccessFlags = 0;
+    iboDesc.MiscFlags = 0;
+
+    D3D11_SUBRESOURCE_DATA iboInitData;
+    iboInitData.pSysMem = &indices[0];
+
+    ID3D11Buffer* ibo;
+    hr = m_device->CreateBuffer(&iboDesc, &iboInitData, &ibo);
+
+    if (FAILED(hr))
+    {
+        LOG(Error, "WinDX11Drawcall : IBO object creation failed");
+        throw std::exception("IBO object creation failed");
+    }
+
+    mesh->SetBuffersData(vbo, ibo);
 }
 
 void WinDX11Renderer::RenderFrame()

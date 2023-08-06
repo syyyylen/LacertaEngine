@@ -87,29 +87,6 @@ void LacertaEditor::Start()
         m_sceneGameObjects.push_back(teapotGo);
     }
 
-    /*
-    auto tfMeshesGroup = m_activeScene->m_registry.group<TransformComponent>(entt::get<MeshComponent>);
-    for(auto go : tfMeshesGroup)
-    {
-        auto[transform, meshComponent] = tfMeshesGroup.get<TransformComponent, MeshComponent>(go);
-
-        // Adding DC
-        Mesh* mesh = meshComponent.GetMesh();
-        std::vector<VertexMesh> meshVertData = mesh->GetVertices();
-        std::vector<unsigned int> meshIndices = mesh->GetIndices();
-        DrawcallData dcData = {};
-        dcData.Data = &meshVertData[0];
-        dcData.Size = meshVertData.size();
-        dcData.Type = DrawcallType::dcMesh;
-        dcData.ShaderName = meshComponent.m_shaderName;
-        dcData.IndexesData = &meshIndices[0];
-        dcData.IndexesSize = meshIndices.size();
-        dcData.LocalMatrix = transform.GetTransformMatrix();
-
-        GraphicsEngine::Get()->AddDrawcall(&dcData);
-    }
-    */
-
     // --------------------------- Camera Default Position ---------------------
 
     m_sceneCamera.SetTranslation(Vector3(0.0f, 0.0f, -2.5f));
@@ -157,15 +134,13 @@ void LacertaEditor::Update()
 
         // Adding DC
         Mesh* mesh = meshComponent.GetMesh();
-        std::vector<VertexMesh> meshVertData = mesh->GetVertices();
-        std::vector<unsigned int> meshIndices = mesh->GetIndices();
         DrawcallData dcData = {};
-        dcData.Data = &meshVertData[0];
-        dcData.Size = meshVertData.size();
+        dcData.VBO = mesh->GetVBO();
+        dcData.VerticesCount = mesh->GetVerticesSize();
+        dcData.IBO = mesh->GetIBO();
+        dcData.IndicesCount = mesh->GetIndicesSize();
         dcData.Type = DrawcallType::dcMesh;
         dcData.ShaderName = meshComponent.m_shaderName;
-        dcData.IndexesData = &meshIndices[0];
-        dcData.IndexesSize = meshIndices.size();
         dcData.LocalMatrix = transform.GetTransformMatrix();
 
         GraphicsEngine::Get()->AddDrawcall(&dcData);

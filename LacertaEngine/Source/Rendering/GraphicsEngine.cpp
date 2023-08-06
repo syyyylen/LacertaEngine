@@ -94,6 +94,12 @@ void GraphicsEngine::UpdateMeshConstants(void* buffer)
         m_renderer->UpdateMeshConstantBuffer(buffer);
 }
 
+void GraphicsEngine::CreateBuffers(Mesh* mesh, std::vector<VertexMesh> vertices, std::vector<unsigned> indices)
+{
+    if(m_renderer)
+        m_renderer->CreateBuffers(mesh, vertices, indices);
+}
+
 void GraphicsEngine::Shutdown()
 {
     LOG(Debug, "GraphicsEngine : Shutdown");
