@@ -19,7 +19,7 @@ static float s_inputDownScalar = 0.03f;
 static float s_moveOffset = 10.0f;
 static float s_moveFrequency = 0.6f;
 static float s_scaleFrequency = 0.1f;
-static float s_maxScaleMultiplier = 5.0f;
+static float s_maxScaleMultiplier = 10.0f;
 
 LacertaEditor::LacertaEditor()
 {
@@ -67,7 +67,8 @@ void LacertaEditor::Start()
     m_activeScene = new Scene();
 
     // ----------------------------- Debug GO Creation -----------------------
-    
+
+    Mesh* statueMesh = ResourceManager::Get()->CreateResource<Mesh>(L"Assets/Meshes/statue.obj");
     Mesh* teaPotMesh = ResourceManager::Get()->CreateResource<Mesh>(L"Assets/Meshes/teapot.obj");
 
     float rdmDist = 30.0f;
@@ -79,7 +80,7 @@ void LacertaEditor::Start()
                                                                                             Random::RandomFloatRange(-rdmDist, rdmDist)));
         
         MeshComponent& meshComp = teapotGo->AddComponent<MeshComponent>();
-        meshComp.SetMesh(teaPotMesh);
+        i % 2 == 0 ? meshComp.SetMesh(teaPotMesh) : meshComp.SetMesh(statueMesh);
         meshComp.m_shaderName = "MeshShader";
 
         m_sceneGameObjects.push_back(teapotGo);
@@ -217,7 +218,7 @@ void LacertaEditor::Update()
         ImGui::SliderFloat("offset", &s_moveOffset, -20.0f, 20.0f);   
         ImGui::SliderFloat("move frequency", &s_moveFrequency, 0.01f, 1.0f);
         ImGui::SliderFloat("scale frequency", &s_scaleFrequency, 0.01f, 1.0f);
-        ImGui::SliderFloat("max scale mult", &s_maxScaleMultiplier, 1.0f, 20.0f);
+        ImGui::SliderFloat("max scale mult", &s_maxScaleMultiplier, 1.0f, 35.0f);
         ImGui::End();
     }
 
