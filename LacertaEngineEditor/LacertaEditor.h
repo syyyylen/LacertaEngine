@@ -42,7 +42,8 @@ private:
     unsigned long m_previousTickCount;
     float m_deltaTime;
 
-    // TODO create a Scene class which will store the GO's
+    Scene* m_activeScene;
+
     std::list<GameObject*> m_sceneGameObjects;
 
     // TODO handle scene Camera

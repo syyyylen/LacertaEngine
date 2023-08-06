@@ -1,7 +1,7 @@
 ﻿#pragma once
-#include "Component.h"
+#include "Entt/entt.hpp"
+#include "Scene.h"
 #include "../Core.h"
-#include "Transform.h"
 
 namespace LacertaEngine
 {
@@ -10,21 +10,31 @@ class LACERTAENGINE_API GameObject
 {
 public:
     GameObject();
+    GameObject(Scene* scene, entt::entity entityHandle, std::string name);
     ~GameObject();
 
-    void SetPosition(Vector3 position);
-    void SetScale(Vector3 scale);
-    // TODO SetRotation
+    template<typename T, typename... Args>
+    T& AddComponent(Args&&... args)
+    {
+        return m_scene->m_registry.emplace<T>(m_entityHandle, std::forward<Args>(args)...);
+    }
 
-    Transform* GetTransform() { return m_transform; }
+    template<typename T>
+    T& GetComponent()
+    {
+        return m_scene->m_registry.get<T>(m_entityHandle);
+    }
 
-    void AddComponent(Component* comp);
-    
-    std::list<Component*> GetComponentsList() { return m_components; }
+    template<typename T>
+    bool HasComponent()
+    {
+        return m_scene->m_registry.all_of<T>(m_entityHandle);
+    }
     
 private:
-    Transform* m_transform;
-    std::list<Component*> m_components;
+    entt::entity m_entityHandle;
+    std::string m_name;
+    Scene* m_scene;
 };
     
 }

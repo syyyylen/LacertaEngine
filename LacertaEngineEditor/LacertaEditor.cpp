@@ -58,6 +58,10 @@ void LacertaEditor::Start()
     HWND hwnd = m_editorWindow->GetHWND();
     GraphicsEngine::Get()->InitializeRenderer((int*)hwnd, RendererType::RENDERER_WIN_DX11, width, height, 24, 60);
 
+    // ---------------------------- Debug Scene Creation --------------------
+
+    m_activeScene = new Scene();
+
     // ----------------------------- Debug GO Creation -----------------------
     
     Mesh* teaPotMesh = ResourceManager::Get()->CreateResource<Mesh>(L"Assets/Meshes/teapot.obj");
@@ -66,58 +70,45 @@ void LacertaEditor::Start()
     float maxScaleMult = 4.0f;
     for(int i = 0; i < 50; i++)
     {
-        GameObject* teapotGo = new GameObject(); // Every single scene obj heap allocated just feels bad
-        MeshComponent* teapotMeshComp = new MeshComponent(); // Every single component heap allocated just feels bad
+        GameObject* teapotGo = m_activeScene->CreateGameObject("TeapotGo");
+        
+        MeshComponent& meshComp = teapotGo->AddComponent<MeshComponent>();
+        meshComp.SetMesh(teaPotMesh);
+        meshComp.VertexShaderPath = L"../LacertaEngine/Source/Rendering/Shaders/MeshVertex.hlsl"; // TODO material system
+        meshComp.PixelShaderPath = L"../LacertaEngine/Source/Rendering/Shaders/MeshPixelShader.hlsl"; // TODO material system
 
-        teapotMeshComp->SetMesh(teaPotMesh);
-        teapotMeshComp->VertexShaderPath = L"../LacertaEngine/Source/Rendering/Shaders/MeshVertex.hlsl"; // TODO material system
-        teapotMeshComp->PixelShaderPath = L"../LacertaEngine/Source/Rendering/Shaders/MeshPixelShader.hlsl"; // TODO material system
-
-        teapotGo->AddComponent(teapotMeshComp);
-
-        teapotGo->SetPosition(Vector3(Random::RandomFloatRange(-rdmDist, rdmDist),
+        TransformComponent& tf = teapotGo->GetComponent<TransformComponent>();
+        tf.SetPosition(Vector3(Random::RandomFloatRange(-rdmDist, rdmDist),
                                         Random::RandomFloatRange(-rdmDist, rdmDist),
                                         Random::RandomFloatRange(-rdmDist, rdmDist)));
 
         float rdmScale = Random::RandomFloatRange(0.5f, maxScaleMult);
-        teapotGo->SetScale(Vector3(rdmScale, rdmScale, rdmScale));
+        tf.SetScale(Vector3(rdmScale, rdmScale, rdmScale));
         
         m_sceneGameObjects.push_back(teapotGo);
     }
 
     // ----------------------------- Debug Scene Draw Objects -----------------------
 
-    // TODO move this into a proper Scene system, and into the Update function
-    // TODO store the Components continuously in memory and let the GO become an ID to retrieve components
-    for(auto go : m_sceneGameObjects)
+    auto tfMeshesGroup = m_activeScene->m_registry.group<TransformComponent>(entt::get<MeshComponent>);
+    for(auto go : tfMeshesGroup)
     {
-        std::list<Component*> components = go->GetComponentsList();
-        for(auto comp : components)
-        {
-            MeshComponent* meshComp = static_cast<MeshComponent*>(comp);
-            if(meshComp)
-            {
-                Mesh* mesh = meshComp->GetMesh();
-                if(mesh)
-                {
-                    std::vector<VertexMesh> meshVertData = mesh->GetVertices();
-                    std::vector<unsigned int> meshIndices = mesh->GetIndices();
-                    DrawcallData dcData = {};
-                    dcData.Data = &meshVertData[0];
-                    dcData.Size = meshVertData.size();
-                    dcData.Type = DrawcallType::dcMesh;
-                    dcData.VertexShaderPath = meshComp->VertexShaderPath;
-                    dcData.PixelShaderPath = meshComp->PixelShaderPath;
-                    dcData.IndexesData = &meshIndices[0];
-                    dcData.IndexesSize = meshIndices.size();
-                    dcData.LocalMatrix = go->GetTransform()->GetTransformMatrix();
+        auto[transform, meshComponent] = tfMeshesGroup.get<TransformComponent, MeshComponent>(go);
+        Mesh* mesh = meshComponent.GetMesh();
+        std::vector<VertexMesh> meshVertData = mesh->GetVertices();
+        std::vector<unsigned int> meshIndices = mesh->GetIndices();
+        DrawcallData dcData = {};
+        dcData.Data = &meshVertData[0];
+        dcData.Size = meshVertData.size();
+        dcData.Type = DrawcallType::dcMesh;
+        dcData.VertexShaderPath = meshComponent.VertexShaderPath;
+        dcData.PixelShaderPath = meshComponent.PixelShaderPath;
+        dcData.IndexesData = &meshIndices[0];
+        dcData.IndexesSize = meshIndices.size();
+        dcData.LocalMatrix = transform.GetTransformMatrix();
 
-                    GraphicsEngine::Get()->AddDrawcall(&dcData);
-                }
-            }
-        }
+        GraphicsEngine::Get()->AddDrawcall(&dcData);
     }
-    // TODO move this into a proper Scene system, and into the Update function
     
     // --------------------------- Camera Default Position ---------------------
 

@@ -1,15 +1,16 @@
 ﻿#pragma once
-#include "../Maths/Maths.h"
-#include "../Core.h"
+#include "../../Maths/Maths.h"
+#include "../../Core.h"
+#include "../Component.h"
 
 namespace LacertaEngine
 {
     
-class LACERTAENGINE_API Transform
+class LACERTAENGINE_API TransformComponent : public Component
 {
 public:
-    Transform();
-    ~Transform();
+    TransformComponent();
+    ~TransformComponent();
 
     void SetPosition(Vector3 position);
     void SetScale(Vector3 scale);

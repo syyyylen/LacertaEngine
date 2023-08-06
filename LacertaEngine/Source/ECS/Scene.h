@@ -4,14 +4,18 @@
 
 namespace LacertaEngine
 {
-    
+
+class GameObject;
+
 class LACERTAENGINE_API Scene
 {
 public:
     Scene();
     ~Scene();
 
-private:
+    GameObject* CreateGameObject(std::string name);
+
+public:
     entt::registry m_registry;
 };
     
