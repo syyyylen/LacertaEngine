@@ -44,8 +44,6 @@ private:
 
     Scene* m_activeScene;
 
-    std::list<GameObject*> m_sceneGameObjects;
-
     // TODO handle scene Camera
     bool m_isMouseLocked = true;
     Matrix4x4 m_sceneCamera;

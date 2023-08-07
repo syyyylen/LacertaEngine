@@ -15,11 +15,7 @@ namespace LacertaEngineEditor
 static float s_mouseSensivity = 3.0;
 static float s_moveSpeed = 6.5f;
 static float s_inputDownScalar = 0.03f;
-
-static float s_moveOffset = 10.0f;
-static float s_moveFrequency = 0.6f;
-static float s_scaleFrequency = 0.1f;
-static float s_maxScaleMultiplier = 10.0f;
+static int item_current_idx = 0; 
 
 LacertaEditor::LacertaEditor()
 {
@@ -71,19 +67,19 @@ void LacertaEditor::Start()
     Mesh* statueMesh = ResourceManager::Get()->CreateResource<Mesh>(L"Assets/Meshes/statue.obj");
     Mesh* teaPotMesh = ResourceManager::Get()->CreateResource<Mesh>(L"Assets/Meshes/teapot.obj");
 
-    float rdmDist = 30.0f;
-    Vector3 offset = Vector3(40.0f, 0.0f, 0.0f);
+    float rdmDist = 10.0f;
+    Vector3 offset = Vector3(20.0f, 0.0f, 0.0f);
     for(int i = 0; i < 60; i++)
     {
-        GameObject* teapotGo = m_activeScene->CreateGameObject("TeapotGo", offset + Vector3(Random::RandomFloatRange(-rdmDist, rdmDist),
+        std::string name;
+        i % 2 == 0 ? name = "Teapot" : name = "Statue";
+        GameObject* teapotGo = m_activeScene->CreateGameObject(name, offset + Vector3(Random::RandomFloatRange(-rdmDist, rdmDist),
                                                                                             Random::RandomFloatRange(-rdmDist, rdmDist),
                                                                                             Random::RandomFloatRange(-rdmDist, rdmDist)));
         
         MeshComponent& meshComp = teapotGo->AddComponent<MeshComponent>();
         i % 2 == 0 ? meshComp.SetMesh(teaPotMesh) : meshComp.SetMesh(statueMesh);
         meshComp.m_shaderName = "MeshShader";
-
-        m_sceneGameObjects.push_back(teapotGo);
     }
 
     // --------------------------- Camera Default Position ---------------------
@@ -98,7 +94,8 @@ void LacertaEditor::Start()
     ImGuiIO& io = ImGui::GetIO(); (void)io;
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
-
+    io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+    
     // Setup Dear ImGui style
     ImGui::StyleColorsDark();
 
@@ -122,20 +119,11 @@ void LacertaEditor::Update()
 
     GraphicsEngine::Get()->ClearDrawcalls();
 
-    float f = 0.5f + 0.5f * std::sin(2 * 3.14 * s_scaleFrequency * m_globalTimer->Elapsed());
-    float f2 = 0.5f + 0.5f * std::sin(2 * 3.14 * s_moveFrequency * m_globalTimer->Elapsed());
-    float scaleMultiplier = MathUtilities::Remap(f, 0.0f, 1.0f, 1.0f, s_maxScaleMultiplier);
-
     auto tfMeshesGroup = m_activeScene->m_registry.group<TransformComponent>(entt::get<MeshComponent>);
     for(auto go : tfMeshesGroup)
     {
         auto[transform, meshComponent] = tfMeshesGroup.get<TransformComponent, MeshComponent>(go);
 
-        // Performing some transformations
-        transform.SetScale(Vector3(scaleMultiplier, scaleMultiplier, scaleMultiplier));
-        Vector3 destination = Vector3(transform.GetStartPosition().X, transform.GetStartPosition().Y + s_moveOffset, transform.GetStartPosition().Z);
-        transform.SetPosition(Vector3::Lerp(transform.GetStartPosition(), destination, f2));
-        
         // Adding DC
         Mesh* mesh = meshComponent.GetMesh();
         DrawcallData dcData = {};
@@ -199,8 +187,28 @@ void LacertaEditor::Update()
     ImGui_ImplDX11_NewFrame();
     ImGui_ImplWin32_NewFrame();
     ImGui::NewFrame();
-    
-    { // My imgui test window
+
+    {
+        ImGui::Begin("SceneHierarchy");
+
+        if (ImGui::BeginListBox("listbox 1"))
+        {
+            for (int n = 0; n < (int)m_activeScene->m_gameObjects.size(); n++)
+            {
+                const bool is_selected = (item_current_idx == n);
+                if (ImGui::Selectable(m_activeScene->m_gameObjects[n]->GetName().data(), is_selected))
+                    item_current_idx = n;
+
+                if (is_selected)
+                    ImGui::SetItemDefaultFocus();
+            }
+            ImGui::EndListBox();
+        }
+        
+        ImGui::End();
+    }
+
+    { 
         ImGui::Begin("FrameRate");                  
         ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
         ImGui::End();
@@ -210,15 +218,6 @@ void LacertaEditor::Update()
         ImGui::Begin("Debugging");
         ImGui::SliderFloat("Sensivity", &s_mouseSensivity, 0.1f, 10.0f);   
         ImGui::SliderFloat("MoveSpeed", &s_moveSpeed, 0.1f, 25.0f);
-        ImGui::End();
-    }
-
-    {
-        ImGui::Begin("C'est n'imp");
-        ImGui::SliderFloat("offset", &s_moveOffset, -20.0f, 20.0f);   
-        ImGui::SliderFloat("move frequency", &s_moveFrequency, 0.01f, 1.0f);
-        ImGui::SliderFloat("scale frequency", &s_scaleFrequency, 0.01f, 1.0f);
-        ImGui::SliderFloat("max scale mult", &s_maxScaleMultiplier, 1.0f, 35.0f);
         ImGui::End();
     }
 

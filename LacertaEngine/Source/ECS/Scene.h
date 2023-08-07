@@ -18,6 +18,7 @@ public:
 
 public:
     entt::registry m_registry;
+    std::vector<GameObject*> m_gameObjects;
 };
     
 }
