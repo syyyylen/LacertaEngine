@@ -21,6 +21,8 @@ public:
     void Update();
     void Quit();
 
+    void Close();
+    
     bool IsRunning();
 
     EditorWindow* GetEditorWindow();
