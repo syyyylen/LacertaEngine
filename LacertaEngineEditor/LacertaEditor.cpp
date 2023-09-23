@@ -66,6 +66,7 @@ void LacertaEditor::Start()
 
     Mesh* statueMesh = ResourceManager::Get()->CreateResource<Mesh>(L"Assets/Meshes/statue.obj");
     Mesh* teaPotMesh = ResourceManager::Get()->CreateResource<Mesh>(L"Assets/Meshes/teapot.obj");
+    Texture* sandTexture = ResourceManager::Get()->CreateResource<Texture>(L"Assets/Textures/sand.png"); // TODO subclass implem not called here, obviously
 
     float rdmDist = 10.0f;
     Vector3 offset = Vector3(20.0f, 0.0f, 0.0f);
@@ -79,6 +80,7 @@ void LacertaEditor::Start()
         
         MeshComponent& meshComp = teapotGo->AddComponent<MeshComponent>();
         i % 2 == 0 ? meshComp.SetMesh(teaPotMesh) : meshComp.SetMesh(statueMesh);
+        meshComp.SetTexture(sandTexture);
         meshComp.m_shaderName = "MeshShader";
     }
 
