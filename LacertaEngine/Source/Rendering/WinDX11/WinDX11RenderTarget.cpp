@@ -32,26 +32,27 @@ void WinDX11RenderTarget::SetActive(Renderer* renderer)
 void WinDX11RenderTarget::ReloadBuffers(Renderer* renderer, unsigned width, unsigned height)
 {
     // ------------------------ Rendering full scene to the backbuffer -----------------------------
+
     WinDX11Renderer* localRenderer = (WinDX11Renderer*)renderer;
     ID3D11Device* device = (ID3D11Device*)renderer->GetDriver();
     ID3D11Texture2D* buffer = NULL;
-
+    
     HRESULT hr = localRenderer->GetDXGISwapChain()->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)&buffer);
     if(FAILED(hr))
     {
         LOG(Error, "Failed Backbuffer creation");
         throw std::exception("Failed Backbuffer creation");
     }
-
+    
     hr = device->CreateRenderTargetView(buffer, nullptr, &m_renderTarget);
     if(FAILED(hr))
     {
         LOG(Error, "Failed Render Target creation");
         throw std::exception("Failed Render Target creation");
     }
-
+    
     buffer->Release();
-
+    
     // Depth buffer 
     D3D11_TEXTURE2D_DESC tex_desc = {};
     tex_desc.Width = width;
@@ -65,37 +66,30 @@ void WinDX11RenderTarget::ReloadBuffers(Renderer* renderer, unsigned width, unsi
     tex_desc.MiscFlags = 0;
     tex_desc.ArraySize = 1;
     tex_desc.CPUAccessFlags = 0;
-
+    
     hr = device->CreateTexture2D(&tex_desc, nullptr, &buffer);
     if(FAILED(hr))
     {
         LOG(Error, "Failed depth buffer creation");
         throw std::exception("Failed depth buffer creation");
     }
-
+    
     hr = device->CreateDepthStencilView(buffer, NULL, &m_depthStencil);
     if(FAILED(hr))
     {
         LOG(Error, "Failed depth buffer creation");
         throw std::exception("Failed depth buffer creation");
     }
-
+    
     buffer->Release();
 
+    // TODO all this code will be used in the second render target (scene render target texture) 
     // -------------------------------------- Rendering the scene to a texture --------------------------------------------------
     
     // WinDX11Renderer* localRenderer = (WinDX11Renderer*)renderer;
     // ID3D11Device* device = (ID3D11Device*)renderer->GetDriver();
     // HRESULT hr;
     // ID3D11Texture2D* BackBuffer;
-    //
-    // // Backbuffer
-    // hr = localRenderer->GetDXGISwapChain()->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)&BackBuffer);
-    // if(FAILED(hr))
-    // {
-    //     LOG(Error, "Failed Backbuffer creation");
-    //     throw std::exception("Failed Backbuffer creation");
-    // }
     //
     // // Render scene to texture
     // D3D11_TEXTURE2D_DESC textureDesc = {};
@@ -131,6 +125,14 @@ void WinDX11RenderTarget::ReloadBuffers(Renderer* renderer, unsigned width, unsi
     //     LOG(Error, errorMsg);
     //     LOG(Error, "Failed Scene texture Shader Res View creation");
     //     throw std::exception("Failed Scene texture Shader Res View creation");
+    // }
+    //
+    // // Backbuffer
+    // hr = localRenderer->GetDXGISwapChain()->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)&m_sceneTexture);
+    // if(FAILED(hr))
+    // {
+    //     LOG(Error, "Failed Backbuffer creation");
+    //     throw std::exception("Failed Backbuffer creation");
     // }
     //
     // // RTV

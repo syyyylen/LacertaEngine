@@ -188,18 +188,13 @@ void LacertaEditor::Update()
 
     // ----------------------------- UI Update  --------------------------
 
+    // TODO when we reach this point, set the render target to the fullscreen render target 
+
     // Start the Dear ImGui frame
     ImGui_ImplDX11_NewFrame();
     ImGui_ImplWin32_NewFrame();
     ImGui::NewFrame();
 
-    // Render the scene texture here
-    // {
-    //     ImGui::Begin("DirectX11 Texture Test");
-    //     ImGui::Image((void*)Dx11RenderTarget->m_sceneTextureView, ImVec2(256, 256));
-    //     ImGui::End();
-    // }
-    
     // Dockspace wip
     static bool dockspaceOpen = false; // TODO make a viewport ImGui window and render scene as texture inside it
     if(dockspaceOpen)
@@ -208,8 +203,6 @@ void LacertaEditor::Update()
         static bool opt_padding = false;
         static ImGuiDockNodeFlags dockspace_flags = ImGuiDockNodeFlags_None;
         
-        // We are using the ImGuiWindowFlags_NoDocking flag to make the parent window not dockable into,
-        // because it would be confusing to have two docking targets within each others.
         ImGuiWindowFlags window_flags = ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDocking;
         if (opt_fullscreen)
         {
@@ -261,6 +254,13 @@ void LacertaEditor::Update()
 
             ImGui::EndMenuBar();
         }
+    }
+
+    // Render the scene texture here
+    {
+        ImGui::Begin("DirectX11 Texture Test");
+        ImGui::Image((void*)Dx11RenderTarget->m_sceneTextureView, ImVec2(256, 256));
+        ImGui::End();
     }
     
     {

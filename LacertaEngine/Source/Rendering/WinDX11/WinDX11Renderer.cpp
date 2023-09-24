@@ -246,7 +246,7 @@ void WinDX11Renderer::CreateBuffers(Mesh* mesh, std::vector<VertexMesh> vertices
 
 void WinDX11Renderer::RenderFrame()
 {
-    m_renderTarget->SetActive(this);
+    m_renderTarget->SetActive(this); // TODO set active the scene render target texture and dc into it
     m_renderTarget->Clear(this, Vector4(0.0f, 0.0f, 0.0f, 1.0f));
 
     for(auto dc : m_drawcalls)

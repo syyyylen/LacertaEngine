@@ -39,7 +39,7 @@ public:
     Shader* GetShader(std::string shaderName);
 
 protected:
-    RenderTarget* m_renderTarget;
+    RenderTarget* m_renderTarget; // TODO renderer must store multiple render targets (fullwindow, scene...)
     std::list<Drawcall*> m_drawcalls;
     std::map<std::string, Shader*> m_shaders;
 };
