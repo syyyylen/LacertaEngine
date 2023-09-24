@@ -2,6 +2,7 @@
 #include "../Core.h"
 #include "Resource.h"
 #include "../Logger/Logger.h"
+#include "Texture/Texture.h"
 
 
 namespace LacertaEngine
@@ -17,6 +18,8 @@ public:
     static ResourceManager* Get();
     static void Create();
     static void Shutdown();
+    
+    Texture* CreateTexture(const wchar_t* filePath);
 
     template <typename T>
     T* CreateResource(const wchar_t* filePath)

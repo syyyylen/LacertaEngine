@@ -1,4 +1,6 @@
 ﻿#include "ResourceManager.h"
+#include "../Rendering/GraphicsEngine.h"
+#include "Texture/DX11Texture.h"
 
 namespace LacertaEngine
 {
@@ -34,5 +36,20 @@ void ResourceManager::Shutdown()
     LOG(Debug, "Resource Manager : Shutdown");
 }
 
+Texture* ResourceManager::CreateTexture(const wchar_t* filePath)
+{
+    RendererType rdrType = GraphicsEngine::Get()->GetRendererType();
+
+    switch (rdrType)
+    {
+    case RENDERER_WIN_DX11:
+        {
+            DX11Texture* Texture = CreateResource<DX11Texture>(filePath);
+            return Texture;
+        }
+    }
+
+    return nullptr;
+}
 }
 

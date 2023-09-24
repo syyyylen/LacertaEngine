@@ -29,11 +29,7 @@ void DX11Texture::CreateResource(const wchar_t* filePath)
     {
         res = DirectX::CreateTexture(Device, imageData.GetImages(), imageData.GetImageCount(), imageData.GetMetadata(), &m_texture);
 
-        if(SUCCEEDED(res))
-        {
-            LOG(Debug, "Texture Created, now trying to create shader resource view");
-        }
-        else
+        if(!SUCCEEDED(res))
         {
             std::string errorMsg = std::system_category().message(res);
             LOG(Error, errorMsg);
@@ -46,11 +42,7 @@ void DX11Texture::CreateResource(const wchar_t* filePath)
         desc.Texture2D.MostDetailedMip = 0;
         res = Device->CreateShaderResourceView(m_texture, &desc, &m_shaderResView);
 
-        if(SUCCEEDED(res))
-        {
-            LOG(Debug, "Shader Resource View creation succeded");
-        }
-        else
+        if(!SUCCEEDED(res))
         {
             std::string errorMsg = std::system_category().message(res);
             LOG(Error, errorMsg);

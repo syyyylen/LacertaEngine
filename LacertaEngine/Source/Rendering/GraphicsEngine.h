@@ -37,6 +37,7 @@ public:
     void CreateBuffers(Mesh* mesh, std::vector<VertexMesh> vertices, std::vector<unsigned int> indices);
     
     Renderer* GetRenderer() { return m_renderer; }
+    RendererType GetRendererType() { return m_rendererType; }
     
 private:
     RendererType m_rendererType;

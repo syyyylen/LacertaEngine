@@ -8,6 +8,7 @@
 #include "Rendering/Drawcall.h"
 #include "Rendering/WinDX11/WinDX11Renderer.h"
 #include "Rendering/WinDX11/WinDX11RenderTarget.h"
+#include "RessourcesManager/Texture/DX11Texture.h"
 
 namespace LacertaEngineEditor
 {
@@ -66,7 +67,7 @@ void LacertaEditor::Start()
 
     Mesh* statueMesh = ResourceManager::Get()->CreateResource<Mesh>(L"Assets/Meshes/statue.obj");
     Mesh* teaPotMesh = ResourceManager::Get()->CreateResource<Mesh>(L"Assets/Meshes/teapot.obj");
-    Texture* sandTexture = ResourceManager::Get()->CreateResource<Texture>(L"Assets/Textures/sand.png"); // TODO subclass implem not called here, obviously
+    Texture* sandTexture = ResourceManager::Get()->CreateTexture(L"Assets/Textures/sand.jpg"); 
 
     float rdmDist = 10.0f;
     Vector3 offset = Vector3(20.0f, 0.0f, 0.0f);
