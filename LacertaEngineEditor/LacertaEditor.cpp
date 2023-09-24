@@ -68,7 +68,7 @@ void LacertaEditor::Start()
     Mesh* statueMesh = ResourceManager::Get()->CreateResource<Mesh>(L"Assets/Meshes/statue.obj");
     Mesh* teaPotMesh = ResourceManager::Get()->CreateResource<Mesh>(L"Assets/Meshes/teapot.obj");
     Texture* sandTexture = ResourceManager::Get()->CreateTexture(L"Assets/Textures/sand.jpg"); 
-    Texture* brickTexture = ResourceManager::Get()->CreateTexture(L"Assets/Textures/brick.png"); 
+    Texture* brickTexture = ResourceManager::Get()->CreateTexture(L"Assets/Textures/brick.png");
 
     float rdmDist = 10.0f;
     Vector3 offset = Vector3(20.0f, 0.0f, 0.0f);
@@ -193,6 +193,13 @@ void LacertaEditor::Update()
     ImGui_ImplWin32_NewFrame();
     ImGui::NewFrame();
 
+    // Render the scene texture here
+    // {
+    //     ImGui::Begin("DirectX11 Texture Test");
+    //     ImGui::Image((void*)Dx11RenderTarget->m_sceneTextureView, ImVec2(256, 256));
+    //     ImGui::End();
+    // }
+    
     // Dockspace wip
     static bool dockspaceOpen = false; // TODO make a viewport ImGui window and render scene as texture inside it
     if(dockspaceOpen)

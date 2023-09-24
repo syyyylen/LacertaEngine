@@ -21,6 +21,9 @@ public:
 
     ID3D11RenderTargetView* GetRtv() { return m_renderTarget; }
 
+    ID3D11Texture2D* m_sceneTexture;
+    ID3D11ShaderResourceView* m_sceneTextureView;
+
 private:
     ID3D11RenderTargetView* m_renderTarget;
     ID3D11DepthStencilView* m_depthStencil;

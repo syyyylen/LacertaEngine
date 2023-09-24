@@ -31,6 +31,7 @@ void WinDX11RenderTarget::SetActive(Renderer* renderer)
 
 void WinDX11RenderTarget::ReloadBuffers(Renderer* renderer, unsigned width, unsigned height)
 {
+    // ------------------------ Rendering full scene to the backbuffer -----------------------------
     WinDX11Renderer* localRenderer = (WinDX11Renderer*)renderer;
     ID3D11Device* device = (ID3D11Device*)renderer->GetDriver();
     ID3D11Texture2D* buffer = NULL;
@@ -80,6 +81,104 @@ void WinDX11RenderTarget::ReloadBuffers(Renderer* renderer, unsigned width, unsi
     }
 
     buffer->Release();
+
+    // -------------------------------------- Rendering the scene to a texture --------------------------------------------------
+    
+    // WinDX11Renderer* localRenderer = (WinDX11Renderer*)renderer;
+    // ID3D11Device* device = (ID3D11Device*)renderer->GetDriver();
+    // HRESULT hr;
+    // ID3D11Texture2D* BackBuffer;
+    //
+    // // Backbuffer
+    // hr = localRenderer->GetDXGISwapChain()->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)&BackBuffer);
+    // if(FAILED(hr))
+    // {
+    //     LOG(Error, "Failed Backbuffer creation");
+    //     throw std::exception("Failed Backbuffer creation");
+    // }
+    //
+    // // Render scene to texture
+    // D3D11_TEXTURE2D_DESC textureDesc = {};
+    // textureDesc.Width = width;
+    // textureDesc.Height = height;
+    // textureDesc.MipLevels = 1;
+    // textureDesc.ArraySize = 1;
+    // textureDesc.Format = DXGI_FORMAT_B8G8R8A8_UNORM;
+    // textureDesc.SampleDesc.Count = 1;
+    // textureDesc.Usage = D3D11_USAGE_DEFAULT;
+    // textureDesc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
+    // textureDesc.CPUAccessFlags = 0;
+    // textureDesc.MiscFlags = 0;
+    // hr = device->CreateTexture2D(&textureDesc, NULL, &m_sceneTexture);
+    // if(FAILED(hr))
+    // {
+    //     std::string errorMsg = std::system_category().message(hr);
+    //     LOG(Error, errorMsg);
+    //     LOG(Error, "Failed scene texture creation");
+    //     throw std::exception("Failed scene texture creation");
+    // }
+    //
+    // // Scene texture Shader Res View
+    // D3D11_SHADER_RESOURCE_VIEW_DESC shaderResourceViewDesc;
+    // shaderResourceViewDesc.Format = textureDesc.Format;
+    // shaderResourceViewDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+    // shaderResourceViewDesc.Texture2D.MostDetailedMip = 0;
+    // shaderResourceViewDesc.Texture2D.MipLevels = 1;
+    // hr = device->CreateShaderResourceView(m_sceneTexture, &shaderResourceViewDesc, &m_sceneTextureView);
+    // if(FAILED(hr))
+    // {
+    //     std::string errorMsg = std::system_category().message(hr);
+    //     LOG(Error, errorMsg);
+    //     LOG(Error, "Failed Scene texture Shader Res View creation");
+    //     throw std::exception("Failed Scene texture Shader Res View creation");
+    // }
+    //
+    // // RTV
+    // D3D11_RENDER_TARGET_VIEW_DESC renderTargetViewDesc;
+    // renderTargetViewDesc.Format = textureDesc.Format;
+    // renderTargetViewDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
+    // renderTargetViewDesc.Texture2D.MipSlice = 0;
+    // hr = device->CreateRenderTargetView(m_sceneTexture, &renderTargetViewDesc, &m_renderTarget);
+    // if(FAILED(hr))
+    // {
+    //     std::string errorMsg = std::system_category().message(hr);
+    //     LOG(Error, errorMsg);
+    //     LOG(Error, "Failed Render Target creation");
+    //     throw std::exception("Failed Render Target creation");
+    // }
+    //
+    // // Depth buffer 
+    // D3D11_TEXTURE2D_DESC tex_desc = {};
+    // tex_desc.Width = width;
+    // tex_desc.Height = height;
+    // tex_desc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+    // tex_desc.Usage = D3D11_USAGE_DEFAULT;
+    // tex_desc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
+    // tex_desc.MipLevels = 1;
+    // tex_desc.SampleDesc.Count = 1;
+    // tex_desc.SampleDesc.Quality = 0;
+    // tex_desc.MiscFlags = 0;
+    // tex_desc.ArraySize = 1;
+    // tex_desc.CPUAccessFlags = 0;
+    // hr = device->CreateTexture2D(&tex_desc, nullptr, &BackBuffer);
+    // if(FAILED(hr))
+    // {
+    //     std::string errorMsg = std::system_category().message(hr);
+    //     LOG(Error, errorMsg);
+    //     LOG(Error, "Failed depth buffer creation");
+    //     throw std::exception("Failed depth buffer creation");
+    // }
+    //
+    // hr = device->CreateDepthStencilView(BackBuffer, NULL, &m_depthStencil);
+    // if(FAILED(hr))
+    // {
+    //     std::string errorMsg = std::system_category().message(hr);
+    //     LOG(Error, errorMsg);
+    //     LOG(Error, "Failed depth buffer creation");
+    //     throw std::exception("Failed depth buffer creation");
+    // }
+    //
+    // BackBuffer->Release();
 }
 
 void WinDX11RenderTarget::Resize(Renderer* renderer, unsigned width, unsigned height)
