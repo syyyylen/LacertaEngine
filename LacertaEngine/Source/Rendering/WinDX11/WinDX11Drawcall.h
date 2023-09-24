@@ -22,7 +22,7 @@ public:
 
 private:
     ID3D11Buffer* m_vbo;
-    ID3D11Buffer* m_ibo; 
+    ID3D11Buffer* m_ibo;
 };
 
 }

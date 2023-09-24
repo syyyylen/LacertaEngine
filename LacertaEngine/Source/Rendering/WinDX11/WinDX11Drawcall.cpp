@@ -36,6 +36,8 @@ void WinDX11Drawcall::Setup(Renderer* renderer, DrawcallData* dcData)
     
     m_shader = renderer->GetShader(dcData->ShaderName);
     m_shader->Load(renderer, dcData->Type);
+
+    m_texture = dcData->Texture;
 }
 
 void WinDX11Drawcall::Pass(Renderer* renderer)

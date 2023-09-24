@@ -5,6 +5,7 @@
 #include "../../Logger/Logger.h"
 #include <d3dcompiler.h>
 #include "../GraphicsEngine.h"
+#include "../../RessourcesManager/Texture/DX11Texture.h"
 
 namespace LacertaEngine
 {
@@ -128,6 +129,9 @@ void WinDX11Shader::PreparePass(Renderer* renderer, Drawcall* dc)
 
     ctx->VSSetShader(m_vertexShader, nullptr, 0);
     ctx->PSSetShader(m_fragmentShader, nullptr, 0);
+
+    DX11Texture* Texture = (DX11Texture*)dc->GetTexture();
+    ctx->PSSetShaderResources(0, 1, &Texture->m_shaderResView);
 }
 
 void WinDX11Shader::Pass(Renderer* renderer, Drawcall* dc)

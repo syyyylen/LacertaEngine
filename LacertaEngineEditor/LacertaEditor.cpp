@@ -137,6 +137,7 @@ void LacertaEditor::Update()
         dcData.Type = DrawcallType::dcMesh;
         dcData.ShaderName = meshComponent.m_shaderName;
         dcData.LocalMatrix = transform.GetTransformMatrix();
+        dcData.Texture = meshComponent.GetTexture();
 
         GraphicsEngine::Get()->AddDrawcall(&dcData);
     }

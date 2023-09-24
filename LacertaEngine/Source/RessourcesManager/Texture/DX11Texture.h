@@ -14,7 +14,7 @@ public:
 
     void CreateResource(const wchar_t* filePath) final;
 
-private:
+public:
     ID3D11Resource* m_texture = nullptr;
     ID3D11ShaderResourceView* m_shaderResView = nullptr;
 };
