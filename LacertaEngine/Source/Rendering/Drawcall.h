@@ -2,6 +2,7 @@
 #include "../Core.h"
 #include "Renderer.h"
 #include "../Maths/Maths.h"
+#include "../RessourcesManager/Texture/Texture.h"
 
 namespace LacertaEngine
 {
@@ -18,6 +19,7 @@ struct DrawcallData
     unsigned long VerticesCount;
     void* IBO;
     unsigned long IndicesCount;
+    Texture* Texture;
     std::string ShaderName;
     DrawcallType Type;
     Matrix4x4 LocalMatrix;
@@ -70,8 +72,10 @@ public:
     unsigned long GetIndexListSize() { return m_indexCount; }
     DrawcallType GetType() { return m_type; }
     Matrix4x4 LocalMatrix() { return m_localMatrix; } // TODO relocate this
+    Texture* GetTexture() { return m_texture; }
 
 protected:
+    Texture* m_texture;
     Shader* m_shader;
     unsigned long m_verticesCount;
     unsigned long m_indexCount;

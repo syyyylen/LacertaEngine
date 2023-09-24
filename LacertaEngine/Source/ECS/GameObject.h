@@ -2,6 +2,7 @@
 #include "Entt/entt.hpp"
 #include "Scene.h"
 #include "../Core.h"
+#include "../Maths/Vector3.h"
 
 namespace LacertaEngine
 {
@@ -10,8 +11,10 @@ class LACERTAENGINE_API GameObject
 {
 public:
     GameObject();
-    GameObject(Scene* scene, entt::entity entityHandle, std::string name);
+    GameObject(Scene* scene, entt::entity entityHandle, std::string name, Vector3 position);
     ~GameObject();
+
+    std::string GetName(){ return m_name; }
 
     template<typename T, typename... Args>
     T& AddComponent(Args&&... args)
@@ -41,6 +44,8 @@ private:
     entt::entity m_entityHandle;
     std::string m_name;
     Scene* m_scene;
+
+    Vector3 m_startPosition;
 };
     
 }

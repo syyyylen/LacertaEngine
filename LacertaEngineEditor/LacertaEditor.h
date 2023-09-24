@@ -21,6 +21,8 @@ public:
     void Update();
     void Quit();
 
+    void Close();
+    
     bool IsRunning();
 
     EditorWindow* GetEditorWindow();
@@ -43,8 +45,6 @@ private:
     float m_deltaTime;
 
     Scene* m_activeScene;
-
-    std::list<GameObject*> m_sceneGameObjects;
 
     // TODO handle scene Camera
     bool m_isMouseLocked = true;

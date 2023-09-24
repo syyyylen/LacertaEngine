@@ -8,14 +8,15 @@
 #include "Rendering/Drawcall.h"
 #include "Rendering/WinDX11/WinDX11Renderer.h"
 #include "Rendering/WinDX11/WinDX11RenderTarget.h"
+#include "RessourcesManager/Texture/DX11Texture.h"
 
 namespace LacertaEngineEditor
 {
 
-static float s_mouseSensivity = 3.0f;
-static float s_moveSpeed = 2.5f;
-static float s_strafeMoveSpeed = 2.5f;
+static float s_mouseSensivity = 3.0;
+static float s_moveSpeed = 6.5f;
 static float s_inputDownScalar = 0.03f;
+static int item_current_idx = 0; 
 
 LacertaEditor::LacertaEditor()
 {
@@ -63,28 +64,26 @@ void LacertaEditor::Start()
     m_activeScene = new Scene();
 
     // ----------------------------- Debug GO Creation -----------------------
-    
-    Mesh* teaPotMesh = ResourceManager::Get()->CreateResource<Mesh>(L"Assets/Meshes/teapot.obj");
 
-    float rdmDist = 20.0f;
-    float maxScaleMult = 6.0f;
-    for(int i = 0; i < 25; i++)
+    Mesh* statueMesh = ResourceManager::Get()->CreateResource<Mesh>(L"Assets/Meshes/statue.obj");
+    Mesh* teaPotMesh = ResourceManager::Get()->CreateResource<Mesh>(L"Assets/Meshes/teapot.obj");
+    Texture* sandTexture = ResourceManager::Get()->CreateTexture(L"Assets/Textures/sand.jpg"); 
+    Texture* brickTexture = ResourceManager::Get()->CreateTexture(L"Assets/Textures/brick.png"); 
+
+    float rdmDist = 10.0f;
+    Vector3 offset = Vector3(20.0f, 0.0f, 0.0f);
+    for(int i = 0; i < 60; i++)
     {
-        GameObject* teapotGo = m_activeScene->CreateGameObject("TeapotGo");
+        std::string name;
+        i % 2 == 0 ? name = "Teapot" : name = "Statue";
+        GameObject* teapotGo = m_activeScene->CreateGameObject(name, offset + Vector3(Random::RandomFloatRange(-rdmDist, rdmDist),
+                                                                                            Random::RandomFloatRange(-rdmDist, rdmDist),
+                                                                                            Random::RandomFloatRange(-rdmDist, rdmDist)));
         
         MeshComponent& meshComp = teapotGo->AddComponent<MeshComponent>();
-        meshComp.SetMesh(teaPotMesh);
+        i % 2 == 0 ? meshComp.SetMesh(teaPotMesh) : meshComp.SetMesh(statueMesh);
+        i % 2 == 0 ? meshComp.SetTexture(brickTexture) : meshComp.SetTexture(sandTexture);
         meshComp.m_shaderName = "MeshShader";
-
-        TransformComponent& tf = teapotGo->GetComponent<TransformComponent>();
-        tf.SetPosition(Vector3(Random::RandomFloatRange(-rdmDist, rdmDist),
-                                        Random::RandomFloatRange(-rdmDist, rdmDist),
-                                        Random::RandomFloatRange(-rdmDist, rdmDist)));
-
-        float rdmScale = Random::RandomFloatRange(0.6f, maxScaleMult);
-        tf.SetScale(Vector3(rdmScale, rdmScale, rdmScale));
-        
-        m_sceneGameObjects.push_back(teapotGo);
     }
 
     // --------------------------- Camera Default Position ---------------------
@@ -99,7 +98,8 @@ void LacertaEditor::Start()
     ImGuiIO& io = ImGui::GetIO(); (void)io;
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
-
+    io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+    
     // Setup Dear ImGui style
     ImGui::StyleColorsDark();
 
@@ -123,17 +123,10 @@ void LacertaEditor::Update()
 
     GraphicsEngine::Get()->ClearDrawcalls();
 
-    float frequency = 0.3f;
-    float scaleMultiplier = MathUtilities::Remap(0.5f + 0.5f * std::sin(2 * 3.14 * frequency * m_globalTimer->Elapsed()),
-                                                    0.0f, 1.0f, 1.0f, 5.0f);
-
     auto tfMeshesGroup = m_activeScene->m_registry.group<TransformComponent>(entt::get<MeshComponent>);
     for(auto go : tfMeshesGroup)
     {
         auto[transform, meshComponent] = tfMeshesGroup.get<TransformComponent, MeshComponent>(go);
-
-        // Performing some scale modifications
-        transform.SetScale(Vector3(scaleMultiplier, scaleMultiplier, scaleMultiplier));
 
         // Adding DC
         Mesh* mesh = meshComponent.GetMesh();
@@ -145,6 +138,7 @@ void LacertaEditor::Update()
         dcData.Type = DrawcallType::dcMesh;
         dcData.ShaderName = meshComponent.m_shaderName;
         dcData.LocalMatrix = transform.GetTransformMatrix();
+        dcData.Texture = meshComponent.GetTexture();
 
         GraphicsEngine::Get()->AddDrawcall(&dcData);
     }
@@ -179,14 +173,14 @@ void LacertaEditor::Update()
     worldCam *= temp;
 
     Vector3 newCamPos = m_sceneCamera.GetTranslation() + worldCam.GetZDirection() * (m_cameraForward * (s_moveSpeed * s_inputDownScalar));
-    newCamPos = newCamPos + worldCam.GetXDirection() * (m_cameraRight * (s_strafeMoveSpeed * s_inputDownScalar));
+    newCamPos = newCamPos + worldCam.GetXDirection() * (m_cameraRight * (s_moveSpeed * s_inputDownScalar));
     worldCam.SetTranslation(newCamPos);
     cc.CameraPosition = newCamPos;
     m_sceneCamera = worldCam;
     worldCam.Inverse();
     cc.ViewMatrix = worldCam;
     
-    cc.ProjectionMatrix.SetPerspectiveFovLH(1.57f, ((float)width / (float)height), 0.1f, 100.0f);
+    cc.ProjectionMatrix.SetPerspectiveFovLH(1.57f, ((float)width / (float)height), 0.1f, 1000.0f);
     
     GraphicsEngine::Get()->UpdateShaderConstants(&cc);
 
@@ -198,8 +192,91 @@ void LacertaEditor::Update()
     ImGui_ImplDX11_NewFrame();
     ImGui_ImplWin32_NewFrame();
     ImGui::NewFrame();
+
+    // Dockspace wip
+    static bool dockspaceOpen = false; // TODO make a viewport ImGui window and render scene as texture inside it
+    if(dockspaceOpen)
+    {
+        static bool opt_fullscreen = true;
+        static bool opt_padding = false;
+        static ImGuiDockNodeFlags dockspace_flags = ImGuiDockNodeFlags_None;
+        
+        // We are using the ImGuiWindowFlags_NoDocking flag to make the parent window not dockable into,
+        // because it would be confusing to have two docking targets within each others.
+        ImGuiWindowFlags window_flags = ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDocking;
+        if (opt_fullscreen)
+        {
+            const ImGuiViewport* viewport = ImGui::GetMainViewport();
+            ImGui::SetNextWindowPos(viewport->WorkPos);
+            ImGui::SetNextWindowSize(viewport->WorkSize);
+            ImGui::SetNextWindowViewport(viewport->ID);
+            ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
+            ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
+            window_flags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
+            window_flags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
+        }
+        else
+        {
+            dockspace_flags &= ~ImGuiDockNodeFlags_PassthruCentralNode;
+        }
+        
+        if (dockspace_flags & ImGuiDockNodeFlags_PassthruCentralNode)
+            window_flags |= ImGuiWindowFlags_NoBackground;
+        
+        if (!opt_padding)
+            ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
+        
+        ImGui::Begin("DockSpace Demo", &dockspaceOpen, window_flags);
+        
+        if (!opt_padding)
+            ImGui::PopStyleVar();
+        
+        if (opt_fullscreen)
+            ImGui::PopStyleVar(2);
+        
+        // Submit the DockSpace
+        ImGuiIO& io = ImGui::GetIO();
+        if (io.ConfigFlags & ImGuiConfigFlags_DockingEnable)
+        {
+            ImGuiID dockspace_id = ImGui::GetID("MyDockSpace");
+            ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), dockspace_flags);
+        }
+
+        if (ImGui::BeginMenuBar())
+        {
+            if (ImGui::BeginMenu("File"))
+            {
+                if (ImGui::MenuItem("Exit", NULL, false))
+                    Close();
+                
+                ImGui::EndMenu();
+            }
+
+            ImGui::EndMenuBar();
+        }
+    }
     
-    { // My imgui test window
+    {
+        ImGui::Begin("SceneHierarchy");
+
+        if (ImGui::BeginListBox("Scene GameObjects"))
+        {
+            for (int n = 0; n < (int)m_activeScene->m_gameObjects.size(); n++)
+            {
+                const bool is_selected = (item_current_idx == n);
+                if (ImGui::Selectable(m_activeScene->m_gameObjects[n]->GetName().data(), is_selected))
+                    item_current_idx = n;
+
+                if (is_selected)
+                    ImGui::SetItemDefaultFocus();
+            }
+            ImGui::EndListBox();
+        }
+        
+        ImGui::End();
+    }
+
+    { 
         ImGui::Begin("FrameRate");                  
         ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
         ImGui::End();
@@ -208,10 +285,12 @@ void LacertaEditor::Update()
     {
         ImGui::Begin("Debugging");
         ImGui::SliderFloat("Sensivity", &s_mouseSensivity, 0.1f, 10.0f);   
-        ImGui::SliderFloat("MoveSpeed", &s_moveSpeed, 0.1f, 10.0f);
-        ImGui::SliderFloat("StrafeMoveSpeed", &s_strafeMoveSpeed, 0.1f, 10.0f);
+        ImGui::SliderFloat("MoveSpeed", &s_moveSpeed, 0.1f, 25.0f);
         ImGui::End();
     }
+
+    if(dockspaceOpen)
+        ImGui::End(); // End dockspace
 
     ImGui::Render();
     ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
@@ -240,6 +319,11 @@ void LacertaEditor::Quit()
     LOG(Debug, "Lacerta Editor : Quit");
     
     Logger::Get()->WriteLogsToFile();
+}
+
+void LacertaEditor::Close()
+{
+    m_editorWindow->OnDestroy();
 }
 
 bool LacertaEditor::IsRunning()
