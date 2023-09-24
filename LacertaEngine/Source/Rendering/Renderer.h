@@ -33,13 +33,13 @@ public:
 
     virtual int* GetDriver() = 0;
     
-    RenderTarget* GetRenderTarget() { return m_renderTarget; }
+    RenderTarget* GetRenderTarget(int index) { return m_renderTargets[index]; }
 
     bool HasShader(std::string shaderName) { return m_shaders.find(shaderName) != m_shaders.end(); }
     Shader* GetShader(std::string shaderName);
 
 protected:
-    RenderTarget* m_renderTarget; // TODO renderer must store multiple render targets (fullwindow, scene...)
+    std::vector<RenderTarget*> m_renderTargets;
     std::list<Drawcall*> m_drawcalls;
     std::map<std::string, Shader*> m_shaders;
 };

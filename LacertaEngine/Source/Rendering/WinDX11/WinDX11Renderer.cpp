@@ -134,8 +134,9 @@ void WinDX11Renderer::CreateRenderTarget(int width, int height, int depth)
 {
     LOG(Debug, "WinDX11Renderer : Create Render Target");
 
-    m_renderTarget = new WinDX11RenderTarget();
-    m_renderTarget->Initialize(this, width, height, depth);
+    WinDX11RenderTarget* newRendTarg = new WinDX11RenderTarget();
+    newRendTarg->Initialize(this, width, height, depth);
+    m_renderTargets.emplace_back(newRendTarg);
 }
 
 void WinDX11Renderer::LoadShaders()
@@ -246,8 +247,8 @@ void WinDX11Renderer::CreateBuffers(Mesh* mesh, std::vector<VertexMesh> vertices
 
 void WinDX11Renderer::RenderFrame()
 {
-    m_renderTarget->SetActive(this); // TODO set active the scene render target texture and dc into it
-    m_renderTarget->Clear(this, Vector4(0.0f, 0.0f, 0.0f, 1.0f));
+    m_renderTargets[0]->SetActive(this); // TODO set active the scene render target texture and dc into it
+    m_renderTargets[0]->Clear(this, Vector4(0.0f, 0.0f, 0.0f, 1.0f));
 
     for(auto dc : m_drawcalls)
         dc->Pass(this);
@@ -260,7 +261,7 @@ void WinDX11Renderer::PresentSwapChain()
 
 void WinDX11Renderer::OnResize(unsigned width, unsigned height)
 {
-    WinDX11RenderTarget* rendTarg = (WinDX11RenderTarget*)m_renderTarget;
+    WinDX11RenderTarget* rendTarg = (WinDX11RenderTarget*)m_renderTargets[0];
     rendTarg->Resize(this, width, height);
 }
 

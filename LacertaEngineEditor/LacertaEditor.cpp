@@ -146,7 +146,7 @@ void LacertaEditor::Update()
     // ----------------------------- Rendering Update  --------------------------
 
     WinDX11Renderer* Dx11Renderer = (WinDX11Renderer*)GraphicsEngine::Get()->GetRenderer(); // TODO remove direct reference to DX11
-    WinDX11RenderTarget* Dx11RenderTarget = (WinDX11RenderTarget*)Dx11Renderer->GetRenderTarget();
+    WinDX11RenderTarget* Dx11RenderTarget = (WinDX11RenderTarget*)Dx11Renderer->GetRenderTarget(0);
     RECT windowRect = m_editorWindow->GetClientWindowRect();
     int width = windowRect.right - windowRect.left;
     int height = windowRect.bottom - windowRect.top;
