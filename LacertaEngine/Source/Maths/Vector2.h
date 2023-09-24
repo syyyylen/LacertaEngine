@@ -11,7 +11,7 @@ public:
     {
     }
     
-    Vector2(int x,int y):X(x),Y(y)
+    Vector2(float x,float y):X(x),Y(y)
     {
     }
     
@@ -39,7 +39,7 @@ public:
     }
     
 public:
-    int X = 0, Y = 0;
+    float X = 0, Y = 0;
 };
 
 }

@@ -46,6 +46,7 @@ void DX11Texture::CreateResource(const wchar_t* filePath)
         {
             std::string errorMsg = std::system_category().message(res);
             LOG(Error, errorMsg);
+            throw std::exception("Shader res view creation failed");
         }
     }
     else

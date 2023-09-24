@@ -131,6 +131,7 @@ void WinDX11Shader::PreparePass(Renderer* renderer, Drawcall* dc)
     ctx->PSSetShader(m_fragmentShader, nullptr, 0);
 
     DX11Texture* Texture = (DX11Texture*)dc->GetTexture();
+    ctx->VSSetShaderResources(0, 1, &Texture->m_shaderResView);
     ctx->PSSetShaderResources(0, 1, &Texture->m_shaderResView);
 }
 
