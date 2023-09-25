@@ -256,11 +256,17 @@ void LacertaEditor::Update()
         }
     }
 
-    // Render the scene texture here
+    WinDX11RenderTarget* Dx11RenderTarget1 = (WinDX11RenderTarget*)Dx11Renderer->GetRenderTarget(1);
+    if(Dx11RenderTarget1 != nullptr)
     {
-        ImGui::Begin("DirectX11 Texture Test");
-        ImGui::Image((void*)Dx11RenderTarget->m_sceneTextureView, ImVec2(256, 256));
-        ImGui::End();
+        if(Dx11RenderTarget1->RenderToTexture())
+        {
+            {
+                ImGui::Begin("DirectX11 Texture Test");
+                ImGui::Image((void*)Dx11RenderTarget1->GetTextureShaderResView(), ImVec2(320, 320));
+                ImGui::End();
+            }
+        }
     }
     
     {

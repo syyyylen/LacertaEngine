@@ -33,7 +33,7 @@ public:
 
     virtual int* GetDriver() = 0;
     
-    RenderTarget* GetRenderTarget(int index) { return m_renderTargets[index]; }
+    RenderTarget* GetRenderTarget(int index);
 
     bool HasShader(std::string shaderName) { return m_shaders.find(shaderName) != m_shaders.end(); }
     Shader* GetShader(std::string shaderName);
