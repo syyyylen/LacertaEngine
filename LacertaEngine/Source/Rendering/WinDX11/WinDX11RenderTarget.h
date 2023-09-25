@@ -15,7 +15,7 @@ public:
     void Initialize(Renderer* renderer, int width, int height, int depth) override;
     void SetActive(Renderer* renderer) override;
     void ReloadBuffers(Renderer* renderer, unsigned width, unsigned height);
-    void Resize(Renderer* renderer, unsigned width, unsigned height);
+    void Resize(Renderer* renderer, unsigned width, unsigned height) override;
     void Clear(Renderer* renderer, Vector4 color) override;
     void SetViewportSize(Renderer* renderer, UINT width, UINT height) override;
 

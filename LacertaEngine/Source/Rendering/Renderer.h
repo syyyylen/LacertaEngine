@@ -2,6 +2,7 @@
 #include <map>
 
 #include "../Core.h"
+#include "../Maths/Maths.h"
 
 namespace LacertaEngine
 {
@@ -22,8 +23,8 @@ public:
     virtual void Initialize(int* context, int width, int height, int targetRefreshRate) = 0;
     virtual void CreateRenderTarget(int width, int height, int depth) = 0;
     virtual void LoadShaders() = 0;
-    virtual void RenderFrame() = 0;
-    virtual void OnResize(unsigned width, unsigned height) = 0;
+    virtual void RenderFrame(Vector2 ViewportSize) = 0;
+    virtual void OnResizeWindow(unsigned width, unsigned height) = 0;
     virtual void PresentSwapChain() = 0;
     virtual void UpdateConstantBuffer(void* buffer) = 0;
     virtual void UpdateMeshConstantBuffer(void* buffer) = 0;

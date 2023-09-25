@@ -146,14 +146,11 @@ void LacertaEditor::Update()
     // ----------------------------- Rendering Update  --------------------------
 
     WinDX11Renderer* Dx11Renderer = (WinDX11Renderer*)GraphicsEngine::Get()->GetRenderer(); // TODO remove direct reference to DX11
-    WinDX11RenderTarget* Dx11RenderTarget = (WinDX11RenderTarget*)Dx11Renderer->GetRenderTarget(0);
-    RECT windowRect = m_editorWindow->GetClientWindowRect();
-    int width = windowRect.right - windowRect.left;
-    int height = windowRect.bottom - windowRect.top;
-    Dx11RenderTarget->SetViewportSize(Dx11Renderer, width, height);
-
-    // TODO Camera pos & rot are updated here with
-    // TODO some hard coded Matrix 
+    WinDX11RenderTarget* BackBufferRenderTarget = (WinDX11RenderTarget*)Dx11Renderer->GetRenderTarget(0);
+    WinDX11RenderTarget* SceneTextureRenderTarget = (WinDX11RenderTarget*)Dx11Renderer->GetRenderTarget(1);
+    
+    // TODO Camera pos & rot are updated here with some hard coded Matrix
+    
     // Constant Buffer Update 
     ConstantBuffer cc;
     cc.Time = m_globalTimer->Elapsed(); 
@@ -180,15 +177,19 @@ void LacertaEditor::Update()
     worldCam.Inverse();
     cc.ViewMatrix = worldCam;
     
-    cc.ProjectionMatrix.SetPerspectiveFovLH(1.57f, ((float)width / (float)height), 0.1f, 1000.0f);
+    // Update the perspective projection to the ImGui viewport size
+    cc.ProjectionMatrix.SetPerspectiveFovLH(1.57f, (m_viewportCachedSize.X / m_viewportCachedSize.Y), 0.1f, 1000.0f);
     
     GraphicsEngine::Get()->UpdateShaderConstants(&cc);
 
-    GraphicsEngine::Get()->Render();
+    GraphicsEngine::Get()->RenderScene(m_viewportCachedSize);
+
+    RECT windowRect = m_editorWindow->GetClientWindowRect();
+    int width = windowRect.right - windowRect.left;
+    int height = windowRect.bottom - windowRect.top;
+    BackBufferRenderTarget->SetViewportSize(Dx11Renderer, width, height); // update the backbuffer viewport size
 
     // ----------------------------- UI Update  --------------------------
-
-    // TODO when we reach this point, set the render target to the fullscreen render target 
 
     // Start the Dear ImGui frame
     ImGui_ImplDX11_NewFrame();
@@ -255,22 +256,18 @@ void LacertaEditor::Update()
             ImGui::EndMenuBar();
         }
     }
-
-    WinDX11RenderTarget* Dx11RenderTarget1 = (WinDX11RenderTarget*)Dx11Renderer->GetRenderTarget(1);
-    if(Dx11RenderTarget1 != nullptr)
+    
+    if(SceneTextureRenderTarget != nullptr)
     {
-        if(Dx11RenderTarget1->RenderToTexture())
+        if(SceneTextureRenderTarget->RenderToTexture())
         {
             {
                 ImGui::Begin("Viewport");
-                ImVec2 vMin = ImGui::GetWindowContentRegionMin();
-                ImVec2 vMax = ImGui::GetWindowContentRegionMax();
-                vMin.x += ImGui::GetWindowPos().x;
-                vMin.y += ImGui::GetWindowPos().y;
-                vMax.x += ImGui::GetWindowPos().x;
-                vMax.y += ImGui::GetWindowPos().y;
-                ImGui::GetForegroundDrawList()->AddRect( vMin, vMax, IM_COL32( 255, 255, 0, 255 ) );
-                ImGui::Image((void*)Dx11RenderTarget1->GetTextureShaderResView(), ImGui::GetWindowSize());
+                
+                ImVec2 viewportSize = ImGui::GetContentRegionAvail();
+                m_viewportCachedSize = Vector2(viewportSize.x, viewportSize.y);
+                
+                ImGui::Image((void*)SceneTextureRenderTarget->GetTextureShaderResView(), viewportSize);
                 ImGui::End();
             }
         }

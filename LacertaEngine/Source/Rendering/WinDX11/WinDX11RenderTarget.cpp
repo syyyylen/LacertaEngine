@@ -142,10 +142,22 @@ void WinDX11RenderTarget::Resize(Renderer* renderer, unsigned width, unsigned he
     if(m_renderTarget)
         m_renderTarget->Release();
 
-    WinDX11Renderer* localRenderer = (WinDX11Renderer*)renderer;
-    // carefull with the buffer count (curr : 2, set to 0 to preserve all)
-    // see : https://learn.microsoft.com/en-us/windows/win32/api/dxgi/nf-dxgi-idxgiswapchain-resizebuffers
-    localRenderer->GetDXGISwapChain()->ResizeBuffers(2, width, height, DXGI_FORMAT_R8G8B8A8_UNORM, 0);
+    if(m_targetTextureShaderResView)
+        m_targetTextureShaderResView->Release();
+
+    if(m_depthStencil)
+        m_depthStencil->Release();
+
+    // If this render target is the backbuffer, we want to resize it on app window size change
+    if(!m_renderToTexture)
+    {
+        WinDX11Renderer* localRenderer = (WinDX11Renderer*)renderer;
+        // carefull with the buffer count (curr : 2, set to 0 to preserve all)
+        // see : https://learn.microsoft.com/en-us/windows/win32/api/dxgi/nf-dxgi-idxgiswapchain-resizebuffers
+        localRenderer->GetDXGISwapChain()->ResizeBuffers(2, width, height, DXGI_FORMAT_R8G8B8A8_UNORM, 0);
+    }
+
+    // We need to resize the textures to match the resolution
     ReloadBuffers(renderer, width, height);
 }
 

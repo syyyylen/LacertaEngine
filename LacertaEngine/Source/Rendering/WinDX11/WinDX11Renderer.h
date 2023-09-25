@@ -20,9 +20,9 @@ public:
     void CreateRenderTarget(int width, int height, int depth) override;
     void LoadShaders() override;
     
-    void RenderFrame() override;
+    void RenderFrame(Vector2 ViewportSize) override;
     void PresentSwapChain() override;
-    void OnResize(unsigned width, unsigned height) override;
+    void OnResizeWindow(unsigned width, unsigned height) override;
     void UpdateConstantBuffer(void* buffer) override;
     void UpdateMeshConstantBuffer(void* buffer) override;
     void AddDrawcall(DrawcallData* dcData) override;
@@ -40,6 +40,8 @@ private:
     D3D_FEATURE_LEVEL m_featureLevel;
     ID3D11Buffer* m_constantBuffer; 
     ID3D11Buffer* m_meshConstantBuffer;
+
+    Vector2 m_previousViewportSize;
 };
 
 }
