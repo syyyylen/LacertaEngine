@@ -31,8 +31,6 @@ void WinDX11RenderTarget::SetActive(Renderer* renderer)
 
 void WinDX11RenderTarget::ReloadBuffers(Renderer* renderer, unsigned width, unsigned height)
 {
-    // ------------------------ Rendering full scene to the backbuffer -----------------------------
-
     WinDX11Renderer* localRenderer = (WinDX11Renderer*)renderer;
     ID3D11Device* device = (ID3D11Device*)renderer->GetDriver();
     ID3D11Texture2D* buffer = NULL;

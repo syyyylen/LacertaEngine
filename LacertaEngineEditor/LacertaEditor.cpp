@@ -196,7 +196,7 @@ void LacertaEditor::Update()
     ImGui::NewFrame();
 
     // Dockspace wip
-    static bool dockspaceOpen = false; // TODO make a viewport ImGui window and render scene as texture inside it
+    static bool dockspaceOpen = true;
     if(dockspaceOpen)
     {
         static bool opt_fullscreen = true;
@@ -262,8 +262,15 @@ void LacertaEditor::Update()
         if(Dx11RenderTarget1->RenderToTexture())
         {
             {
-                ImGui::Begin("DirectX11 Texture Test");
-                ImGui::Image((void*)Dx11RenderTarget1->GetTextureShaderResView(), ImVec2(320, 320));
+                ImGui::Begin("Viewport");
+                ImVec2 vMin = ImGui::GetWindowContentRegionMin();
+                ImVec2 vMax = ImGui::GetWindowContentRegionMax();
+                vMin.x += ImGui::GetWindowPos().x;
+                vMin.y += ImGui::GetWindowPos().y;
+                vMax.x += ImGui::GetWindowPos().x;
+                vMax.y += ImGui::GetWindowPos().y;
+                ImGui::GetForegroundDrawList()->AddRect( vMin, vMax, IM_COL32( 255, 255, 0, 255 ) );
+                ImGui::Image((void*)Dx11RenderTarget1->GetTextureShaderResView(), ImGui::GetWindowSize());
                 ImGui::End();
             }
         }

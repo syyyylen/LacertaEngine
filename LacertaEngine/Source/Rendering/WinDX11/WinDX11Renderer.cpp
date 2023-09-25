@@ -252,11 +252,11 @@ void WinDX11Renderer::CreateBuffers(Mesh* mesh, std::vector<VertexMesh> vertices
 
 void WinDX11Renderer::RenderFrame()
 {
-    m_renderTargets[0]->SetActive(this); 
-    m_renderTargets[0]->Clear(this, Vector4(0.0f, 0.0f, 0.0f, 1.0f));
-
-    for(auto dc : m_drawcalls)
-        dc->Pass(this);
+    // m_renderTargets[0]->SetActive(this); 
+    // m_renderTargets[0]->Clear(this, Vector4(0.0f, 0.0f, 0.0f, 1.0f));
+    //
+    // for(auto dc : m_drawcalls)
+    //     dc->Pass(this);
 
     m_renderTargets[1]->SetActive(this);
     m_renderTargets[1]->Clear(this, Vector4(0.0f, 0.0f, 0.0f, 0.0f));
