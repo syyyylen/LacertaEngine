@@ -68,7 +68,7 @@ void LacertaEditor::Start()
     Mesh* statueMesh = ResourceManager::Get()->CreateResource<Mesh>(L"Assets/Meshes/statue.obj");
     Mesh* teaPotMesh = ResourceManager::Get()->CreateResource<Mesh>(L"Assets/Meshes/teapot.obj");
     Texture* sandTexture = ResourceManager::Get()->CreateTexture(L"Assets/Textures/sand.jpg"); 
-    Texture* brickTexture = ResourceManager::Get()->CreateTexture(L"Assets/Textures/brick.png"); 
+    Texture* brickTexture = ResourceManager::Get()->CreateTexture(L"Assets/Textures/brick.png");
 
     float rdmDist = 10.0f;
     Vector3 offset = Vector3(20.0f, 0.0f, 0.0f);
@@ -146,14 +146,11 @@ void LacertaEditor::Update()
     // ----------------------------- Rendering Update  --------------------------
 
     WinDX11Renderer* Dx11Renderer = (WinDX11Renderer*)GraphicsEngine::Get()->GetRenderer(); // TODO remove direct reference to DX11
-    WinDX11RenderTarget* Dx11RenderTarget = (WinDX11RenderTarget*)Dx11Renderer->GetRenderTarget();
-    RECT windowRect = m_editorWindow->GetClientWindowRect();
-    int width = windowRect.right - windowRect.left;
-    int height = windowRect.bottom - windowRect.top;
-    Dx11RenderTarget->SetViewportSize(Dx11Renderer, width, height);
-
-    // TODO Camera pos & rot are updated here with
-    // TODO some hard coded Matrix 
+    WinDX11RenderTarget* BackBufferRenderTarget = (WinDX11RenderTarget*)Dx11Renderer->GetRenderTarget(0);
+    WinDX11RenderTarget* SceneTextureRenderTarget = (WinDX11RenderTarget*)Dx11Renderer->GetRenderTarget(1);
+    
+    // TODO Camera pos & rot are updated here with some hard coded Matrix
+    
     // Constant Buffer Update 
     ConstantBuffer cc;
     cc.Time = m_globalTimer->Elapsed(); 
@@ -180,11 +177,17 @@ void LacertaEditor::Update()
     worldCam.Inverse();
     cc.ViewMatrix = worldCam;
     
-    cc.ProjectionMatrix.SetPerspectiveFovLH(1.57f, ((float)width / (float)height), 0.1f, 1000.0f);
+    // Update the perspective projection to the ImGui viewport size
+    cc.ProjectionMatrix.SetPerspectiveFovLH(1.57f, (m_viewportCachedSize.X / m_viewportCachedSize.Y), 0.1f, 1000.0f);
     
     GraphicsEngine::Get()->UpdateShaderConstants(&cc);
 
-    GraphicsEngine::Get()->Render();
+    GraphicsEngine::Get()->RenderScene(m_viewportCachedSize);
+
+    RECT windowRect = m_editorWindow->GetClientWindowRect();
+    int width = windowRect.right - windowRect.left;
+    int height = windowRect.bottom - windowRect.top;
+    BackBufferRenderTarget->SetViewportSize(Dx11Renderer, width, height); // update the backbuffer viewport size
 
     // ----------------------------- UI Update  --------------------------
 
@@ -194,15 +197,13 @@ void LacertaEditor::Update()
     ImGui::NewFrame();
 
     // Dockspace wip
-    static bool dockspaceOpen = false; // TODO make a viewport ImGui window and render scene as texture inside it
+    static bool dockspaceOpen = true;
     if(dockspaceOpen)
     {
         static bool opt_fullscreen = true;
         static bool opt_padding = false;
         static ImGuiDockNodeFlags dockspace_flags = ImGuiDockNodeFlags_None;
         
-        // We are using the ImGuiWindowFlags_NoDocking flag to make the parent window not dockable into,
-        // because it would be confusing to have two docking targets within each others.
         ImGuiWindowFlags window_flags = ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDocking;
         if (opt_fullscreen)
         {
@@ -253,6 +254,22 @@ void LacertaEditor::Update()
             }
 
             ImGui::EndMenuBar();
+        }
+    }
+    
+    if(SceneTextureRenderTarget != nullptr)
+    {
+        if(SceneTextureRenderTarget->RenderToTexture())
+        {
+            {
+                ImGui::Begin("Viewport");
+                
+                ImVec2 viewportSize = ImGui::GetContentRegionAvail();
+                m_viewportCachedSize = Vector2(viewportSize.x, viewportSize.y);
+                
+                ImGui::Image((void*)SceneTextureRenderTarget->GetTextureShaderResView(), viewportSize);
+                ImGui::End();
+            }
         }
     }
     

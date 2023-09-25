@@ -134,8 +134,14 @@ void WinDX11Renderer::CreateRenderTarget(int width, int height, int depth)
 {
     LOG(Debug, "WinDX11Renderer : Create Render Target");
 
-    m_renderTarget = new WinDX11RenderTarget();
-    m_renderTarget->Initialize(this, width, height, depth);
+    WinDX11RenderTarget* newRendTarg = new WinDX11RenderTarget();
+    newRendTarg->Initialize(this, width, height, depth);
+    m_renderTargets.emplace_back(newRendTarg);
+
+    WinDX11RenderTarget* textureRendTarg = new WinDX11RenderTarget();
+    textureRendTarg->SetRenderToTexture(true);
+    textureRendTarg->Initialize(this, width, height, depth);
+    m_renderTargets.emplace_back(textureRendTarg);
 }
 
 void WinDX11Renderer::LoadShaders()
@@ -244,13 +250,24 @@ void WinDX11Renderer::CreateBuffers(Mesh* mesh, std::vector<VertexMesh> vertices
     mesh->SetBuffersData(vbo, ibo);
 }
 
-void WinDX11Renderer::RenderFrame()
+void WinDX11Renderer::RenderFrame(Vector2 ViewportSize)
 {
-    m_renderTarget->SetActive(this);
-    m_renderTarget->Clear(this, Vector4(0.0f, 0.0f, 0.0f, 1.0f));
+    // We scale the scene render target accordingly to the editor viewport size
+    m_renderTargets[1]->SetViewportSize(this, (UINT)ViewportSize.X, (UINT)ViewportSize.Y);
+    if(m_previousViewportSize.X != ViewportSize.X || m_previousViewportSize.Y != m_previousViewportSize.Y)
+    {
+        m_renderTargets[1]->Resize(this, ViewportSize.X, ViewportSize.Y);
+        m_previousViewportSize = ViewportSize;
+    }
+
+    m_renderTargets[1]->SetActive(this);
+    m_renderTargets[1]->Clear(this, Vector4(0.0f, 0.0f, 0.0f, 0.0f));
 
     for(auto dc : m_drawcalls)
         dc->Pass(this);
+
+    // setting back the backbuffer render target
+    m_renderTargets[0]->SetActive(this); 
 }
 
 void WinDX11Renderer::PresentSwapChain()
@@ -258,9 +275,12 @@ void WinDX11Renderer::PresentSwapChain()
     m_dxgiSwapChain->Present(true, NULL);   
 }
 
-void WinDX11Renderer::OnResize(unsigned width, unsigned height)
+void WinDX11Renderer::OnResizeWindow(unsigned width, unsigned height)
 {
-    WinDX11RenderTarget* rendTarg = (WinDX11RenderTarget*)m_renderTarget;
+    WinDX11RenderTarget* rendTarg = (WinDX11RenderTarget*)m_renderTargets[0];
+    if(rendTarg == nullptr)
+        return;
+    
     rendTarg->Resize(this, width, height);
 }
 

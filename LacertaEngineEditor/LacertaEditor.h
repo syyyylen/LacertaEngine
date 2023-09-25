@@ -46,6 +46,8 @@ private:
 
     Scene* m_activeScene;
 
+    Vector2 m_viewportCachedSize = Vector2(1920.0f, 1080.0f);
+
     // TODO handle scene Camera
     bool m_isMouseLocked = true;
     Matrix4x4 m_sceneCamera;

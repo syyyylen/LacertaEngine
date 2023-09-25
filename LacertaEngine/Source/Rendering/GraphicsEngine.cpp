@@ -64,16 +64,16 @@ void GraphicsEngine::ClearDrawcalls()
         m_renderer->ClearDrawcalls();
 }
 
-void GraphicsEngine::Render()
+void GraphicsEngine::RenderScene(Vector2 ViewportSize)
 {
     if(m_renderer)
-        m_renderer->RenderFrame();
+        m_renderer->RenderFrame(ViewportSize);
 }
 
 void GraphicsEngine::Resize(unsigned width, unsigned height)
 {
     if(m_renderer)
-        m_renderer->OnResize(width, height);
+        m_renderer->OnResizeWindow(width, height);
 }
 
 void GraphicsEngine::PresentSwapChain()

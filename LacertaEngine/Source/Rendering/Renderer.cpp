@@ -23,6 +23,14 @@ void Renderer::ClearDrawcalls()
     m_drawcalls.clear();
 }
 
+RenderTarget* Renderer::GetRenderTarget(int index)
+{
+    if(m_renderTargets.size() > index)
+        return m_renderTargets[index];
+
+    return nullptr;
+}
+
 Shader* Renderer::GetShader(std::string shaderName)
 {
     auto it = m_shaders.find(shaderName);

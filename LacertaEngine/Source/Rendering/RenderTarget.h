@@ -16,7 +16,7 @@ public:
     virtual void SetActive(Renderer* renderer) = 0;
     virtual void Clear(Renderer* renderer, Vector4 color) = 0;
     virtual void SetViewportSize(Renderer* renderer, UINT width, UINT height) = 0;
-
+    virtual void Resize(Renderer* renderer, unsigned width, unsigned height) = 0;
 
 private:
     int m_width;
