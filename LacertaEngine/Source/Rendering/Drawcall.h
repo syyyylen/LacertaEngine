@@ -1,4 +1,5 @@
 ﻿#pragma once
+
 #include "../Core.h"
 #include "Renderer.h"
 #include "../Maths/Maths.h"
@@ -13,6 +14,13 @@ enum DrawcallType
     dcMesh
 };
 
+struct MatLightProperties
+{
+    Vector4 DiffuseColor = Vector4(0.0f, 0.0f, 0.0f, 0.0f);
+    Vector4 SpecularColor =  Vector4(0.0f, 0.0f, 0.0f, 0.0f);
+    float SpecularIntensity = 16.0f;
+};
+
 struct DrawcallData
 {
     void* VBO;
@@ -23,6 +31,7 @@ struct DrawcallData
     std::string ShaderName;
     DrawcallType Type;
     Matrix4x4 LocalMatrix;
+    MatLightProperties LightProperties;
 };
 
 __declspec(align(16))
@@ -33,12 +42,18 @@ struct ConstantBuffer
     Matrix4x4 ProjectionMatrix;
     Vector3 CameraPosition;
     float Time = 0.0f;
+    float Ambient = 0.1f; // TODO all those light constants will become material relative
+    float Diffuse = 1.0f;
+    float Specular = 1.0f;
+    float Shininess = 30.0f;
+    Vector3 LightDirection;
 };
 
 __declspec(align(16))
 struct MeshConstantBuffer
 {
     Matrix4x4 LocalMatrix;
+    MatLightProperties LightProperties;
 };
 
 struct VertexDataScreen
@@ -72,6 +87,7 @@ public:
     unsigned long GetIndexListSize() { return m_indexCount; }
     DrawcallType GetType() { return m_type; }
     Matrix4x4 LocalMatrix() { return m_localMatrix; } // TODO relocate this
+    MatLightProperties LigthProperties() { return m_lightProperties; } // TODO relocate this
     Texture* GetTexture() { return m_texture; }
 
 protected:
@@ -80,7 +96,10 @@ protected:
     unsigned long m_verticesCount;
     unsigned long m_indexCount;
     DrawcallType m_type;
+
+    // TODO the way the info is transferred all across the pipeline seems stupid af 
     Matrix4x4 m_localMatrix;
+    MatLightProperties m_lightProperties;
 };
 
 }

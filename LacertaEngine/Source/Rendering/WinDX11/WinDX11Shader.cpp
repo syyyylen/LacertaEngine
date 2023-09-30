@@ -121,6 +121,7 @@ void WinDX11Shader::PreparePass(Renderer* renderer, Drawcall* dc)
     {
         MeshConstantBuffer meshCb;
         meshCb.LocalMatrix = dc->LocalMatrix();
+        meshCb.LightProperties = dc->LigthProperties();
         GraphicsEngine::Get()->UpdateMeshConstants(&meshCb);
         ctx->IASetIndexBuffer((ID3D11Buffer*)dc->GetIBO(), DXGI_FORMAT_R32_UINT, 0);
     }

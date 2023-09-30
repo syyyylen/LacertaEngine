@@ -8,9 +8,16 @@
 namespace LacertaEngineEditor
 {
 
+// TEMP CONSTANTS 
 static float s_mouseSensivity = 3.0;
 static float s_moveSpeed = 6.5f;
 static float s_inputDownScalar = 0.03f;
+
+static float LightRotation = 0.0f;
+static float Ambient = 0.1f;
+static float Diffuse = 1.0f;
+static float Specular = 1.0f;
+static float Shininess = 30.0f;
     
 LacertaEditor::LacertaEditor()
 {
@@ -65,20 +72,26 @@ void LacertaEditor::Start()
     Texture* sandTexture = ResourceManager::Get()->CreateTexture(L"Assets/Textures/sand.jpg"); 
     Texture* brickTexture = ResourceManager::Get()->CreateTexture(L"Assets/Textures/brick.png");
 
-    float rdmDist = 10.0f;
-    Vector3 offset = Vector3(20.0f, 0.0f, 0.0f);
-    for(int i = 0; i < 60; i++)
+    float rdmDist = 20.0f;
+    Vector3 offset = Vector3(30.0f, 0.0f, 0.0f);
+    for(int i = 0; i < 15; i++)
     {
         std::string name;
         i % 2 == 0 ? name = "Teapot" : name = "Statue";
         GameObject* teapotGo = m_activeScene->CreateGameObject(name, offset + Vector3(Random::RandomFloatRange(-rdmDist, rdmDist),
                                                                                             Random::RandomFloatRange(-rdmDist, rdmDist),
                                                                                             Random::RandomFloatRange(-rdmDist, rdmDist)));
+        TransformComponent& tfComp = teapotGo->GetComponent<TransformComponent>();
+        tfComp.SetScale(Vector3(4.0f, 4.0f, 4.0f));
         
         MeshComponent& meshComp = teapotGo->AddComponent<MeshComponent>();
         i % 2 == 0 ? meshComp.SetMesh(teaPotMesh) : meshComp.SetMesh(statueMesh);
-        i % 2 == 0 ? meshComp.SetTexture(brickTexture) : meshComp.SetTexture(sandTexture);
-        meshComp.m_shaderName = "MeshShader";
+
+        // Creating the material and giving him properties
+        Material* newMat = new Material();
+        MatLightProperties properties;
+        newMat->InitializeProperties(properties, "MeshShader", sandTexture);
+        meshComp.SetMaterial(newMat);
     }
 
     // --------------------------- Camera Default Position ---------------------
@@ -111,6 +124,9 @@ void LacertaEditor::Update()
     {
         auto[transform, meshComponent] = tfMeshesGroup.get<TransformComponent, MeshComponent>(go);
 
+        if(meshComponent.GetMaterial() == nullptr)
+            continue;
+        
         // Adding DC
         Mesh* mesh = meshComponent.GetMesh();
         DrawcallData dcData = {};
@@ -119,9 +135,10 @@ void LacertaEditor::Update()
         dcData.IBO = mesh->GetIBO();
         dcData.IndicesCount = mesh->GetIndicesSize();
         dcData.Type = DrawcallType::dcMesh;
-        dcData.ShaderName = meshComponent.m_shaderName;
+        dcData.ShaderName = meshComponent.GetMaterial()->GetShader();
         dcData.LocalMatrix = transform.GetTransformMatrix();
-        dcData.Texture = meshComponent.GetTexture();
+        dcData.Texture = meshComponent.GetMaterial()->GetTexture();
+        dcData.LightProperties = meshComponent.GetMaterial()->GetMatLightProperties();
 
         GraphicsEngine::Get()->AddDrawcall(&dcData);
     }
@@ -158,6 +175,17 @@ void LacertaEditor::Update()
     
     // Update the perspective projection to the ImGui viewport size
     cc.ProjectionMatrix.SetPerspectiveFovLH(1.57f, (m_viewportCachedSize.X / m_viewportCachedSize.Y), 0.1f, 1000.0f);
+
+    // TODO remove temporary lighting constant and do per-material lighting computation
+    cc.Ambient = Ambient;
+    cc.Diffuse = Diffuse;
+    cc.Specular = Specular;
+    cc.Shininess = Shininess;
+
+    Matrix4x4 lightRotationMatrix;
+    lightRotationMatrix.SetIdentity();
+    lightRotationMatrix.SetRotationY(LightRotation);
+    cc.LightDirection = lightRotationMatrix.GetZDirection();
     
     GraphicsEngine::Get()->UpdateShaderConstants(&cc);
 

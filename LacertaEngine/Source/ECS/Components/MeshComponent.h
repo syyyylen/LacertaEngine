@@ -1,5 +1,6 @@
 ﻿#pragma once
 #include "../Component.h"
+#include "../../Rendering/Material.h"
 #include "../../RessourcesManager/Resources.h"
 #include "../../RessourcesManager/Mesh/Mesh.h"
 
@@ -15,16 +16,12 @@ public:
     void SetMesh(Mesh* mesh) { m_mesh = mesh; }
     Mesh* GetMesh() { return m_mesh; }
 
-    void SetTexture(Texture* texture) { m_texture = texture; }
-    Texture* GetTexture() { return m_texture; }
-
+    void SetMaterial(Material* material) { m_material = material; }
+    Material* GetMaterial() { return m_material; }
+    
 private:
     Mesh* m_mesh;
-    Texture* m_texture;
-
-public:
-    // TODO add a Material class that stores Shader / Data (which differs in every mat instance)
-    std::string m_shaderName;
+    Material* m_material;
 };
     
 }
