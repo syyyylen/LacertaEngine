@@ -30,6 +30,7 @@ public:
     void ClearDrawcalls();
     void RenderScene(Vector2 ViewportSize);
     void Resize(unsigned width, unsigned height);
+    void SetBackbufferViewportSize(int width, int height);
     void PresentSwapChain();
     void UpdateShaderConstants(void* buffer);
     void UpdateMeshConstants(void* buffer);

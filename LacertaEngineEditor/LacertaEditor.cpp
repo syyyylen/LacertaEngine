@@ -4,9 +4,6 @@
 
 #include "ImGui/UIRenderer.h"
 #include "Rendering/Drawcall.h"
-#include "Rendering/WinDX11/WinDX11Renderer.h"
-#include "Rendering/WinDX11/WinDX11RenderTarget.h"
-#include "RessourcesManager/Texture/DX11Texture.h"
 
 namespace LacertaEngineEditor
 {
@@ -62,6 +59,7 @@ void LacertaEditor::Start()
 
     // ----------------------------- Debug GO Creation -----------------------
 
+    // TODO standardize resource creation
     Mesh* statueMesh = ResourceManager::Get()->CreateResource<Mesh>(L"Assets/Meshes/statue.obj");
     Mesh* teaPotMesh = ResourceManager::Get()->CreateResource<Mesh>(L"Assets/Meshes/teapot.obj");
     Texture* sandTexture = ResourceManager::Get()->CreateTexture(L"Assets/Textures/sand.jpg"); 
@@ -130,9 +128,6 @@ void LacertaEditor::Update()
 
     // ----------------------------- Rendering Update  --------------------------
 
-    WinDX11Renderer* Dx11Renderer = (WinDX11Renderer*)GraphicsEngine::Get()->GetRenderer(); // TODO remove direct reference to DX11
-    WinDX11RenderTarget* BackBufferRenderTarget = (WinDX11RenderTarget*)Dx11Renderer->GetRenderTarget(0);
-    
     // TODO Camera pos & rot are updated here with some hard coded Matrix
     
     // Constant Buffer Update 
@@ -171,7 +166,7 @@ void LacertaEditor::Update()
     RECT windowRect = m_editorWindow->GetClientWindowRect();
     int width = windowRect.right - windowRect.left;
     int height = windowRect.bottom - windowRect.top;
-    BackBufferRenderTarget->SetViewportSize(Dx11Renderer, width, height); // update the backbuffer viewport size
+    GraphicsEngine::Get()->SetBackbufferViewportSize(width, height);
 
     // ----------------------------- UI Update  --------------------------
 
