@@ -22,10 +22,12 @@ public:
     void Quit();
 
     void Close();
-    
     bool IsRunning();
 
+    void SetViewportCachedSize(Vector2 newSize) { m_viewportCachedSize = newSize; }
+    Vector2 GetViewportCachedSize() { return m_viewportCachedSize; }
     EditorWindow* GetEditorWindow();
+    Scene* GetActiveScene() { return m_activeScene; }
 
     // InputListener interface
     void OnKeyDown(int key) override;
@@ -40,13 +42,12 @@ public:
 private:
     EditorWindow* m_editorWindow;
     Timer* m_globalTimer;
+    Vector2 m_viewportCachedSize = Vector2(1920.0f, 1080.0f);
 
     unsigned long m_previousTickCount;
     float m_deltaTime;
 
     Scene* m_activeScene;
-
-    Vector2 m_viewportCachedSize = Vector2(1920.0f, 1080.0f);
 
     // TODO handle scene Camera
     bool m_isMouseLocked = true;

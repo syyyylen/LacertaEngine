@@ -24,12 +24,13 @@ public:
     static GraphicsEngine* Get();
     static void Create();
     static void Shutdown();
-    
+
     void InitializeRenderer(int* context, RendererType type, int width, int height, int depth, int targetRefreshRate);
     void AddDrawcall(DrawcallData* dcData);
     void ClearDrawcalls();
     void RenderScene(Vector2 ViewportSize);
     void Resize(unsigned width, unsigned height);
+    void SetBackbufferViewportSize(int width, int height);
     void PresentSwapChain();
     void UpdateShaderConstants(void* buffer);
     void UpdateMeshConstants(void* buffer);

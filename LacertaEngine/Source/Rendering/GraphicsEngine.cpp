@@ -76,6 +76,12 @@ void GraphicsEngine::Resize(unsigned width, unsigned height)
         m_renderer->OnResizeWindow(width, height);
 }
 
+void GraphicsEngine::SetBackbufferViewportSize(int width, int height)
+{
+    if(m_renderer)
+        m_renderer->GetRenderTarget(0)->SetViewportSize(m_renderer, width, height);
+}
+
 void GraphicsEngine::PresentSwapChain()
 {
     if(m_renderer)
@@ -109,5 +115,4 @@ void GraphicsEngine::Shutdown()
     
     delete s_graphicsEngine;
 }
-    
 }

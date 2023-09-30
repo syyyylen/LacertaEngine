@@ -23,11 +23,14 @@ void WinDX11Drawcall::Setup(Renderer* renderer, DrawcallData* dcData)
     m_verticesCount = dcData->VerticesCount;
     m_ibo = static_cast<ID3D11Buffer*>(dcData->IBO);
     m_indexCount = dcData->IndicesCount;
-    
+
+    // TODO the way the info is transferred all across the pipeline seems stupid af 
     m_type = dcData->Type;
     if(dcData->Type == DrawcallType::dcMesh)
         m_localMatrix = dcData->LocalMatrix;
 
+    m_lightProperties = dcData->LightProperties;
+    
     if(!renderer->HasShader(dcData->ShaderName))
     {
         LOG(Error, "Invalid Shader Name, not contained in the current renderer");

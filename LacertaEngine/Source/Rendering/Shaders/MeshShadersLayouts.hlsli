@@ -10,4 +10,5 @@ struct VertexOutput
     float4 position : SV_POSITION;
     float2 texcoord : TEXCOORD0;
     float3 normal : NORMAL;
+    float3 directionToCamera : TEXCOORD1;
 };

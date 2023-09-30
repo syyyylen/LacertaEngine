@@ -12,6 +12,7 @@ VertexOutput main(VertexInput input)
     ret.position = mul(ret.position, Projection);
     ret.texcoord = input.texcoord;
     ret.normal = input.normal;
+    ret.directionToCamera = normalize(ret.position.xyz - CameraPosition.xyz);
     
     return ret;
 }
