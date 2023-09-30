@@ -109,5 +109,4 @@ void GraphicsEngine::Shutdown()
     
     delete s_graphicsEngine;
 }
-    
 }

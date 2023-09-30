@@ -24,7 +24,7 @@ public:
     static GraphicsEngine* Get();
     static void Create();
     static void Shutdown();
-    
+
     void InitializeRenderer(int* context, RendererType type, int width, int height, int depth, int targetRefreshRate);
     void AddDrawcall(DrawcallData* dcData);
     void ClearDrawcalls();
