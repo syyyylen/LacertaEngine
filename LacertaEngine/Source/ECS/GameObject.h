@@ -13,7 +13,7 @@ public:
     GameObject();
     GameObject(Scene* scene, entt::entity entityHandle, std::string name, Vector3 position);
     ~GameObject();
-
+    
     std::string GetName(){ return m_name; }
 
     template<typename T, typename... Args>

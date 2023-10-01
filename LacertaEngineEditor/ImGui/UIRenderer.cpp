@@ -5,6 +5,7 @@
 #include "Rendering/WinDX11/WinDX11Renderer.h"
 #include "Rendering/WinDX11/WinDX11RenderTarget.h"
 #include "UIPanels/GlobalSettingsPanel.h"
+#include "UIPanels/SceneHierarchyPanel.h"
 
 namespace LacertaEngineEditor
 {
@@ -68,6 +69,7 @@ void UIRenderer::InitializeUI(HWND hwnd, LacertaEditor* editor)
 
     //Create and store all the main panels
     m_panels.push_back(new GlobalSettingsPanel());
+    m_panels.push_back(new SceneHierarchyPanel());
 
     for(auto panel : m_panels)
         panel->Start();
@@ -141,6 +143,8 @@ void UIRenderer::Update()
         }
     }
 
+    //Viewport 
+    
     // TODO get the infos more properly + DX11 agnostic 
     WinDX11Renderer* Dx11Renderer = (WinDX11Renderer*)GraphicsEngine::Get()->GetRenderer(); 
     WinDX11RenderTarget* SceneTextureRenderTarget = (WinDX11RenderTarget*)Dx11Renderer->GetRenderTarget(1);
@@ -160,27 +164,9 @@ void UIRenderer::Update()
             }
         }
     }
+
+    // Stats 
     
-    {
-        ImGui::Begin("SceneHierarchy");
-
-        if (ImGui::BeginListBox("Scene GameObjects"))
-        {
-            for (int n = 0; n < (int)m_editor->GetActiveScene()->m_gameObjects.size(); n++)
-            {
-                const bool is_selected = (item_current_idx == n);
-                if (ImGui::Selectable(m_editor->GetActiveScene()->m_gameObjects[n]->GetName().data(), is_selected))
-                    item_current_idx = n;
-
-                if (is_selected)
-                    ImGui::SetItemDefaultFocus();
-            }
-            ImGui::EndListBox();
-        }
-        
-        ImGui::End();
-    }
-
     { 
         ImGui::Begin("FrameRate");                  
         ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);

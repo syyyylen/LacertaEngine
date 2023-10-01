@@ -61,18 +61,19 @@ void LacertaEditor::Start()
     Texture* sandTexture = ResourceManager::Get()->CreateTexture(L"Assets/Textures/sand.jpg"); 
     Texture* brickTexture = ResourceManager::Get()->CreateTexture(L"Assets/Textures/brick.png");
 
-    float rdmDist = 20.0f;
+    float rdmDist = 40.0f;
     Vector3 offset = Vector3(30.0f, 0.0f, 0.0f);
     for(int i = 0; i < 15; i++)
     {
         std::string name;
         i % 2 == 0 ? name = "Teapot" : name = "Statue";
+        name += std::to_string(i);
         GameObject* teapotGo = m_activeScene->CreateGameObject(name, offset + Vector3(Random::RandomFloatRange(-rdmDist, rdmDist),
                                                                                             Random::RandomFloatRange(-rdmDist, rdmDist),
                                                                                             Random::RandomFloatRange(-rdmDist, rdmDist)));
         TransformComponent& tfComp = teapotGo->GetComponent<TransformComponent>();
         Vector3 scale;
-        i % 2 == 0 ? scale = Vector3(4.0f, 4.0f, 4.0f) : scale = Vector3(6.5f, 6.5f, 6.5f);
+        i % 2 == 0 ? scale = Vector3(6.5f, 6.5f, 6.5f) : scale = Vector3(8.5f, 8.5f, 8.5f);
         tfComp.SetScale(scale);
         
         MeshComponent& meshComp = teapotGo->AddComponent<MeshComponent>();
@@ -82,7 +83,10 @@ void LacertaEditor::Start()
         Material* newMat = new Material();
         MatLightProperties properties;
         newMat->InitializeProperties(properties, "MeshShader", sandTexture);
-        meshComp.SetMaterial(newMat);
+        if(Random::RandomFloatRange(0.0f, 1.0f) > 0.7f)
+            newMat->SetTexture(brickTexture);
+        
+        meshComp.SetMaterial(newMat); 
     }
 
     // --------------------------- Camera Default Position ---------------------
