@@ -171,11 +171,8 @@ void LacertaEditor::Update()
     // Update the perspective projection to the ImGui viewport size
     cc.ProjectionMatrix.SetPerspectiveFovLH(1.57f, (m_viewportCachedSize.X / m_viewportCachedSize.Y), 0.1f, 1000.0f);
 
-    // TODO remove temporary lighting constant and do per-material lighting computation
+    // Ambient lighting constant
     cc.Ambient = m_ambient;
-    cc.Diffuse = m_diffuse;
-    cc.Specular = m_specular;
-    cc.Shininess = m_shininess;
 
     Matrix4x4 lightRotationMatrix;
     lightRotationMatrix.SetIdentity();

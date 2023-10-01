@@ -54,9 +54,6 @@ public:
 
     float m_lightRotation = 0.0f;
     float m_ambient = 0.1f;
-    float m_diffuse = 1.0f;
-    float m_specular = 1.0f;
-    float m_shininess = 10.0f;
 
 private:
     EditorWindow* m_editorWindow;

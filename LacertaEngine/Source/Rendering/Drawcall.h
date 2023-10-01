@@ -16,9 +16,9 @@ enum DrawcallType
 
 struct MatLightProperties
 {
-    Vector4 DiffuseColor = Vector4(0.0f, 0.0f, 0.0f, 0.0f);
-    Vector4 SpecularColor =  Vector4(1.0f, 1.0f, 1.0f, 1.0f);
-    float SpecularIntensity = 16.0f;
+    float DiffuseIntensity = 1.0f;
+    float SpecularIntensity = 1.0f;
+    float Shininess = 10.0f;
 };
 
 struct DrawcallData
@@ -43,9 +43,6 @@ struct ConstantBuffer
     Vector3 CameraPosition;
     float Time = 0.0f;
     float Ambient = 0.1f; // TODO all those light constants will become material relative
-    float Diffuse = 1.0f;
-    float Specular = 1.0f;
-    float Shininess = 30.0f;
     Vector3 LightDirection;
 };
 
