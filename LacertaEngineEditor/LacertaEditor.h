@@ -47,8 +47,8 @@ public:
     
     // Temporary constants, exposed for UI panels
 public:
-    float m_mouseSensivity = 3.0;
-    float m_moveSpeed = 6.5f;
+    float m_mouseSensivity = 3.0f;
+    float m_moveSpeed = 12.5f;
     float m_inputDownScalar = 0.03f;
 
     float m_lightRotation = 0.0f;

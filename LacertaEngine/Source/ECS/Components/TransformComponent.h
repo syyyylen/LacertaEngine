@@ -22,9 +22,11 @@ public:
 
      // TODO remove and use constructor
     void SetStartPosition(Vector3 position) { m_startPosition = position; }
-    
     Vector3 GetStartPosition() { return m_startPosition; }
 
+    Vector3 Position() { return m_transformMatrix.GetTranslation(); }
+    Vector3 Scale() { return m_transformMatrix.GetScale(); }
+    
     void SetTransformMatrix(Matrix4x4 mat) { m_transformMatrix = mat; }
     Matrix4x4 GetTransformMatrix() { return m_transformMatrix; }
 

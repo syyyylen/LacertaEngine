@@ -4,6 +4,7 @@
 #include "imgui_src/imgui.h"
 #include "Rendering/WinDX11/WinDX11Renderer.h"
 #include "Rendering/WinDX11/WinDX11RenderTarget.h"
+#include "UIPanels/DetailsPanel.h"
 #include "UIPanels/GlobalSettingsPanel.h"
 #include "UIPanels/SceneHierarchyPanel.h"
 
@@ -70,6 +71,7 @@ void UIRenderer::InitializeUI(HWND hwnd, LacertaEditor* editor)
     //Create and store all the main panels
     m_panels.push_back(new GlobalSettingsPanel());
     m_panels.push_back(new SceneHierarchyPanel());
+    m_panels.push_back(new DetailsPanel());
 
     for(auto panel : m_panels)
         panel->Start();

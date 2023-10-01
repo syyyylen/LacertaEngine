@@ -61,9 +61,9 @@ void LacertaEditor::Start()
     Texture* sandTexture = ResourceManager::Get()->CreateTexture(L"Assets/Textures/sand.jpg"); 
     Texture* brickTexture = ResourceManager::Get()->CreateTexture(L"Assets/Textures/brick.png");
 
-    float rdmDist = 40.0f;
-    Vector3 offset = Vector3(30.0f, 0.0f, 0.0f);
-    for(int i = 0; i < 15; i++)
+    float rdmDist = 80.0f;
+    Vector3 offset = Vector3(50.0f, 0.0f, 0.0f);
+    for(int i = 0; i < 25; i++)
     {
         std::string name;
         i % 2 == 0 ? name = "Teapot" : name = "Statue";
@@ -73,7 +73,7 @@ void LacertaEditor::Start()
                                                                                             Random::RandomFloatRange(-rdmDist, rdmDist)));
         TransformComponent& tfComp = teapotGo->GetComponent<TransformComponent>();
         Vector3 scale;
-        i % 2 == 0 ? scale = Vector3(6.5f, 6.5f, 6.5f) : scale = Vector3(8.5f, 8.5f, 8.5f);
+        i % 2 == 0 ? scale = Vector3(16.5f, 16.5f, 16.5f) : scale = Vector3(40.0f, 40.0f, 40.0f);
         tfComp.SetScale(scale);
         
         MeshComponent& meshComp = teapotGo->AddComponent<MeshComponent>();
