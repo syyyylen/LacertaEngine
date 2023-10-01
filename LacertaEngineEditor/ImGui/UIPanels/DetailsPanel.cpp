@@ -28,10 +28,14 @@ void DetailsPanel::Update()
     {
         GameObject* selectedGo = editor->GetSelectedGo();
         ImGui::Text(selectedGo->GetName().c_str());
+        
         ImGui::Separator();
 
         if(selectedGo->HasComponent<TransformComponent>())
         {
+            ImGui::Text("Transform");
+            ImGui::Spacing();
+            
             TransformComponent& tfComp = selectedGo->GetComponent<TransformComponent>();
 
             // Position
@@ -44,6 +48,23 @@ void DetailsPanel::Update()
             ImGui::InputFloat3("Scale", scale);
             tfComp.SetScale(Vector3(scale[0], scale[1], scale[2]));
         }
+
+        ImGui::Separator();
+
+        if(selectedGo->HasComponent<MeshComponent>())
+        {
+            ImGui::Text("Mesh");
+            ImGui::Spacing();
+            
+            MeshComponent& meshComp = selectedGo->GetComponent<MeshComponent>();
+
+            if(meshComp.GetMaterial() != nullptr)
+            {
+                ImGui::Text("Material Shader : %s", meshComp.GetMaterial()->GetShader().c_str());
+            }
+        }
+
+        ImGui::Separator();
     }
     else
     {
