@@ -8,17 +8,6 @@
 namespace LacertaEngineEditor
 {
 
-// TEMP CONSTANTS 
-static float s_mouseSensivity = 3.0;
-static float s_moveSpeed = 6.5f;
-static float s_inputDownScalar = 0.03f;
-
-static float LightRotation = 0.0f;
-static float Ambient = 0.1f;
-static float Diffuse = 1.0f;
-static float Specular = 1.0f;
-static float Shininess = 30.0f;
-    
 LacertaEditor::LacertaEditor()
 {
 }
@@ -72,17 +61,20 @@ void LacertaEditor::Start()
     Texture* sandTexture = ResourceManager::Get()->CreateTexture(L"Assets/Textures/sand.jpg"); 
     Texture* brickTexture = ResourceManager::Get()->CreateTexture(L"Assets/Textures/brick.png");
 
-    float rdmDist = 20.0f;
-    Vector3 offset = Vector3(30.0f, 0.0f, 0.0f);
+    float rdmDist = 50.0f;
+    Vector3 offset = Vector3(40.0f, 0.0f, 0.0f);
     for(int i = 0; i < 15; i++)
     {
         std::string name;
         i % 2 == 0 ? name = "Teapot" : name = "Statue";
+        name += std::to_string(i);
         GameObject* teapotGo = m_activeScene->CreateGameObject(name, offset + Vector3(Random::RandomFloatRange(-rdmDist, rdmDist),
                                                                                             Random::RandomFloatRange(-rdmDist, rdmDist),
                                                                                             Random::RandomFloatRange(-rdmDist, rdmDist)));
         TransformComponent& tfComp = teapotGo->GetComponent<TransformComponent>();
-        tfComp.SetScale(Vector3(4.0f, 4.0f, 4.0f));
+        Vector3 scale;
+        i % 2 == 0 ? scale = Vector3(16.5f, 16.5f, 16.5f) : scale = Vector3(40.0f, 40.0f, 40.0f);
+        tfComp.SetScale(scale);
         
         MeshComponent& meshComp = teapotGo->AddComponent<MeshComponent>();
         i % 2 == 0 ? meshComp.SetMesh(teaPotMesh) : meshComp.SetMesh(statueMesh);
@@ -91,7 +83,10 @@ void LacertaEditor::Start()
         Material* newMat = new Material();
         MatLightProperties properties;
         newMat->InitializeProperties(properties, "MeshShader", sandTexture);
-        meshComp.SetMaterial(newMat);
+        if(Random::RandomFloatRange(0.0f, 1.0f) > 0.7f)
+            newMat->SetTexture(brickTexture);
+        
+        meshComp.SetMaterial(newMat); 
     }
 
     // --------------------------- Camera Default Position ---------------------
@@ -165,8 +160,8 @@ void LacertaEditor::Update()
     temp.SetRotationY(m_cameraRotationY);
     worldCam *= temp;
 
-    Vector3 newCamPos = m_sceneCamera.GetTranslation() + worldCam.GetZDirection() * (m_cameraForward * (s_moveSpeed * s_inputDownScalar));
-    newCamPos = newCamPos + worldCam.GetXDirection() * (m_cameraRight * (s_moveSpeed * s_inputDownScalar));
+    Vector3 newCamPos = m_sceneCamera.GetTranslation() + worldCam.GetZDirection() * (m_cameraForward * (m_moveSpeed * m_inputDownScalar));
+    newCamPos = newCamPos + worldCam.GetXDirection() * (m_cameraRight * (m_moveSpeed * m_inputDownScalar));
     worldCam.SetTranslation(newCamPos);
     cc.CameraPosition = newCamPos;
     m_sceneCamera = worldCam;
@@ -177,14 +172,14 @@ void LacertaEditor::Update()
     cc.ProjectionMatrix.SetPerspectiveFovLH(1.57f, (m_viewportCachedSize.X / m_viewportCachedSize.Y), 0.1f, 1000.0f);
 
     // TODO remove temporary lighting constant and do per-material lighting computation
-    cc.Ambient = Ambient;
-    cc.Diffuse = Diffuse;
-    cc.Specular = Specular;
-    cc.Shininess = Shininess;
+    cc.Ambient = m_ambient;
+    cc.Diffuse = m_diffuse;
+    cc.Specular = m_specular;
+    cc.Shininess = m_shininess;
 
     Matrix4x4 lightRotationMatrix;
     lightRotationMatrix.SetIdentity();
-    lightRotationMatrix.SetRotationY(LightRotation);
+    lightRotationMatrix.SetRotationY(m_lightRotation);
     cc.LightDirection = lightRotationMatrix.GetZDirection();
     
     GraphicsEngine::Get()->UpdateShaderConstants(&cc);
@@ -239,6 +234,19 @@ EditorWindow* LacertaEditor::GetEditorWindow()
     return m_editorWindow;
 }
 
+void LacertaEditor::DestroyGo(GameObject* goToDestroy)
+{
+    if(goToDestroy == m_selectedObject)
+        m_selectedObject = nullptr;
+
+    if(m_activeScene == nullptr)
+        return;
+    
+    m_activeScene->RemoveGameObject(goToDestroy);
+
+    delete goToDestroy;
+}
+
 void LacertaEditor::OnKeyDown(int key)
 {
     if(key == 'Z')
@@ -280,8 +288,8 @@ void LacertaEditor::OnMouseMove(const Vector2& mousePosition)
     int width = windowRect.right - windowRect.left;
     int height = windowRect.bottom - windowRect.top;
     
-    m_cameraRotationX += (mousePosition.Y - (height / 2.0f)) * m_deltaTime * (s_mouseSensivity * s_inputDownScalar);
-    m_cameraRotationY += (mousePosition.X - (width / 2.0f)) * m_deltaTime * (s_mouseSensivity * s_inputDownScalar);
+    m_cameraRotationX += (mousePosition.Y - (height / 2.0f)) * m_deltaTime * (m_mouseSensivity * m_inputDownScalar);
+    m_cameraRotationY += (mousePosition.X - (width / 2.0f)) * m_deltaTime * (m_mouseSensivity * m_inputDownScalar);
 
     InputSystem::Get()->SetCursorPosition(Vector2(width/2.0f, height/2.0f));
 }

@@ -1,5 +1,6 @@
 ﻿#pragma once
 
+#include "UIPanel.h"
 #include "../LacertaEditor.h"
 #include "../EditorWindow/EditorWindow.h"
 
@@ -19,8 +20,10 @@ public:
 
     void InitializeUI(HWND hwnd, LacertaEditor* editor);
     void Update();
+    LacertaEditor* GetEditor() { return m_editor; }
 
 private:
+    std::vector<UIPanel*> m_panels;
     static UIRenderer* s_UIRenderer;
     LacertaEditor* m_editor;
 };

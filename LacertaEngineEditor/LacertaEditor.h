@@ -26,8 +26,15 @@ public:
 
     void SetViewportCachedSize(Vector2 newSize) { m_viewportCachedSize = newSize; }
     Vector2 GetViewportCachedSize() { return m_viewportCachedSize; }
+    
     EditorWindow* GetEditorWindow();
+    
     Scene* GetActiveScene() { return m_activeScene; }
+
+    bool HasSelectedGo() { return m_selectedObject != nullptr; }
+    void SetSelectedGo(GameObject* selectedGo) { m_selectedObject = selectedGo; }
+    GameObject* GetSelectedGo() { return m_selectedObject; }
+    void DestroyGo(GameObject* goToDestroy);
 
     // InputListener interface
     void OnKeyDown(int key) override;
@@ -38,6 +45,18 @@ public:
     virtual void OnLeftMouseUp(const Vector2& mousePos) override;
     virtual void OnRightMouseUp(const Vector2& mousePos) override;
     // end InputListener interface
+    
+    // Temporary constants, exposed for UI panels
+public:
+    float m_mouseSensivity = 3.0f;
+    float m_moveSpeed = 12.5f;
+    float m_inputDownScalar = 0.03f;
+
+    float m_lightRotation = 0.0f;
+    float m_ambient = 0.1f;
+    float m_diffuse = 1.0f;
+    float m_specular = 1.0f;
+    float m_shininess = 10.0f;
 
 private:
     EditorWindow* m_editorWindow;
@@ -48,6 +67,7 @@ private:
     float m_deltaTime;
 
     Scene* m_activeScene;
+    GameObject* m_selectedObject;
 
     // TODO handle scene Camera
     bool m_isMouseLocked = true;

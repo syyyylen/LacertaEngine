@@ -30,4 +30,10 @@ GameObject* Scene::CreateGameObject(std::string name, Vector3 position)
     return go;
 }
 
+void Scene::RemoveGameObject(GameObject* goToRemove)
+{
+    m_gameObjects.erase(std::remove(m_gameObjects.begin(), m_gameObjects.end(), goToRemove), m_gameObjects.end());
+    m_registry.destroy(goToRemove->GetEntityHandle());
+}
+    
 }

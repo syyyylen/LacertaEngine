@@ -14,6 +14,7 @@ public:
     GameObject(Scene* scene, entt::entity entityHandle, std::string name, Vector3 position);
     ~GameObject();
 
+    entt::entity GetEntityHandle() { return m_entityHandle; }
     std::string GetName(){ return m_name; }
 
     template<typename T, typename... Args>
