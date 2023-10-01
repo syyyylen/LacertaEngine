@@ -34,6 +34,7 @@ public:
     bool HasSelectedGo() { return m_selectedObject != nullptr; }
     void SetSelectedGo(GameObject* selectedGo) { m_selectedObject = selectedGo; }
     GameObject* GetSelectedGo() { return m_selectedObject; }
+    void DestroyGo(GameObject* goToDestroy);
 
     // InputListener interface
     void OnKeyDown(int key) override;

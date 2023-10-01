@@ -61,9 +61,9 @@ void LacertaEditor::Start()
     Texture* sandTexture = ResourceManager::Get()->CreateTexture(L"Assets/Textures/sand.jpg"); 
     Texture* brickTexture = ResourceManager::Get()->CreateTexture(L"Assets/Textures/brick.png");
 
-    float rdmDist = 80.0f;
-    Vector3 offset = Vector3(50.0f, 0.0f, 0.0f);
-    for(int i = 0; i < 25; i++)
+    float rdmDist = 50.0f;
+    Vector3 offset = Vector3(40.0f, 0.0f, 0.0f);
+    for(int i = 0; i < 15; i++)
     {
         std::string name;
         i % 2 == 0 ? name = "Teapot" : name = "Statue";
@@ -232,6 +232,19 @@ bool LacertaEditor::IsRunning()
 EditorWindow* LacertaEditor::GetEditorWindow()
 {
     return m_editorWindow;
+}
+
+void LacertaEditor::DestroyGo(GameObject* goToDestroy)
+{
+    if(goToDestroy == m_selectedObject)
+        m_selectedObject = nullptr;
+
+    if(m_activeScene == nullptr)
+        return;
+    
+    m_activeScene->RemoveGameObject(goToDestroy);
+
+    delete goToDestroy;
 }
 
 void LacertaEditor::OnKeyDown(int key)

@@ -42,6 +42,14 @@ void SceneHierarchyPanel::Update()
 
         ImGui::EndListBox();
     }
+
+    if(ImGui::Button("Delete"))
+    {
+        if(editor->HasSelectedGo())
+        {
+            editor->DestroyGo(editor->GetSelectedGo());
+        }
+    }
     
     ImGui::End();
 }

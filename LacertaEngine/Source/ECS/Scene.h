@@ -15,6 +15,7 @@ public:
     ~Scene();
 
     GameObject* CreateGameObject(std::string name, Vector3 position);
+    void RemoveGameObject(GameObject* goToRemove);
 
 public:
     entt::registry m_registry;
