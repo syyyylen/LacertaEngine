@@ -8,17 +8,6 @@
 namespace LacertaEngineEditor
 {
 
-// TEMP CONSTANTS 
-static float s_mouseSensivity = 3.0;
-static float s_moveSpeed = 6.5f;
-static float s_inputDownScalar = 0.03f;
-
-static float LightRotation = 0.0f;
-static float Ambient = 0.1f;
-static float Diffuse = 1.0f;
-static float Specular = 1.0f;
-static float Shininess = 30.0f;
-    
 LacertaEditor::LacertaEditor()
 {
 }
@@ -82,7 +71,9 @@ void LacertaEditor::Start()
                                                                                             Random::RandomFloatRange(-rdmDist, rdmDist),
                                                                                             Random::RandomFloatRange(-rdmDist, rdmDist)));
         TransformComponent& tfComp = teapotGo->GetComponent<TransformComponent>();
-        tfComp.SetScale(Vector3(4.0f, 4.0f, 4.0f));
+        Vector3 scale;
+        i % 2 == 0 ? scale = Vector3(4.0f, 4.0f, 4.0f) : scale = Vector3(6.5f, 6.5f, 6.5f);
+        tfComp.SetScale(scale);
         
         MeshComponent& meshComp = teapotGo->AddComponent<MeshComponent>();
         i % 2 == 0 ? meshComp.SetMesh(teaPotMesh) : meshComp.SetMesh(statueMesh);
@@ -165,8 +156,8 @@ void LacertaEditor::Update()
     temp.SetRotationY(m_cameraRotationY);
     worldCam *= temp;
 
-    Vector3 newCamPos = m_sceneCamera.GetTranslation() + worldCam.GetZDirection() * (m_cameraForward * (s_moveSpeed * s_inputDownScalar));
-    newCamPos = newCamPos + worldCam.GetXDirection() * (m_cameraRight * (s_moveSpeed * s_inputDownScalar));
+    Vector3 newCamPos = m_sceneCamera.GetTranslation() + worldCam.GetZDirection() * (m_cameraForward * (m_moveSpeed * m_inputDownScalar));
+    newCamPos = newCamPos + worldCam.GetXDirection() * (m_cameraRight * (m_moveSpeed * m_inputDownScalar));
     worldCam.SetTranslation(newCamPos);
     cc.CameraPosition = newCamPos;
     m_sceneCamera = worldCam;
@@ -177,14 +168,14 @@ void LacertaEditor::Update()
     cc.ProjectionMatrix.SetPerspectiveFovLH(1.57f, (m_viewportCachedSize.X / m_viewportCachedSize.Y), 0.1f, 1000.0f);
 
     // TODO remove temporary lighting constant and do per-material lighting computation
-    cc.Ambient = Ambient;
-    cc.Diffuse = Diffuse;
-    cc.Specular = Specular;
-    cc.Shininess = Shininess;
+    cc.Ambient = m_ambient;
+    cc.Diffuse = m_diffuse;
+    cc.Specular = m_specular;
+    cc.Shininess = m_shininess;
 
     Matrix4x4 lightRotationMatrix;
     lightRotationMatrix.SetIdentity();
-    lightRotationMatrix.SetRotationY(LightRotation);
+    lightRotationMatrix.SetRotationY(m_lightRotation);
     cc.LightDirection = lightRotationMatrix.GetZDirection();
     
     GraphicsEngine::Get()->UpdateShaderConstants(&cc);
@@ -280,8 +271,8 @@ void LacertaEditor::OnMouseMove(const Vector2& mousePosition)
     int width = windowRect.right - windowRect.left;
     int height = windowRect.bottom - windowRect.top;
     
-    m_cameraRotationX += (mousePosition.Y - (height / 2.0f)) * m_deltaTime * (s_mouseSensivity * s_inputDownScalar);
-    m_cameraRotationY += (mousePosition.X - (width / 2.0f)) * m_deltaTime * (s_mouseSensivity * s_inputDownScalar);
+    m_cameraRotationX += (mousePosition.Y - (height / 2.0f)) * m_deltaTime * (m_mouseSensivity * m_inputDownScalar);
+    m_cameraRotationY += (mousePosition.X - (width / 2.0f)) * m_deltaTime * (m_mouseSensivity * m_inputDownScalar);
 
     InputSystem::Get()->SetCursorPosition(Vector2(width/2.0f, height/2.0f));
 }

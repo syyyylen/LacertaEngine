@@ -38,6 +38,18 @@ public:
     virtual void OnLeftMouseUp(const Vector2& mousePos) override;
     virtual void OnRightMouseUp(const Vector2& mousePos) override;
     // end InputListener interface
+    
+    // Temporary constants, exposed for UI panelsesqe
+public:
+    float m_mouseSensivity = 3.0;
+    float m_moveSpeed = 6.5f;
+    float m_inputDownScalar = 0.03f;
+
+    float m_lightRotation = 0.0f;
+    float m_ambient = 0.1f;
+    float m_diffuse = 1.0f;
+    float m_specular = 1.0f;
+    float m_shininess = 10.0f;
 
 private:
     EditorWindow* m_editorWindow;

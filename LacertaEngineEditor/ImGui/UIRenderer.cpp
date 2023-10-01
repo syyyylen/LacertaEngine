@@ -4,6 +4,7 @@
 #include "imgui_src/imgui.h"
 #include "Rendering/WinDX11/WinDX11Renderer.h"
 #include "Rendering/WinDX11/WinDX11RenderTarget.h"
+#include "UIPanels/GlobalSettingsPanel.h"
 
 namespace LacertaEngineEditor
 {
@@ -36,6 +37,9 @@ void UIRenderer::Create()
 
 void UIRenderer::Shutdown()
 {
+    for(auto panel : s_UIRenderer->m_panels)
+        panel->Close();
+    
     ImGui_ImplDX11_Shutdown();
     ImGui_ImplWin32_Shutdown();
     ImGui::DestroyContext();
@@ -61,6 +65,12 @@ void UIRenderer::InitializeUI(HWND hwnd, LacertaEditor* editor)
     ImGui_ImplDX11_Init((ID3D11Device*)Dx11Renderer->GetDriver(), Dx11Renderer->GetImmediateContext());
 
     m_editor = editor;
+
+    //Create and store all the main panels
+    m_panels.push_back(new GlobalSettingsPanel());
+
+    for(auto panel : m_panels)
+        panel->Start();
 }
 
 void UIRenderer::Update()
@@ -177,10 +187,14 @@ void UIRenderer::Update()
         ImGui::End();
     }
 
+    for(auto panel : m_panels)
+        panel->Update();
+
     if(dockspaceOpen)
         ImGui::End(); // End dockspace
 
     ImGui::Render();
     ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
 }
+    
 }

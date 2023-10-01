@@ -17,7 +17,7 @@ enum DrawcallType
 struct MatLightProperties
 {
     Vector4 DiffuseColor = Vector4(0.0f, 0.0f, 0.0f, 0.0f);
-    Vector4 SpecularColor =  Vector4(0.0f, 0.0f, 0.0f, 0.0f);
+    Vector4 SpecularColor =  Vector4(1.0f, 1.0f, 1.0f, 1.0f);
     float SpecularIntensity = 16.0f;
 };
 
