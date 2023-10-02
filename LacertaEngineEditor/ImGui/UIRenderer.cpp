@@ -179,10 +179,16 @@ void UIRenderer::Update()
                     Matrix4x4 cameraMatrix = m_editor->GetCameraMatrix();
                     cameraMatrix.Inverse(); // View matrix
                     Matrix4x4 cameraProjectionMatrix = m_editor->GetCameraProjectionMatrix();
-                    Matrix4x4 selectedGoTfMatrix = selectedGo->GetComponent<TransformComponent>().GetTransformMatrix();
+                    auto& tfComp = selectedGo->GetComponent<TransformComponent>();
+                    Matrix4x4 selectedGoTfMatrix = tfComp.GetTransformMatrix();
 
                     ImGuizmo::Manipulate(cameraMatrix.ToFloatPtr(), cameraProjectionMatrix.ToFloatPtr(),
                         ImGuizmo::OPERATION::TRANSLATE, ImGuizmo::LOCAL, selectedGoTfMatrix.ToFloatPtr());
+
+                    if(ImGuizmo::IsUsing())
+                    {
+                        tfComp.SetTransformMatrix(selectedGoTfMatrix);
+                    }
                 }
                 
                 ImGui::End();
