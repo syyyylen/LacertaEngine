@@ -170,6 +170,7 @@ void LacertaEditor::Update()
     
     // Update the perspective projection to the ImGui viewport size
     cc.ProjectionMatrix.SetPerspectiveFovLH(1.57f, (m_viewportCachedSize.X / m_viewportCachedSize.Y), 0.1f, 1000.0f);
+    m_sceneCameraProjection = cc.ProjectionMatrix;
 
     // Ambient lighting constant
     cc.Ambient = m_ambient;

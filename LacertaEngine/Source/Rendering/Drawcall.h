@@ -42,7 +42,7 @@ struct ConstantBuffer
     Matrix4x4 ProjectionMatrix;
     Vector3 CameraPosition;
     float Time = 0.0f;
-    float Ambient = 0.1f; // TODO all those light constants will become material relative
+    float Ambient = 0.1f;
     Vector3 LightDirection;
 };
 

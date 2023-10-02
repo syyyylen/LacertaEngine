@@ -203,6 +203,8 @@ public:
         );
     }
 
+    float* ToFloatPtr() { return m_mat[0]; }
+
 private:
     float m_mat[4][4] = {};
 
