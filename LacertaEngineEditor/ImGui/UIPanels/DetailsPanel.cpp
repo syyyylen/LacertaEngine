@@ -60,7 +60,18 @@ void DetailsPanel::Update()
 
             if(meshComp.GetMaterial() != nullptr)
             {
-                ImGui::Text("Material Shader : %s", meshComp.GetMaterial()->GetShader().c_str());
+                Material* mat = meshComp.GetMaterial();
+                
+                ImGui::Text("Material Shader : %s", mat->GetShader().c_str());
+                ImGui::Spacing();
+
+                MatLightProperties lightProperties = mat->GetMatLightProperties();
+
+                ImGui::SliderFloat("Diffuse", &lightProperties.DiffuseIntensity, 0.0f, 5.0f);
+                ImGui::SliderFloat("Specular", &lightProperties.SpecularIntensity, 0.0f, 5.0f);
+                ImGui::SliderFloat("Shininess", &lightProperties.Shininess, 0.0f, 40.0f);
+
+                mat->SetMatLightProperties(lightProperties);
             }
         }
 

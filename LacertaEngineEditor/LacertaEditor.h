@@ -35,6 +35,9 @@ public:
     void SetSelectedGo(GameObject* selectedGo) { m_selectedObject = selectedGo; }
     GameObject* GetSelectedGo() { return m_selectedObject; }
     void DestroyGo(GameObject* goToDestroy);
+    
+    Matrix4x4 GetCameraMatrix() { return m_sceneCamera; }
+    Matrix4x4 GetCameraProjectionMatrix() { return m_sceneCameraProjection; }
 
     // InputListener interface
     void OnKeyDown(int key) override;
@@ -54,9 +57,6 @@ public:
 
     float m_lightRotation = 0.0f;
     float m_ambient = 0.1f;
-    float m_diffuse = 1.0f;
-    float m_specular = 1.0f;
-    float m_shininess = 10.0f;
 
 private:
     EditorWindow* m_editorWindow;
@@ -72,6 +72,7 @@ private:
     // TODO handle scene Camera
     bool m_isMouseLocked = true;
     Matrix4x4 m_sceneCamera;
+    Matrix4x4 m_sceneCameraProjection;
     float m_cameraForward;
     float m_cameraRight;
     float m_cameraRotationX;

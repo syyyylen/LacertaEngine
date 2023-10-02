@@ -33,9 +33,6 @@ void GlobalSettingsPanel::Update()
         ImGui::Text("Lighting");
         ImGui::SliderFloat("Directional rotation", &editor->m_lightRotation, 0.0f, 6.28f);
         ImGui::SliderFloat("Ambient", &editor->m_ambient, 0.0f, 1.0f);
-        ImGui::SliderFloat("Diffuse", &editor->m_diffuse, 0.0f, 3.0f);
-        ImGui::SliderFloat("Specular", &editor->m_specular, 0.0f, 5.0f);
-        ImGui::SliderFloat("Shininess", &editor->m_shininess, 0.0f, 50.0f);
         
         ImGui::End();
     }

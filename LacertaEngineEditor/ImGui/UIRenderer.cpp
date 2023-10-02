@@ -7,6 +7,7 @@
 #include "UIPanels/DetailsPanel.h"
 #include "UIPanels/GlobalSettingsPanel.h"
 #include "UIPanels/SceneHierarchyPanel.h"
+#include "imgui_src/ImGuizmo.h"
 
 namespace LacertaEngineEditor
 {
@@ -83,6 +84,7 @@ void UIRenderer::Update()
     ImGui_ImplDX11_NewFrame();
     ImGui_ImplWin32_NewFrame();
     ImGui::NewFrame();
+    ImGuizmo::BeginFrame();
 
     // Dockspace wip
     static bool dockspaceOpen = true;
@@ -160,8 +162,35 @@ void UIRenderer::Update()
                 
                 ImVec2 viewportSize = ImGui::GetContentRegionAvail();
                 m_editor->SetViewportCachedSize(Vector2(viewportSize.x, viewportSize.y));
-                
                 ImGui::Image((void*)SceneTextureRenderTarget->GetTextureShaderResView(), viewportSize);
+
+                // Gizmos
+                if(m_editor->HasSelectedGo())
+                {
+                    GameObject* selectedGo = m_editor->GetSelectedGo();
+
+                    ImGuizmo::SetOrthographic(false);
+                    ImGuizmo::SetDrawlist();
+
+                    float windowWidth = (float)ImGui::GetWindowWidth();
+                    float windowHeight = (float)ImGui::GetWindowHeight();
+                    ImGuizmo::SetRect(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y, windowWidth, windowHeight);
+
+                    Matrix4x4 cameraMatrix = m_editor->GetCameraMatrix();
+                    cameraMatrix.Inverse(); // View matrix
+                    Matrix4x4 cameraProjectionMatrix = m_editor->GetCameraProjectionMatrix();
+                    auto& tfComp = selectedGo->GetComponent<TransformComponent>();
+                    Matrix4x4 selectedGoTfMatrix = tfComp.GetTransformMatrix();
+
+                    ImGuizmo::Manipulate(cameraMatrix.ToFloatPtr(), cameraProjectionMatrix.ToFloatPtr(),
+                        ImGuizmo::OPERATION::TRANSLATE, ImGuizmo::LOCAL, selectedGoTfMatrix.ToFloatPtr());
+
+                    if(ImGuizmo::IsUsing())
+                    {
+                        tfComp.SetTransformMatrix(selectedGoTfMatrix);
+                    }
+                }
+                
                 ImGui::End();
             }
         }

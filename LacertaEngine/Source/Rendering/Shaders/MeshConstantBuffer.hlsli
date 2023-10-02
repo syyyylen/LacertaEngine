@@ -3,9 +3,9 @@ sampler TextureSampler: register(s0);
 
 struct MaterialLightProperties
 {
-    float4 DiffuseColor;
-    float4 SpecularColor;
+    float DiffuseIntensity;
     float SpecularIntensity;
+    float Shininess;
 };
 
 cbuffer CBuffer : register(b1)

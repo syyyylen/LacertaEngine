@@ -6,8 +6,5 @@ cbuffer CBuffer : register(b0)
     float3 CameraPosition;
     float Time;
     float Ambient;
-    float Diffuse;
-    float Specular;
-    float Shininess;
     float3 LightDirection;
 };
