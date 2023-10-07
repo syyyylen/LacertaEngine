@@ -58,6 +58,8 @@ public:
     float m_lightRotation = 0.0f;
     float m_ambient = 0.1f;
 
+    bool Translate = true;
+
 private:
     EditorWindow* m_editorWindow;
     Timer* m_globalTimer;

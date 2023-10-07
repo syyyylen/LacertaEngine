@@ -270,6 +270,11 @@ void LacertaEditor::OnKeyUp(int key)
     m_cameraForward = 0.0f;
     m_cameraRight = 0.0f;
 
+    if(key == 'R')
+    {
+        Translate = !Translate;
+    }
+
     if(key == 'E')
     {
         m_isMouseLocked = m_isMouseLocked ? false : true;
