@@ -245,6 +245,42 @@ void LacertaEditor::DestroyGo(GameObject* goToDestroy)
     delete goToDestroy;
 }
 
+void LacertaEditor::AddSphereToScene()
+{
+    Mesh* sphereMesh = ResourceManager::Get()->CreateResource<Mesh>(L"Assets/Meshes/sphere.obj");
+    Texture* defaultTexture = ResourceManager::Get()->CreateTexture(L"Assets/Textures/grey.jpg");
+    
+    std::string name = "Sphere";
+    name += std::to_string(m_activeScene->m_gameObjects.size());
+    GameObject* sphereGo = m_activeScene->CreateGameObject(name, Vector3(0.0f, 0.0f, 0.0f));
+    
+    MeshComponent& meshComp = sphereGo->AddComponent<MeshComponent>();
+    meshComp.SetMesh(sphereMesh);
+    
+    Material* newMat = new Material();
+    MatLightProperties properties;
+    newMat->InitializeProperties(properties, "MeshShader", defaultTexture);
+    meshComp.SetMaterial(newMat);
+}
+
+void LacertaEditor::AddCubeToScene()
+{
+    Mesh* sphereMesh = ResourceManager::Get()->CreateResource<Mesh>(L"Assets/Meshes/cube.obj");
+    Texture* defaultTexture = ResourceManager::Get()->CreateTexture(L"Assets/Textures/grey.jpg");
+    
+    std::string name = "Cube";
+    name += std::to_string(m_activeScene->m_gameObjects.size());
+    GameObject* sphereGo = m_activeScene->CreateGameObject(name, Vector3(0.0f, 0.0f, 0.0f));
+    
+    MeshComponent& meshComp = sphereGo->AddComponent<MeshComponent>();
+    meshComp.SetMesh(sphereMesh);
+    
+    Material* newMat = new Material();
+    MatLightProperties properties;
+    newMat->InitializeProperties(properties, "MeshShader", defaultTexture);
+    meshComp.SetMaterial(newMat);
+}
+
 void LacertaEditor::OnKeyDown(int key)
 {
     if(key == 'Z')
@@ -269,6 +305,11 @@ void LacertaEditor::OnKeyUp(int key)
 {
     m_cameraForward = 0.0f;
     m_cameraRight = 0.0f;
+
+    if(key == 'R')
+    {
+        Translate = !Translate;
+    }
 
     if(key == 'E')
     {

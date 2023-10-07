@@ -33,6 +33,15 @@ void GlobalSettingsPanel::Update()
         ImGui::Text("Lighting");
         ImGui::SliderFloat("Directional rotation", &editor->m_lightRotation, 0.0f, 6.28f);
         ImGui::SliderFloat("Ambient", &editor->m_ambient, 0.0f, 1.0f);
+        ImGui::Separator();
+
+        ImGui::Text("Controls");
+        std::string content;
+        editor->Translate ? content = "Translate" : content = "Scale";
+        if(ImGui::Button(content.c_str()))
+        {
+            editor->Translate = !editor->Translate;
+        }
         
         ImGui::End();
     }

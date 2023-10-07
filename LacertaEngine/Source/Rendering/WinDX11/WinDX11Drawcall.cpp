@@ -13,8 +13,12 @@ WinDX11Drawcall::WinDX11Drawcall()
 
 WinDX11Drawcall::~WinDX11Drawcall()
 {
-    if(m_vbo)
-        m_vbo->Release();
+    // vbo owner is the mesh itself, we just store the pointer inside the dc
+    // if(m_vbo != nullptr)
+    // {
+    //     m_vbo->Release();
+    //     m_vbo = nullptr;
+    // }
 }
 
 void WinDX11Drawcall::Setup(Renderer* renderer, DrawcallData* dcData)

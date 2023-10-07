@@ -28,13 +28,18 @@ public:
     Vector2 GetViewportCachedSize() { return m_viewportCachedSize; }
     
     EditorWindow* GetEditorWindow();
-    
-    Scene* GetActiveScene() { return m_activeScene; }
 
+    // Scene Utilities
+    Scene* GetActiveScene() { return m_activeScene; }
+    
     bool HasSelectedGo() { return m_selectedObject != nullptr; }
     void SetSelectedGo(GameObject* selectedGo) { m_selectedObject = selectedGo; }
     GameObject* GetSelectedGo() { return m_selectedObject; }
     void DestroyGo(GameObject* goToDestroy);
+
+    void AddSphereToScene();
+    void AddCubeToScene();
+    // Scene Utilities
     
     Matrix4x4 GetCameraMatrix() { return m_sceneCamera; }
     Matrix4x4 GetCameraProjectionMatrix() { return m_sceneCameraProjection; }
@@ -57,6 +62,8 @@ public:
 
     float m_lightRotation = 0.0f;
     float m_ambient = 0.1f;
+
+    bool Translate = true;
 
 private:
     EditorWindow* m_editorWindow;
