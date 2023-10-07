@@ -42,6 +42,17 @@ void SceneHierarchyPanel::Update()
 
         ImGui::EndListBox();
     }
+    ImGui::Separator();
+
+    if(ImGui::Button("Create Sphere"))
+    {
+        editor->AddSphereToScene();
+    }
+    if(ImGui::Button("Create Cube"))
+    {
+        editor->AddCubeToScene();
+    }
+    ImGui::Separator();
 
     if(ImGui::Button("Delete"))
     {
