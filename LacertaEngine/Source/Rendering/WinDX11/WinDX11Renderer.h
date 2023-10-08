@@ -26,7 +26,7 @@ public:
     void UpdateConstantBuffer(void* buffer) override;
     void UpdateMeshConstantBuffer(void* buffer) override;
     void AddDrawcall(DrawcallData* dcData) override;
-    void CreateBuffers(Mesh* mesh, std::vector<VertexMesh> vertices, std::vector<unsigned> indices) override;
+    void CreateBuffers(ShapeData& shapeData, std::vector<VertexMesh> vertices, std::vector<unsigned> indices) override;
 
     int* GetDriver() override { return (int*)m_device; }
 

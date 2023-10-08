@@ -205,7 +205,7 @@ void WinDX11Renderer::AddDrawcall(DrawcallData* dcData)
     m_drawcalls.push_back(dc);
 }
 
-void WinDX11Renderer::CreateBuffers(Mesh* mesh, std::vector<VertexMesh> vertices, std::vector<unsigned> indices)
+void WinDX11Renderer::CreateBuffers(ShapeData& shapeData, std::vector<VertexMesh> vertices, std::vector<unsigned> indices)
 {
     unsigned long dataLength = vertices.size() * (unsigned long)sizeof(VertexMesh);
 
@@ -247,7 +247,8 @@ void WinDX11Renderer::CreateBuffers(Mesh* mesh, std::vector<VertexMesh> vertices
         throw std::exception("IBO object creation failed");
     }
 
-    mesh->SetBuffersData(vbo, ibo);
+    shapeData.Vbo = vbo;
+    shapeData.Ibo = ibo;
 }
 
 void WinDX11Renderer::RenderFrame(Vector2 ViewportSize)

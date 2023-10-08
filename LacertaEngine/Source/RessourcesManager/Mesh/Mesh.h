@@ -4,6 +4,14 @@
 
 namespace LacertaEngine
 {
+
+struct ShapeData
+{
+    void* Vbo;
+    unsigned long VerticesSize;
+    void* Ibo;
+    unsigned long IndexesSize;
+};
     
 class LACERTAENGINE_API Mesh : public Resource
 {
@@ -13,22 +21,10 @@ public:
     
     void CreateResource(const wchar_t* filePath) override;
 
-    void SetBuffersData(void* vbo, void* ibo)
-    {
-        m_vbo = vbo;
-        m_ibo = ibo;
-    }
-
-    void* GetVBO() { return m_vbo; }
-    unsigned long GetVerticesSize() { return m_verticesSize; }
-    void* GetIBO() { return m_ibo; }
-    unsigned long GetIndicesSize() { return m_indexesSize; }
+    const std::vector<ShapeData>& GetShapesData() const { return m_shapesData; }
 
 private:
-    void* m_vbo;
-    unsigned long m_verticesSize;
-    void* m_ibo;
-    unsigned long m_indexesSize;
+    std::vector<ShapeData> m_shapesData;
 };
     
 }

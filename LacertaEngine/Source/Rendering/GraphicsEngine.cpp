@@ -100,10 +100,10 @@ void GraphicsEngine::UpdateMeshConstants(void* buffer)
         m_renderer->UpdateMeshConstantBuffer(buffer);
 }
 
-void GraphicsEngine::CreateBuffers(Mesh* mesh, std::vector<VertexMesh> vertices, std::vector<unsigned> indices)
+void GraphicsEngine::CreateBuffers(ShapeData& shapeData, std::vector<VertexMesh> vertices, std::vector<unsigned> indices)
 {
     if(m_renderer)
-        m_renderer->CreateBuffers(mesh, vertices, indices);
+        m_renderer->CreateBuffers(shapeData, vertices, indices);
 }
 
 void GraphicsEngine::Shutdown()

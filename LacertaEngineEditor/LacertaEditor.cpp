@@ -55,40 +55,26 @@ void LacertaEditor::Start()
 
     // ----------------------------- Debug GO Creation -----------------------
 
-    // TODO standardize resource creation
-    Mesh* statueMesh = ResourceManager::Get()->CreateResource<Mesh>(L"Assets/Meshes/statue.obj");
-    Mesh* teaPotMesh = ResourceManager::Get()->CreateResource<Mesh>(L"Assets/Meshes/teapot.obj");
-    Texture* sandTexture = ResourceManager::Get()->CreateTexture(L"Assets/Textures/sand.jpg"); 
-    Texture* brickTexture = ResourceManager::Get()->CreateTexture(L"Assets/Textures/brick.png");
+    Vector3 spawnLocation = Vector3(0.0f, 0.0f, 0.0f);
+    
+    GameObject& statueGo = AddMeshToScene(L"Assets/Meshes/statue.obj", spawnLocation);
+    TransformComponent& statueTfComp = statueGo.GetComponent<TransformComponent>();
+    statueTfComp.SetScale(Vector3(30.0f, 30.0f, 30.0f));
+    
+    spawnLocation = Vector3(spawnLocation.X + 25.0f, spawnLocation.Y, spawnLocation.Z);
+    
+    GameObject& dragonGo = AddMeshToScene(L"Assets/Meshes/dragon.obj", spawnLocation);
+    TransformComponent& dragonTfComp = dragonGo.GetComponent<TransformComponent>();
+    dragonTfComp.SetScale(Vector3(1.5f, 1.5f, 1.5f));
 
-    float rdmDist = 50.0f;
-    Vector3 offset = Vector3(40.0f, 0.0f, 0.0f);
-    for(int i = 0; i < 15; i++)
-    {
-        std::string name;
-        i % 2 == 0 ? name = "Teapot" : name = "Statue";
-        name += std::to_string(i);
-        GameObject* teapotGo = m_activeScene->CreateGameObject(name, offset + Vector3(Random::RandomFloatRange(-rdmDist, rdmDist),
-                                                                                            Random::RandomFloatRange(-rdmDist, rdmDist),
-                                                                                            Random::RandomFloatRange(-rdmDist, rdmDist)));
-        TransformComponent& tfComp = teapotGo->GetComponent<TransformComponent>();
-        Vector3 scale;
-        i % 2 == 0 ? scale = Vector3(16.5f, 16.5f, 16.5f) : scale = Vector3(40.0f, 40.0f, 40.0f);
-        tfComp.SetScale(scale);
-        
-        MeshComponent& meshComp = teapotGo->AddComponent<MeshComponent>();
-        i % 2 == 0 ? meshComp.SetMesh(teaPotMesh) : meshComp.SetMesh(statueMesh);
+    spawnLocation = Vector3(spawnLocation.X + 25.0f, spawnLocation.Y, spawnLocation.Z);
 
-        // Creating the material and giving him properties
-        Material* newMat = new Material();
-        MatLightProperties properties;
-        newMat->InitializeProperties(properties, "MeshShader", sandTexture);
-        if(Random::RandomFloatRange(0.0f, 1.0f) > 0.7f)
-            newMat->SetTexture(brickTexture);
-        
-        meshComp.SetMaterial(newMat); 
-    }
+    GameObject& teapotGo = AddMeshToScene(L"Assets/Meshes/house.obj", spawnLocation);
+    TransformComponent& teapotTfComp = teapotGo.GetComponent<TransformComponent>();
+    teapotTfComp.SetScale(Vector3(10.0f, 10.0f, 10.0f));
 
+    spawnLocation = Vector3(spawnLocation.X + 25.0f, spawnLocation.Y, spawnLocation.Z);
+    
     // --------------------------- Camera Default Position ---------------------
 
     m_sceneCamera.SetTranslation(Vector3(0.0f, 0.0f, -2.5f));
@@ -121,21 +107,25 @@ void LacertaEditor::Update()
 
         if(meshComponent.GetMaterial() == nullptr)
             continue;
-        
-        // Adding DC
-        Mesh* mesh = meshComponent.GetMesh();
-        DrawcallData dcData = {};
-        dcData.VBO = mesh->GetVBO();
-        dcData.VerticesCount = mesh->GetVerticesSize();
-        dcData.IBO = mesh->GetIBO();
-        dcData.IndicesCount = mesh->GetIndicesSize();
-        dcData.Type = DrawcallType::dcMesh;
-        dcData.ShaderName = meshComponent.GetMaterial()->GetShader();
-        dcData.LocalMatrix = transform.GetTransformMatrix();
-        dcData.Texture = meshComponent.GetMaterial()->GetTexture();
-        dcData.LightProperties = meshComponent.GetMaterial()->GetMatLightProperties();
 
-        GraphicsEngine::Get()->AddDrawcall(&dcData);
+        Mesh* mesh = meshComponent.GetMesh();
+        auto shapes = mesh->GetShapesData();
+        for(const auto shape : shapes)
+        {
+            // Adding DC
+            DrawcallData dcData = {};
+            dcData.VBO = shape.Vbo;
+            dcData.VerticesCount = shape.VerticesSize;
+            dcData.IBO = shape.Ibo;
+            dcData.IndicesCount = shape.IndexesSize;
+            dcData.Type = DrawcallType::dcMesh;
+            dcData.ShaderName = meshComponent.GetMaterial()->GetShader();
+            dcData.LocalMatrix = transform.GetTransformMatrix();
+            dcData.Texture = meshComponent.GetMaterial()->GetTexture();
+            dcData.LightProperties = meshComponent.GetMaterial()->GetMatLightProperties();
+
+            GraphicsEngine::Get()->AddDrawcall(&dcData);
+        }
     }
 
     // ----------------------------- Rendering Update  --------------------------
@@ -245,40 +235,24 @@ void LacertaEditor::DestroyGo(GameObject* goToDestroy)
     delete goToDestroy;
 }
 
-void LacertaEditor::AddSphereToScene()
+GameObject& LacertaEditor::AddMeshToScene(const wchar_t* meshPath, Vector3 position)
 {
-    Mesh* sphereMesh = ResourceManager::Get()->CreateResource<Mesh>(L"Assets/Meshes/sphere.obj");
+    Mesh* mesh = ResourceManager::Get()->CreateResource<Mesh>(meshPath);
     Texture* defaultTexture = ResourceManager::Get()->CreateTexture(L"Assets/Textures/grey.jpg");
     
-    std::string name = "Sphere";
+    std::string name = "GameObject";
     name += std::to_string(m_activeScene->m_gameObjects.size());
-    GameObject* sphereGo = m_activeScene->CreateGameObject(name, Vector3(0.0f, 0.0f, 0.0f));
+    GameObject* go = m_activeScene->CreateGameObject(name, position);
     
-    MeshComponent& meshComp = sphereGo->AddComponent<MeshComponent>();
-    meshComp.SetMesh(sphereMesh);
+    MeshComponent& meshComp = go->AddComponent<MeshComponent>();
+    meshComp.SetMesh(mesh);
     
     Material* newMat = new Material();
     MatLightProperties properties;
     newMat->InitializeProperties(properties, "MeshShader", defaultTexture);
     meshComp.SetMaterial(newMat);
-}
 
-void LacertaEditor::AddCubeToScene()
-{
-    Mesh* sphereMesh = ResourceManager::Get()->CreateResource<Mesh>(L"Assets/Meshes/cube.obj");
-    Texture* defaultTexture = ResourceManager::Get()->CreateTexture(L"Assets/Textures/grey.jpg");
-    
-    std::string name = "Cube";
-    name += std::to_string(m_activeScene->m_gameObjects.size());
-    GameObject* sphereGo = m_activeScene->CreateGameObject(name, Vector3(0.0f, 0.0f, 0.0f));
-    
-    MeshComponent& meshComp = sphereGo->AddComponent<MeshComponent>();
-    meshComp.SetMesh(sphereMesh);
-    
-    Material* newMat = new Material();
-    MatLightProperties properties;
-    newMat->InitializeProperties(properties, "MeshShader", defaultTexture);
-    meshComp.SetMaterial(newMat);
+    return *go;
 }
 
 void LacertaEditor::OnKeyDown(int key)

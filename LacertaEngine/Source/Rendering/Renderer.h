@@ -13,6 +13,7 @@ class RenderTarget;
 class Shader;
 class Mesh;
 struct VertexMesh;
+struct ShapeData;
 
 class LACERTAENGINE_API Renderer
 {
@@ -30,7 +31,7 @@ public:
     virtual void UpdateMeshConstantBuffer(void* buffer) = 0;
     virtual void AddDrawcall(DrawcallData* dcData) = 0;
     virtual void ClearDrawcalls();
-    virtual void CreateBuffers(Mesh* mesh, std::vector<VertexMesh> vertices, std::vector<unsigned int> indices) = 0;
+    virtual void CreateBuffers(ShapeData& shapeData, std::vector<VertexMesh> vertices, std::vector<unsigned int> indices) = 0;
 
     virtual int* GetDriver() = 0;
     
