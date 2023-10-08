@@ -41,17 +41,11 @@ void Mesh::CreateResource(const wchar_t* filePath)
         throw std::exception("Mesh not loaded successfully");
     }
 
-    if(shapes.size() > 1)
-    {
-        LOG(Error, "Mesh has multiple shapes!");
-        throw std::exception("Mesh has multiple shapes!");
-    }
-
-    std::vector<VertexMesh> verticesList;
-    std::vector<unsigned int> indicesList;
-
     for(size_t s = 0; s < shapes.size(); s++)
     {
+        std::vector<VertexMesh> verticesList;
+        std::vector<unsigned int> indicesList;
+        
         size_t indexOffset = 0;
         verticesList.reserve(shapes[s].mesh.indices.size());
         indicesList.reserve(shapes[s].mesh.indices.size());
@@ -86,11 +80,13 @@ void Mesh::CreateResource(const wchar_t* filePath)
 
             indexOffset += numFaceVerts;
         }
-    }
 
-    m_verticesSize = verticesList.size();
-    m_indexesSize = indicesList.size();
-    GraphicsEngine::Get()->CreateBuffers(this, verticesList, indicesList);
+        ShapeData data;
+        data.VerticesSize = verticesList.size();
+        data.IndexesSize = indicesList.size();
+        GraphicsEngine::Get()->CreateBuffers(data, verticesList, indicesList);
+        m_shapesData.emplace_back(data);
+    }
 }
     
 }

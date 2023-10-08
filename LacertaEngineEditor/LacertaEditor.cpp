@@ -60,16 +60,16 @@ void LacertaEditor::Start()
     GameObject& statueGo = AddMeshToScene(L"Assets/Meshes/statue.obj", spawnLocation);
     TransformComponent& statueTfComp = statueGo.GetComponent<TransformComponent>();
     statueTfComp.SetScale(Vector3(30.0f, 30.0f, 30.0f));
-
+    
     spawnLocation = Vector3(spawnLocation.X + 25.0f, spawnLocation.Y, spawnLocation.Z);
-
+    
     GameObject& dragonGo = AddMeshToScene(L"Assets/Meshes/dragon.obj", spawnLocation);
     TransformComponent& dragonTfComp = dragonGo.GetComponent<TransformComponent>();
     dragonTfComp.SetScale(Vector3(1.5f, 1.5f, 1.5f));
 
     spawnLocation = Vector3(spawnLocation.X + 25.0f, spawnLocation.Y, spawnLocation.Z);
 
-    GameObject& teapotGo = AddMeshToScene(L"Assets/Meshes/teapot.obj", spawnLocation);
+    GameObject& teapotGo = AddMeshToScene(L"Assets/Meshes/house.obj", spawnLocation);
     TransformComponent& teapotTfComp = teapotGo.GetComponent<TransformComponent>();
     teapotTfComp.SetScale(Vector3(10.0f, 10.0f, 10.0f));
 
@@ -107,21 +107,25 @@ void LacertaEditor::Update()
 
         if(meshComponent.GetMaterial() == nullptr)
             continue;
-        
-        // Adding DC
-        Mesh* mesh = meshComponent.GetMesh();
-        DrawcallData dcData = {};
-        dcData.VBO = mesh->GetVBO();
-        dcData.VerticesCount = mesh->GetVerticesSize();
-        dcData.IBO = mesh->GetIBO();
-        dcData.IndicesCount = mesh->GetIndicesSize();
-        dcData.Type = DrawcallType::dcMesh;
-        dcData.ShaderName = meshComponent.GetMaterial()->GetShader();
-        dcData.LocalMatrix = transform.GetTransformMatrix();
-        dcData.Texture = meshComponent.GetMaterial()->GetTexture();
-        dcData.LightProperties = meshComponent.GetMaterial()->GetMatLightProperties();
 
-        GraphicsEngine::Get()->AddDrawcall(&dcData);
+        Mesh* mesh = meshComponent.GetMesh();
+        auto shapes = mesh->GetShapesData();
+        for(const auto shape : shapes)
+        {
+            // Adding DC
+            DrawcallData dcData = {};
+            dcData.VBO = shape.Vbo;
+            dcData.VerticesCount = shape.VerticesSize;
+            dcData.IBO = shape.Ibo;
+            dcData.IndicesCount = shape.IndexesSize;
+            dcData.Type = DrawcallType::dcMesh;
+            dcData.ShaderName = meshComponent.GetMaterial()->GetShader();
+            dcData.LocalMatrix = transform.GetTransformMatrix();
+            dcData.Texture = meshComponent.GetMaterial()->GetTexture();
+            dcData.LightProperties = meshComponent.GetMaterial()->GetMatLightProperties();
+
+            GraphicsEngine::Get()->AddDrawcall(&dcData);
+        }
     }
 
     // ----------------------------- Rendering Update  --------------------------
