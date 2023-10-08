@@ -37,8 +37,7 @@ public:
     GameObject* GetSelectedGo() { return m_selectedObject; }
     void DestroyGo(GameObject* goToDestroy);
 
-    void AddSphereToScene();
-    void AddCubeToScene();
+    GameObject& AddMeshToScene(const wchar_t* meshPath, Vector3 position = Vector3(0.0f, 0.0f, 0.0f));
     // Scene Utilities
     
     Matrix4x4 GetCameraMatrix() { return m_sceneCamera; }

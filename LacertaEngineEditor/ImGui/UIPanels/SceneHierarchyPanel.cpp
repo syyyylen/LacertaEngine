@@ -46,11 +46,11 @@ void SceneHierarchyPanel::Update()
 
     if(ImGui::Button("Create Sphere"))
     {
-        editor->AddSphereToScene();
+        editor->SetSelectedGo(&editor->AddMeshToScene(L"Assets/Meshes/sphere.obj"));
     }
     if(ImGui::Button("Create Cube"))
     {
-        editor->AddCubeToScene();
+        editor->SetSelectedGo(&editor->AddMeshToScene(L"Assets/Meshes/cube.obj"));
     }
     ImGui::Separator();
 
