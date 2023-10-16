@@ -11,7 +11,7 @@ float4 main(VertexOutput input) : SV_Target
     float3 ambiantLight = ka * ia;
 
     float kd = MatLightProperties.DiffuseIntensity; // diffuse amount
-    float id = color; // diffuse color is also texture color for now
+    float id = color; // diffuse color is also texture color
     float amountOfDiffuseLight = max(0.0f, dot(LightDirection, input.normal));
     float3 diffuseLight = kd * amountOfDiffuseLight * id;
 

@@ -56,10 +56,10 @@ void LacertaEditor::Start()
     // ----------------------------- Debug GO Creation -----------------------
 
     Vector3 spawnLocation = Vector3(0.0f, 0.0f, 0.0f);
-    
-    GameObject& statueGo = AddMeshToScene(L"Assets/Meshes/statue.obj", spawnLocation);
-    TransformComponent& statueTfComp = statueGo.GetComponent<TransformComponent>();
-    statueTfComp.SetScale(Vector3(30.0f, 30.0f, 30.0f));
+
+    GameObject& houseGo = AddMeshToScene(L"Assets/Meshes/spheregreg.obj", spawnLocation);
+    TransformComponent& houseTfComp = houseGo.GetComponent<TransformComponent>();
+    houseTfComp.SetScale(Vector3(2.0f, 2.0f, 2.0f));
     
     spawnLocation = Vector3(spawnLocation.X + 25.0f, spawnLocation.Y, spawnLocation.Z);
     
@@ -69,11 +69,15 @@ void LacertaEditor::Start()
 
     spawnLocation = Vector3(spawnLocation.X + 25.0f, spawnLocation.Y, spawnLocation.Z);
 
-    GameObject& teapotGo = AddMeshToScene(L"Assets/Meshes/house.obj", spawnLocation);
+    GameObject& teapotGo = AddMeshToScene(L"Assets/Meshes/teapot.obj", spawnLocation);
     TransformComponent& teapotTfComp = teapotGo.GetComponent<TransformComponent>();
     teapotTfComp.SetScale(Vector3(10.0f, 10.0f, 10.0f));
 
     spawnLocation = Vector3(spawnLocation.X + 25.0f, spawnLocation.Y, spawnLocation.Z);
+
+    GameObject& statueGo = AddMeshToScene(L"Assets/Meshes/statue.obj", spawnLocation);
+    TransformComponent& statueTfComp = statueGo.GetComponent<TransformComponent>();
+    statueTfComp.SetScale(Vector3(30.0f, 30.0f, 30.0f));
     
     // --------------------------- Camera Default Position ---------------------
 
