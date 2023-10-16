@@ -69,11 +69,15 @@ void LacertaEditor::Start()
 
     spawnLocation = Vector3(spawnLocation.X + 25.0f, spawnLocation.Y, spawnLocation.Z);
 
-    GameObject& teapotGo = AddMeshToScene(L"Assets/Meshes/house.obj", spawnLocation);
+    GameObject& teapotGo = AddMeshToScene(L"Assets/Meshes/teapot.obj", spawnLocation);
     TransformComponent& teapotTfComp = teapotGo.GetComponent<TransformComponent>();
     teapotTfComp.SetScale(Vector3(10.0f, 10.0f, 10.0f));
 
     spawnLocation = Vector3(spawnLocation.X + 25.0f, spawnLocation.Y, spawnLocation.Z);
+
+    // GameObject& houseGo = AddMeshToScene(L"Assets/Meshes/spheregreg.obj", spawnLocation);
+    // TransformComponent& houseTfComp = houseGo.GetComponent<TransformComponent>();
+    // houseTfComp.SetScale(Vector3(1.0f, 1.0f, 1.0f));
     
     // --------------------------- Camera Default Position ---------------------
 

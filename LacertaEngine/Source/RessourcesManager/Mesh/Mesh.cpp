@@ -23,23 +23,28 @@ void Mesh::CreateResource(const wchar_t* filePath)
 {
     SetFilePath(filePath);
 
-    tinyobj::attrib_t attributes;
-    std::vector<tinyobj::shape_t> shapes;
-    std::vector<tinyobj::material_t> materials;
-    std::string warn;
-    std::string error;
-    
     int utf8StrLen = WideCharToMultiByte(CP_UTF8, 0, filePath, -1, nullptr, 0, nullptr, nullptr);
-    std::string inputfile;
+    std::string inputfile(utf8StrLen, '\0');
     WideCharToMultiByte(CP_UTF8, 0, filePath, -1, &inputfile[0], utf8StrLen, nullptr, nullptr);
+    
+    tinyobj::ObjReaderConfig reader_config;
+    // reader_config.mtl_search_path = "./"; // Path to material files
+    
+    tinyobj::ObjReader reader;
 
-    bool res = tinyobj::LoadObj(&attributes, &shapes, &materials, &warn, &error, inputfile.c_str());
-
-    if(!error.empty() || !res)
-    {
-        LOG(Error, "Mesh failed to load : ");
-        throw std::exception("Mesh not loaded successfully");
+    if (!reader.ParseFromFile(inputfile, reader_config)) {
+        if (!reader.Error().empty()) {
+            std::cerr << "TinyObjReader: " << reader.Error();
+        }
+        return;
     }
+
+    if (!reader.Warning().empty()) {
+        std::cout << "TinyObjReader: " << reader.Warning();
+    }
+
+    auto& attributes = reader.GetAttrib();
+    auto& shapes = reader.GetShapes();
 
     for(size_t s = 0; s < shapes.size(); s++)
     {
