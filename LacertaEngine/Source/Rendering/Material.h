@@ -12,7 +12,7 @@ public:
     Material();
     ~Material();
 
-    void InitializeProperties(MatLightProperties properties, std::string shaderName, Texture* texture);
+    void InitializeProperties(MatLightProperties properties, std::string shaderName, Texture* baseColor);
     
     void SetMatLightProperties(MatLightProperties properties) { m_lightProperties = properties; }
     MatLightProperties GetMatLightProperties() { return m_lightProperties; }
@@ -20,13 +20,20 @@ public:
     void SetShader(std::string shaderName) { m_shaderName = shaderName; }
     std::string GetShader() { return m_shaderName; }
 
-    void SetTexture(Texture* texture) { m_texture = texture; }
-    Texture* GetTexture() { return m_texture; }
+    void SetTexture(size_t index, Texture* texture);
+
+    Texture* GetTexture(size_t index)
+    {
+        if (index < m_textures.size())
+            return m_textures[index];
+        else
+            return nullptr;
+    }
     
 private:
     MatLightProperties m_lightProperties;
     std::string m_shaderName;
-    Texture* m_texture;
+    std::vector<Texture*> m_textures;
 };
 
 }

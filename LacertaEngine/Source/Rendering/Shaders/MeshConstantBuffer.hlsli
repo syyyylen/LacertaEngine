@@ -1,4 +1,4 @@
-Texture2D Texture: register(t0);
+Texture2D BaseColor: register(t0);
 sampler TextureSampler: register(s0);
 
 struct MaterialLightProperties

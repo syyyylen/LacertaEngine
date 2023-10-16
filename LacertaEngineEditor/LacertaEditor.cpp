@@ -123,10 +123,8 @@ void LacertaEditor::Update()
             dcData.IBO = shape.Ibo;
             dcData.IndicesCount = shape.IndexesSize;
             dcData.Type = DrawcallType::dcMesh;
-            dcData.ShaderName = meshComponent.GetMaterial()->GetShader();
             dcData.LocalMatrix = transform.GetTransformMatrix();
-            dcData.Texture = meshComponent.GetMaterial()->GetTexture();
-            dcData.LightProperties = meshComponent.GetMaterial()->GetMatLightProperties();
+            dcData.Material = meshComponent.GetMaterial();
 
             GraphicsEngine::Get()->AddDrawcall(&dcData);
         }
@@ -242,7 +240,7 @@ void LacertaEditor::DestroyGo(GameObject* goToDestroy)
 GameObject& LacertaEditor::AddMeshToScene(const wchar_t* meshPath, Vector3 position)
 {
     Mesh* mesh = ResourceManager::Get()->CreateResource<Mesh>(meshPath);
-    Texture* defaultTexture = ResourceManager::Get()->CreateTexture(L"Assets/Textures/grey.jpg");
+    Texture* defaultTexture = ResourceManager::Get()->CreateTexture(L"Assets/Textures/gregcolor.png");
     
     std::string name = "GameObject";
     name += std::to_string(m_activeScene->m_gameObjects.size());

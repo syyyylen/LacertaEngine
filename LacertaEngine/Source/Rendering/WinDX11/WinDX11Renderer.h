@@ -32,11 +32,13 @@ public:
 
     IDXGISwapChain* GetDXGISwapChain() { return m_dxgiSwapChain; }
     ID3D11DeviceContext* GetImmediateContext() { return m_deviceContext; }
+    ID3D11SamplerState* GetSamplerState() const { return m_samplerState; }
 
 private:
     ID3D11Device* m_device;
     ID3D11DeviceContext* m_deviceContext;
     IDXGISwapChain* m_dxgiSwapChain;
+    ID3D11SamplerState* m_samplerState;
     D3D_FEATURE_LEVEL m_featureLevel;
     ID3D11Buffer* m_constantBuffer; 
     ID3D11Buffer* m_meshConstantBuffer;

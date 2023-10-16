@@ -5,6 +5,7 @@
 #include "../../Logger/Logger.h"
 #include <d3dcompiler.h>
 #include "../GraphicsEngine.h"
+#include "../Material.h"
 #include "../../RessourcesManager/Texture/DX11Texture.h"
 
 namespace LacertaEngine
@@ -121,7 +122,7 @@ void WinDX11Shader::PreparePass(Renderer* renderer, Drawcall* dc)
     {
         MeshConstantBuffer meshCb;
         meshCb.LocalMatrix = dc->LocalMatrix();
-        meshCb.LightProperties = dc->LigthProperties();
+        meshCb.LightProperties = dc->GetMaterial()->GetMatLightProperties();
         GraphicsEngine::Get()->UpdateMeshConstants(&meshCb);
         ctx->IASetIndexBuffer((ID3D11Buffer*)dc->GetIBO(), DXGI_FORMAT_R32_UINT, 0);
     }
@@ -131,9 +132,12 @@ void WinDX11Shader::PreparePass(Renderer* renderer, Drawcall* dc)
     ctx->VSSetShader(m_vertexShader, nullptr, 0);
     ctx->PSSetShader(m_fragmentShader, nullptr, 0);
 
-    DX11Texture* Texture = (DX11Texture*)dc->GetTexture();
+    // TODO add normal map and map it to the uniform
+    DX11Texture* Texture = (DX11Texture*)dc->GetMaterial()->GetTexture(0); 
     ctx->VSSetShaderResources(0, 1, &Texture->m_shaderResView);
     ctx->PSSetShaderResources(0, 1, &Texture->m_shaderResView);
+    ID3D11SamplerState* SamplerState = driver->GetSamplerState();
+    ctx->PSSetSamplers(0, 1, &SamplerState);
 }
 
 void WinDX11Shader::Pass(Renderer* renderer, Drawcall* dc)

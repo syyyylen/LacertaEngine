@@ -57,16 +57,16 @@ void Mesh::CreateResource(const wchar_t* filePath)
         
         for(size_t f = 0; f < shapes[s].mesh.num_face_vertices.size(); f++)
         {
-            unsigned char numFaceVerts = shapes[s].mesh.num_face_vertices[f];
+            size_t numFaceVerts = shapes[s].mesh.num_face_vertices[f];
 
-            for(unsigned char v = 0; v < numFaceVerts; v++)
+            for(size_t v = 0; v < numFaceVerts; v++)
             {
                 tinyobj::index_t index = shapes[s].mesh.indices[indexOffset + v];
                 
                 tinyobj::real_t vx = attributes.vertices[index.vertex_index * 3 + 0];
                 tinyobj::real_t vy = attributes.vertices[index.vertex_index * 3 + 1];
                 tinyobj::real_t vz = attributes.vertices[index.vertex_index * 3 + 2];
-                
+
                 tinyobj::real_t tx = attributes.texcoords[index.texcoord_index * 2 + 0];
                 tinyobj::real_t ty = attributes.texcoords[index.texcoord_index * 2 + 1];
 
@@ -86,7 +86,7 @@ void Mesh::CreateResource(const wchar_t* filePath)
             indexOffset += numFaceVerts;
         }
 
-        ShapeData data;
+        ShapeData data = {};
         data.VerticesSize = verticesList.size();
         data.IndexesSize = indicesList.size();
         GraphicsEngine::Get()->CreateBuffers(data, verticesList, indicesList);

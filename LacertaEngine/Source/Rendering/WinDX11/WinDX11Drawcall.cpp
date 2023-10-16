@@ -3,6 +3,7 @@
 #include "WinDX11Renderer.h"
 #include "WinDX11Shader.h"
 #include "../../Logger/Logger.h"
+#include "../Material.h"
 
 namespace LacertaEngine
 {
@@ -33,18 +34,16 @@ void WinDX11Drawcall::Setup(Renderer* renderer, DrawcallData* dcData)
     if(dcData->Type == DrawcallType::dcMesh)
         m_localMatrix = dcData->LocalMatrix;
 
-    m_lightProperties = dcData->LightProperties;
-    
-    if(!renderer->HasShader(dcData->ShaderName))
+    m_material = dcData->Material;
+
+    if(!renderer->HasShader(m_material->GetShader()))
     {
         LOG(Error, "Invalid Shader Name, not contained in the current renderer");
         return;
     }
     
-    m_shader = renderer->GetShader(dcData->ShaderName);
+    m_shader = renderer->GetShader(m_material->GetShader());
     m_shader->Load(renderer, dcData->Type);
-
-    m_texture = dcData->Texture;
 }
 
 void WinDX11Drawcall::Pass(Renderer* renderer)
