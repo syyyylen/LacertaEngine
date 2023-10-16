@@ -1,16 +1,33 @@
 ﻿#include "Material.h"
 
-LacertaEngine::Material::Material()
+namespace LacertaEngine
+{
+    
+Material::Material()
 {
 }
 
-LacertaEngine::Material::~Material()
+Material::~Material()
 {
 }
 
-void LacertaEngine::Material::InitializeProperties(MatLightProperties properties, std::string shaderName, Texture* texture)
+void Material::InitializeProperties(MatLightProperties properties, std::string shaderName, Texture* baseColor)
 {
     SetMatLightProperties(properties);
     SetShader(shaderName);
-    SetTexture(texture);
+    SetTexture(0, baseColor);
+}
+
+void Material::SetTexture(size_t index, Texture* texture)
+{
+    if(index < m_textures.size())
+    {
+        m_textures[index] = texture;
+    }
+    else
+    {
+        m_textures.push_back(texture);
+    }
+}
+    
 }

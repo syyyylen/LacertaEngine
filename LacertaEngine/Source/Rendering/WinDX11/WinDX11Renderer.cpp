@@ -128,6 +128,23 @@ void WinDX11Renderer::Initialize(int* context, int width, int height, int target
     ID3D11RasterizerState* rasterizerState;
     m_device->CreateRasterizerState(&rasterizerDesc, &rasterizerState);
     m_deviceContext->RSSetState(rasterizerState);
+
+    D3D11_SAMPLER_DESC samplerDesc;
+    ZeroMemory(&samplerDesc, sizeof(D3D11_SAMPLER_DESC));
+    samplerDesc.Filter = D3D11_FILTER_ANISOTROPIC;
+    samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
+    samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+    samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;
+    samplerDesc.MipLODBias = 0.0f;
+    samplerDesc.MaxAnisotropy = 1;
+    samplerDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
+    samplerDesc.MinLOD = 0;
+    samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
+    if(FAILED(m_device->CreateSamplerState(&samplerDesc, &m_samplerState)))
+    {
+        LOG(Error, "Create Sampler State failed");
+        throw std::exception("Create Sampler State failed");
+    }
 }
 
 void WinDX11Renderer::CreateRenderTarget(int width, int height, int depth)

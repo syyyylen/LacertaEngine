@@ -4,7 +4,9 @@
 
 float4 main(VertexOutput input) : SV_Target
 {
-    float4 color = Texture.Sample(TextureSampler, input.texcoord * 0.5f);
+    // return float4(input.texcoord.x, input.texcoord.y, 0, 1);
+    
+    float4 color = BaseColor.Sample(TextureSampler, input.texcoord);
     
     float ka = Ambient;
     float3 ia = float3(color.x, color.y, color.z); // ambient light color is texture color
