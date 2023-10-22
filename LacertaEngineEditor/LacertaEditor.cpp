@@ -57,9 +57,12 @@ void LacertaEditor::Start()
 
     Vector3 spawnLocation = Vector3(0.0f, 0.0f, 0.0f);
 
-    GameObject& houseGo = AddMeshToScene(L"Assets/Meshes/spheregreg.obj", spawnLocation);
-    TransformComponent& houseTfComp = houseGo.GetComponent<TransformComponent>();
-    houseTfComp.SetScale(Vector3(2.0f, 2.0f, 2.0f));
+    GameObject& sphereGo = AddMeshToScene(L"Assets/Meshes/spheregreg.obj", spawnLocation);
+    TransformComponent& sphereTfComp = sphereGo.GetComponent<TransformComponent>();
+    sphereTfComp.SetScale(Vector3(2.0f, 2.0f, 2.0f));
+    Texture* tex = ResourceManager::Get()->CreateTexture(L"Assets/Textures/gregcolor.png");
+    MeshComponent& meshComp = sphereGo.GetComponent<MeshComponent>();
+    meshComp.GetMaterial()->SetTexture(0, tex);
     
     spawnLocation = Vector3(spawnLocation.X + 25.0f, spawnLocation.Y, spawnLocation.Z);
     
@@ -72,15 +75,18 @@ void LacertaEditor::Start()
     GameObject& teapotGo = AddMeshToScene(L"Assets/Meshes/teapot.obj", spawnLocation);
     TransformComponent& teapotTfComp = teapotGo.GetComponent<TransformComponent>();
     teapotTfComp.SetScale(Vector3(10.0f, 10.0f, 10.0f));
-    Texture* tex = ResourceManager::Get()->CreateTexture(L"Assets/Textures/gregcolor.png");
-    MeshComponent& meshComp = teapotGo.GetComponent<MeshComponent>();
-    meshComp.GetMaterial()->SetTexture(0, tex);
 
     spawnLocation = Vector3(spawnLocation.X + 25.0f, spawnLocation.Y, spawnLocation.Z);
 
     GameObject& statueGo = AddMeshToScene(L"Assets/Meshes/statue.obj", spawnLocation);
     TransformComponent& statueTfComp = statueGo.GetComponent<TransformComponent>();
     statueTfComp.SetScale(Vector3(30.0f, 30.0f, 30.0f));
+
+    spawnLocation = Vector3(spawnLocation.X + 25.0f, spawnLocation.Y, spawnLocation.Z);
+
+    GameObject& sphere2Go = AddMeshToScene(L"Assets/Meshes/spheregreg.obj", spawnLocation);
+    TransformComponent& sphere2TfComp = sphere2Go.GetComponent<TransformComponent>();
+    sphere2TfComp.SetScale(Vector3(2.0f, 2.0f, 2.0f));
     
     // --------------------------- Camera Default Position ---------------------
 

@@ -25,9 +25,9 @@ float4 main(VertexOutput input) : SV_Target
     // SPECULAR 
     float ks = MatLightProperties.SpecularIntensity;
     float3 is = float3(1.0, 1.0, 1.0);
-    float3 reflectedLight = reflect(LightDirection, input.normal);
+    float3 reflectedLight = normalize(reflect(LightDirection, input.normal));
     float shininess = MatLightProperties.Shininess;
-    float amountSpecularLight = pow(max(0.0f, dot(reflectedLight, input.directionToCamera)), shininess);
+    float amountSpecularLight = pow(max(0.0f, dot(reflectedLight, input.viewVector)), shininess);
 
     float specularLight = ks * amountSpecularLight * is;
 
