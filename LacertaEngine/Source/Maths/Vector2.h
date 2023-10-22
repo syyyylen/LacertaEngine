@@ -19,14 +19,19 @@ public:
     {
     }
 
-    Vector2 operator *(float num)
+    Vector2 operator *(float num) const
     {
         return Vector2(X*num, Y*num);
     }
 
-    Vector2 operator +(Vector2 vec)
+    Vector2 operator +(const Vector2& vec) const
     {
         return Vector2(X + vec.X, Y + vec.Y);
+    }
+
+    Vector2 operator -(const Vector2& vec) const
+    {
+        return Vector2(X - vec.X, Y - vec.Y);
     }
     
     ~Vector2()

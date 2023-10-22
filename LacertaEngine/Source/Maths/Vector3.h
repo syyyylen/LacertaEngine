@@ -50,14 +50,40 @@ public:
         return a.X * b.X + a.Y * b.Y + a.Z * a.Z; 
     }
 
-    Vector3 operator *(float num)
+    static Vector3 Cross(const Vector3& v1, const Vector3& v2)
+    {
+        Vector3 ret;
+        ret.X = (v1.Y * v2.Z) - (v1.Z * v2.Y);
+        ret.Y = (v1.Z * v2.X) - (v1.X * v2.Z);
+        ret.Z = (v1.X * v2.Y) - (v1.Y * v2.X);
+        return ret;
+    }
+
+    static Vector3 Normalize(const Vector3& vec)
+    {
+        Vector3 ret;
+        const float length = vec.Length();
+
+        ret.X = vec.X / length;
+        ret.Y = vec.Y / length;
+        ret.Z = vec.Z / length;
+
+        return ret;
+    }
+
+    Vector3 operator *(float num) const
     {
         return Vector3(X*num, Y*num, Z*num);
     }
 
-    Vector3 operator +(Vector3 vec)
+    Vector3 operator +(Vector3 vec) const
     {
         return Vector3(X+vec.X, Y+vec.Y, Z+vec.Z);
+    }
+
+    Vector3 operator -(Vector3 vec) const
+    {
+        return Vector3(X-vec.X, Y-vec.Y, Z-vec.Z);
     }
 
 public:

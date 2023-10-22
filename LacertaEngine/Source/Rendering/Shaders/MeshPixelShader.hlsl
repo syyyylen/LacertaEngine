@@ -8,8 +8,18 @@ float4 main(VertexOutput input) : SV_Target
 
     float4 color = float4(1.0f, 1.0f, 1.0f, 1.0f); // default white color
 
+    float3 normal = input.normal;
+
+    if(HasNormalMap)
+    {
+        float4 normalSampled = NormalMap.Sample(NormalSampler, float2(input.texcoord.x, 1.0 - input.texcoord.y));
+        normalSampled.xyz = (normalSampled.xyz * 2.0) - 1.0;
+        normalSampled.xyz = mul(normalSampled.xyz, input.tbn);
+        normal = normalSampled.xyz;
+    }
+
     if(HasAlbedo)
-        color = BaseColor.Sample(TextureSampler, input.texcoord);
+        color = BaseColor.Sample(TextureSampler,  float2(input.texcoord.x, 1.0 - input.texcoord.y));
 
     // AMBIENT 
     float ka = Ambient;
@@ -19,13 +29,13 @@ float4 main(VertexOutput input) : SV_Target
     // DIFFUSE 
     float kd = MatLightProperties.DiffuseIntensity; // diffuse amount
     float4 id = color; // diffuse color is also texture color
-    float amountOfDiffuseLight = max(0.0f, dot(LightDirection, input.normal));
+    float amountOfDiffuseLight = max(0.0f, dot(LightDirection, normal));
     float3 diffuseLight = kd * amountOfDiffuseLight * id;
 
     // SPECULAR 
     float ks = MatLightProperties.SpecularIntensity;
     float3 is = float3(1.0, 1.0, 1.0);
-    float3 reflectedLight = normalize(reflect(LightDirection, input.normal));
+    float3 reflectedLight = normalize(reflect(LightDirection, normal));
     float shininess = MatLightProperties.Shininess;
     float amountSpecularLight = pow(max(0.0f, dot(reflectedLight, input.viewVector)), shininess);
 

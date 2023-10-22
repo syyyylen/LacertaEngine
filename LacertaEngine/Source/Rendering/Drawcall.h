@@ -51,6 +51,7 @@ struct MeshConstantBuffer
     Matrix4x4 LocalMatrix;
     MatLightProperties LightProperties;
     int HasAlbedo;
+    int HasNormalMap;
 };
 
 struct VertexDataScreen
@@ -63,6 +64,8 @@ struct VertexMesh
     Vector3 Position;
     Vector2 Texcoord;
     Vector3 Normal;
+    Vector3 Tangent;
+    Vector3 Binormal;
 };
 
 class Shader;
