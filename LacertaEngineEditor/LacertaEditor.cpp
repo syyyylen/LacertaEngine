@@ -57,9 +57,12 @@ void LacertaEditor::Start()
 
     Vector3 spawnLocation = Vector3(0.0f, 0.0f, 0.0f);
 
-    GameObject& houseGo = AddMeshToScene(L"Assets/Meshes/spheregreg.obj", spawnLocation);
-    TransformComponent& houseTfComp = houseGo.GetComponent<TransformComponent>();
-    houseTfComp.SetScale(Vector3(2.0f, 2.0f, 2.0f));
+    GameObject& sphereGo = AddMeshToScene(L"Assets/Meshes/spheregreg.obj", spawnLocation);
+    TransformComponent& sphereTfComp = sphereGo.GetComponent<TransformComponent>();
+    sphereTfComp.SetScale(Vector3(2.0f, 2.0f, 2.0f));
+    Texture* tex = ResourceManager::Get()->CreateTexture(L"Assets/Textures/gregcolor.png");
+    MeshComponent& meshComp = sphereGo.GetComponent<MeshComponent>();
+    meshComp.GetMaterial()->SetTexture(0, tex);
     
     spawnLocation = Vector3(spawnLocation.X + 25.0f, spawnLocation.Y, spawnLocation.Z);
     
@@ -78,6 +81,12 @@ void LacertaEditor::Start()
     GameObject& statueGo = AddMeshToScene(L"Assets/Meshes/statue.obj", spawnLocation);
     TransformComponent& statueTfComp = statueGo.GetComponent<TransformComponent>();
     statueTfComp.SetScale(Vector3(30.0f, 30.0f, 30.0f));
+
+    spawnLocation = Vector3(spawnLocation.X + 25.0f, spawnLocation.Y, spawnLocation.Z);
+
+    GameObject& sphere2Go = AddMeshToScene(L"Assets/Meshes/spheregreg.obj", spawnLocation);
+    TransformComponent& sphere2TfComp = sphere2Go.GetComponent<TransformComponent>();
+    sphere2TfComp.SetScale(Vector3(2.0f, 2.0f, 2.0f));
     
     // --------------------------- Camera Default Position ---------------------
 
@@ -240,7 +249,6 @@ void LacertaEditor::DestroyGo(GameObject* goToDestroy)
 GameObject& LacertaEditor::AddMeshToScene(const wchar_t* meshPath, Vector3 position)
 {
     Mesh* mesh = ResourceManager::Get()->CreateResource<Mesh>(meshPath);
-    Texture* defaultTexture = ResourceManager::Get()->CreateTexture(L"Assets/Textures/gregcolor.png");
     
     std::string name = "GameObject";
     name += std::to_string(m_activeScene->m_gameObjects.size());
@@ -251,7 +259,7 @@ GameObject& LacertaEditor::AddMeshToScene(const wchar_t* meshPath, Vector3 posit
     
     Material* newMat = new Material();
     MatLightProperties properties;
-    newMat->InitializeProperties(properties, "MeshShader", defaultTexture);
+    newMat->InitializeProperties(properties, "MeshShader");
     meshComp.SetMaterial(newMat);
 
     return *go;

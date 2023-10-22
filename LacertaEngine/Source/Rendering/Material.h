@@ -13,6 +13,7 @@ public:
     ~Material();
 
     void InitializeProperties(MatLightProperties properties, std::string shaderName, Texture* baseColor);
+    void InitializeProperties(MatLightProperties properties, std::string shaderName);
     
     void SetMatLightProperties(MatLightProperties properties) { m_lightProperties = properties; }
     MatLightProperties GetMatLightProperties() { return m_lightProperties; }

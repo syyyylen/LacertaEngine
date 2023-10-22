@@ -8,7 +8,7 @@ struct VertexInput
 struct VertexOutput
 {
     float4 position : SV_POSITION;
+    float3 viewVector : TEXCOORD1;
     float2 texcoord : TEXCOORD0;
     float3 normal : NORMAL;
-    float3 directionToCamera : TEXCOORD1;
 };

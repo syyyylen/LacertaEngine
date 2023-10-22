@@ -38,10 +38,12 @@ public:
     void DestroyGo(GameObject* goToDestroy);
 
     GameObject& AddMeshToScene(const wchar_t* meshPath, Vector3 position = Vector3(0.0f, 0.0f, 0.0f));
-    // Scene Utilities
-    
+    // end Scene Utilities
+
+    // Camera Utilities
     Matrix4x4 GetCameraMatrix() { return m_sceneCamera; }
     Matrix4x4 GetCameraProjectionMatrix() { return m_sceneCameraProjection; }
+    // end Camera Utilities
 
     // InputListener interface
     void OnKeyDown(int key) override;
