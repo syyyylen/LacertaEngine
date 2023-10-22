@@ -6,20 +6,23 @@ float4 main(VertexOutput input) : SV_Target
 {
     // return float4(input.texcoord.x, input.texcoord.y, 0, 1);
 
-    float4 color = float4(255.0f, 255.0f, 255.0f, 1.0f); // default white color
+    float4 color = float4(1.0f, 1.0f, 1.0f, 1.0f); // default white color
 
     if(HasAlbedo)
         color = BaseColor.Sample(TextureSampler, input.texcoord);
-    
+
+    // AMBIENT 
     float ka = Ambient;
     float3 ia = float3(color.x, color.y, color.z); // ambient light color is texture color
     float3 ambiantLight = ka * ia;
 
+    // DIFFUSE 
     float kd = MatLightProperties.DiffuseIntensity; // diffuse amount
-    float id = color; // diffuse color is also texture color
+    float4 id = color; // diffuse color is also texture color
     float amountOfDiffuseLight = max(0.0f, dot(LightDirection, input.normal));
     float3 diffuseLight = kd * amountOfDiffuseLight * id;
 
+    // SPECULAR 
     float ks = MatLightProperties.SpecularIntensity;
     float3 is = float3(1.0, 1.0, 1.0);
     float3 reflectedLight = reflect(LightDirection, input.normal);

@@ -72,6 +72,9 @@ void LacertaEditor::Start()
     GameObject& teapotGo = AddMeshToScene(L"Assets/Meshes/teapot.obj", spawnLocation);
     TransformComponent& teapotTfComp = teapotGo.GetComponent<TransformComponent>();
     teapotTfComp.SetScale(Vector3(10.0f, 10.0f, 10.0f));
+    Texture* tex = ResourceManager::Get()->CreateTexture(L"Assets/Textures/gregcolor.png");
+    MeshComponent& meshComp = teapotGo.GetComponent<MeshComponent>();
+    meshComp.GetMaterial()->SetTexture(0, tex);
 
     spawnLocation = Vector3(spawnLocation.X + 25.0f, spawnLocation.Y, spawnLocation.Z);
 
@@ -240,7 +243,6 @@ void LacertaEditor::DestroyGo(GameObject* goToDestroy)
 GameObject& LacertaEditor::AddMeshToScene(const wchar_t* meshPath, Vector3 position)
 {
     Mesh* mesh = ResourceManager::Get()->CreateResource<Mesh>(meshPath);
-    // Texture* tex = ResourceManager::Get()->CreateTexture(L"Assets/Textures/gregcolor.png");
     
     std::string name = "GameObject";
     name += std::to_string(m_activeScene->m_gameObjects.size());
