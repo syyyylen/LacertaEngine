@@ -37,7 +37,10 @@ float4 main(VertexOutput input) : SV_Target
     float3 is = float3(1.0, 1.0, 1.0);
     float3 reflectedLight = normalize(reflect(LightDirection, normal));
     float shininess = MatLightProperties.Shininess;
-    float amountSpecularLight = pow(max(0.0f, dot(reflectedLight, input.viewVector)), shininess);
+    float amountSpecularLight = 0;
+
+    if(dot(LightDirection, input.normal) > 0) // we use vertex normal instead of normal one
+        amountSpecularLight = pow(max(0.0f, dot(reflectedLight, input.viewVector)), shininess);
 
     float specularLight = ks * amountSpecularLight * is;
 
