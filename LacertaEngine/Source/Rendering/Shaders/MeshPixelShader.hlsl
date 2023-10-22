@@ -10,7 +10,7 @@ float4 main(VertexOutput input) : SV_Target
 
     float3 normal = input.normal;
 
-    if(false /*HasNormalMap*/)
+    if(HasNormalMap)
     {
         float4 normalSampled = NormalMap.Sample(NormalSampler, float2(input.texcoord.x, 1.0 - input.texcoord.y));
         normalSampled.xyz = (normalSampled.xyz * 2.0) - 1.0;
@@ -19,7 +19,7 @@ float4 main(VertexOutput input) : SV_Target
     }
 
     if(HasAlbedo)
-        color = BaseColor.Sample(TextureSampler, float2(input.texcoord.x, 1.0 - input.texcoord.y));
+        color = BaseColor.Sample(TextureSampler,  float2(input.texcoord.x, 1.0 - input.texcoord.y));
 
     // AMBIENT 
     float ka = Ambient;

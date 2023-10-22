@@ -60,9 +60,11 @@ void LacertaEditor::Start()
     GameObject& sphereGo = AddMeshToScene(L"Assets/Meshes/spheregreg.obj", spawnLocation);
     TransformComponent& sphereTfComp = sphereGo.GetComponent<TransformComponent>();
     sphereTfComp.SetScale(Vector3(2.0f, 2.0f, 2.0f));
-    Texture* tex = ResourceManager::Get()->CreateTexture(L"Assets/Textures/brick_d.jpg");
+    Texture* tex = ResourceManager::Get()->CreateTexture(L"Assets/Textures/gregcolor.png");
+    Texture* normalMap = ResourceManager::Get()->CreateTexture(L"Assets/Textures/gregnormal.png");
     MeshComponent& meshComp = sphereGo.GetComponent<MeshComponent>();
     meshComp.GetMaterial()->SetTexture(0, tex);
+    meshComp.GetMaterial()->SetTexture(1, normalMap);
     
     spawnLocation = Vector3(spawnLocation.X + 25.0f, spawnLocation.Y, spawnLocation.Z);
     

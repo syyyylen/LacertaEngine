@@ -138,8 +138,18 @@ void WinDX11Shader::PreparePass(Renderer* renderer, Drawcall* dc)
             meshCb.HasAlbedo = false;
         }
 
-        // TODO add normal map and map it to the uniform
-        
+        const DX11Texture* NormalMap = dynamic_cast<DX11Texture*>(dc->GetMaterial()->GetTexture(1));
+        if(NormalMap != nullptr)
+        {
+            meshCb.HasNormalMap = true;
+            ctx->VSSetShaderResources(1, 1, &NormalMap->m_shaderResView);
+            ctx->PSSetShaderResources(1, 1, &NormalMap->m_shaderResView);
+        }
+        else
+        {
+            meshCb.HasNormalMap = false;
+        }
+
         GraphicsEngine::Get()->UpdateMeshConstants(&meshCb);
         ctx->IASetIndexBuffer((ID3D11Buffer*)dc->GetIBO(), DXGI_FORMAT_R32_UINT, 0);
     }
