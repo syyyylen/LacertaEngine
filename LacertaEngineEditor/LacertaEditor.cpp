@@ -176,12 +176,12 @@ void LacertaEditor::Update()
     m_sceneCameraProjection = cc.ProjectionMatrix;
 
     // Ambient lighting constant
-    cc.Ambient = m_ambient;
+    cc.GlobalAmbient = m_ambient;
 
     Matrix4x4 lightRotationMatrix;
     lightRotationMatrix.SetIdentity();
     lightRotationMatrix.SetRotationY(m_lightRotation);
-    cc.LightDirection = lightRotationMatrix.GetZDirection();
+    cc.DirectionalLightDirection = lightRotationMatrix.GetZDirection();
     
     GraphicsEngine::Get()->UpdateShaderConstants(&cc);
 
