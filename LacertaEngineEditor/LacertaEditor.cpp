@@ -240,7 +240,7 @@ void LacertaEditor::DestroyGo(GameObject* goToDestroy)
 GameObject& LacertaEditor::AddMeshToScene(const wchar_t* meshPath, Vector3 position)
 {
     Mesh* mesh = ResourceManager::Get()->CreateResource<Mesh>(meshPath);
-    Texture* defaultTexture = ResourceManager::Get()->CreateTexture(L"Assets/Textures/gregcolor.png");
+    // Texture* tex = ResourceManager::Get()->CreateTexture(L"Assets/Textures/gregcolor.png");
     
     std::string name = "GameObject";
     name += std::to_string(m_activeScene->m_gameObjects.size());
@@ -251,7 +251,7 @@ GameObject& LacertaEditor::AddMeshToScene(const wchar_t* meshPath, Vector3 posit
     
     Material* newMat = new Material();
     MatLightProperties properties;
-    newMat->InitializeProperties(properties, "MeshShader", defaultTexture);
+    newMat->InitializeProperties(properties, "MeshShader");
     meshComp.SetMaterial(newMat);
 
     return *go;

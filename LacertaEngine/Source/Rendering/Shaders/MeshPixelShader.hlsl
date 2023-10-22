@@ -5,8 +5,11 @@
 float4 main(VertexOutput input) : SV_Target
 {
     // return float4(input.texcoord.x, input.texcoord.y, 0, 1);
-    
-    float4 color = BaseColor.Sample(TextureSampler, input.texcoord);
+
+    float4 color = float4(255.0f, 255.0f, 255.0f, 1.0f); // default white color
+
+    if(HasAlbedo)
+        color = BaseColor.Sample(TextureSampler, input.texcoord);
     
     float ka = Ambient;
     float3 ia = float3(color.x, color.y, color.z); // ambient light color is texture color
@@ -27,7 +30,7 @@ float4 main(VertexOutput input) : SV_Target
 
     float3 finalLight = ambiantLight + diffuseLight + specularLight;
     
-    return color * float4(finalLight, 1.0f);
+    return color * float4(finalLight, color.a);
 
     // safety Yellow
     // return float4(255.0f, 240.0f, 0.0f, 1.0f);

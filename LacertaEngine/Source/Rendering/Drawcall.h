@@ -50,6 +50,7 @@ struct MeshConstantBuffer
 {
     Matrix4x4 LocalMatrix;
     MatLightProperties LightProperties;
+    int HasAlbedo;
 };
 
 struct VertexDataScreen

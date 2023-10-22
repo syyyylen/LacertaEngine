@@ -8,8 +8,9 @@ struct MaterialLightProperties
     float Shininess;
 };
 
-cbuffer CBuffer : register(b1)
+cbuffer MeshCBuffer : register(b1)
 {
     row_major float4x4 Local;
     MaterialLightProperties MatLightProperties;
+    bool HasAlbedo;
 };
