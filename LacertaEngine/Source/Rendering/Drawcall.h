@@ -41,8 +41,8 @@ struct ConstantBuffer
     Matrix4x4 ProjectionMatrix;
     Vector3 CameraPosition;
     float Time = 0.0f;
-    float Ambient = 0.1f;
-    Vector3 LightDirection;
+    float GlobalAmbient = 0.1f;
+    Vector3 DirectionalLightDirection;
 };
 
 __declspec(align(16))

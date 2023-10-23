@@ -182,7 +182,7 @@ void UIRenderer::Update()
                     auto& tfComp = selectedGo->GetComponent<TransformComponent>();
                     Matrix4x4 selectedGoTfMatrix = tfComp.GetTransformMatrix();
 
-                    if(m_editor->Translate)
+                    if(m_editor->m_translate)
                     {
                         ImGuizmo::Manipulate(cameraMatrix.ToFloatPtr(), cameraProjectionMatrix.ToFloatPtr(),
                         ImGuizmo::OPERATION::TRANSLATE, ImGuizmo::LOCAL, selectedGoTfMatrix.ToFloatPtr());
