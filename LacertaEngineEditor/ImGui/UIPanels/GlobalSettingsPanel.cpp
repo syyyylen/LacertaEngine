@@ -31,16 +31,18 @@ void GlobalSettingsPanel::Update()
         ImGui::Separator();
 
         ImGui::Text("Lighting");
+        ImGui::Checkbox("Direction auto rotate", &editor->m_directionalLightAutoRotate);
+        ImGui::SliderFloat("Directional auto rotate speed", &editor->m_directionalLightAutoRotateScalar, 0.1f, 3.0f);
         ImGui::SliderFloat("Directional rotation", &editor->m_lightRotation, 0.0f, 6.28f);
         ImGui::SliderFloat("Ambient", &editor->m_ambient, 0.0f, 1.0f);
         ImGui::Separator();
 
         ImGui::Text("Controls");
         std::string content;
-        editor->Translate ? content = "Translate" : content = "Scale";
+        editor->m_translate ? content = "Translate" : content = "Scale";
         if(ImGui::Button(content.c_str()))
         {
-            editor->Translate = !editor->Translate;
+            editor->m_translate = !editor->m_translate;
         }
         
         ImGui::End();

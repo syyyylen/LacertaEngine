@@ -64,7 +64,9 @@ public:
     float m_lightRotation = 0.0f;
     float m_ambient = 0.1f;
 
-    bool Translate = true;
+    bool m_translate = true;
+    bool m_directionalLightAutoRotate = false;
+    float m_directionalLightAutoRotateScalar = 0.8f;
 
 private:
     EditorWindow* m_editorWindow;

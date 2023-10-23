@@ -92,7 +92,7 @@ void LacertaEditor::Start()
     
     // --------------------------- Camera Default Position ---------------------
 
-    m_sceneCamera.SetTranslation(Vector3(0.0f, 0.0f, -2.5f));
+    m_sceneCamera.SetTranslation(Vector3(0.0f, 15.0f, -35.0f));
 
     // ----------------------------- UI Initialization  ------------------------
 
@@ -178,8 +178,11 @@ void LacertaEditor::Update()
     // Ambient lighting constant
     cc.GlobalAmbient = m_ambient;
 
+    // Directional Light set up
     Matrix4x4 lightRotationMatrix;
     lightRotationMatrix.SetIdentity();
+    if(m_directionalLightAutoRotate)
+        m_lightRotation = m_lightRotation + m_deltaTime * m_directionalLightAutoRotateScalar;
     lightRotationMatrix.SetRotationY(m_lightRotation);
     cc.DirectionalLightDirection = lightRotationMatrix.GetZDirection();
     
@@ -294,7 +297,7 @@ void LacertaEditor::OnKeyUp(int key)
 
     if(key == 'R')
     {
-        Translate = !Translate;
+        m_translate = !m_translate;
     }
 
     if(key == 'E')
