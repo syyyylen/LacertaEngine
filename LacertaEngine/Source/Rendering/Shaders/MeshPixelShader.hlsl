@@ -38,6 +38,16 @@ float4 main(VertexOutput input) : SV_Target
     float specularLight = DoSpecular(float3(1.0, 1.0, 1.0), DirectionalLightDirection, normal, input.viewVector, input.normal);
 
     float3 finalLight = ambiantLight + diffuseLight + specularLight;
+
+    // test 
+    for(int i = 0; i < 2; i++)
+    {
+        float3 posToLight = input.positionWS - PointLights[i].Position;
+        if(length(posToLight) < 20.0f)
+        {
+            return float4(255.0f, 240.0f, 0.0f, 1.0f);
+        } 
+    }
     
     return color * float4(finalLight, color.a);
 
