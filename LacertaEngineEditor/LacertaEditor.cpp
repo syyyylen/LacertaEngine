@@ -191,6 +191,26 @@ void LacertaEditor::Update()
         m_lightRotation = m_lightRotation + m_deltaTime * m_directionalLightAutoRotateScalar;
     lightRotationMatrix.SetRotationY(m_lightRotation);
     cc.DirectionalLightDirection = lightRotationMatrix.GetZDirection();
+
+    // Let's add the point lights to the Constant Buffer
+    const auto pointLightsView = m_activeScene->m_registry.view<PointLightComponent>();
+
+    for(int i = 0; i < pointLightsView.size(); i++)
+    {
+        if(i > MAX_LIGHTS)
+            break;
+        
+        const auto pointLightGo = pointLightsView[i];
+        auto& pointLightComp = pointLightsView.get<PointLightComponent>(pointLightGo);
+
+        PointLight pointLight;
+        pointLight.Color = pointLightComp.GetColor();
+        pointLight.ConstantAttenuation = pointLightComp.GetConstantAttenuation();
+        pointLight.LinearAttenuation = pointLightComp.GetLinearAttenuation();
+        pointLight.QuadraticAttenuation = pointLightComp.GetQuadraticAttenuation();
+
+        cc.PointLights[i] = pointLight;
+    }
     
     GraphicsEngine::Get()->UpdateShaderConstants(&cc);
 

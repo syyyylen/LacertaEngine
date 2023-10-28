@@ -14,6 +14,7 @@ public:
     void SetColor(Vector4 lightColor) { m_color = lightColor; }
     void SetAttenuation(float constant, float linear, float quadratic);
 
+    Vector4 GetColor() const { return m_color; }
     float GetConstantAttenuation() const { return m_constantAttenuation; }
     float GetLinearAttenuation() const { return m_linearAttenuation; }
     float GetQuadraticAttenuation() const { return m_quadraticAttenuation; }

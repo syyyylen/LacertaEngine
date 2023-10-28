@@ -4,6 +4,8 @@
 #include "Renderer.h"
 #include "../Maths/Maths.h"
 
+#define MAX_LIGHTS 8
+
 namespace LacertaEngine
 {
 
@@ -34,6 +36,16 @@ struct DrawcallData
 };
 
 __declspec(align(16))
+struct PointLight
+{
+    Vector3 Position;
+    Vector4 Color;
+    float ConstantAttenuation;
+    float LinearAttenuation;
+    float QuadraticAttenuation;
+};
+
+__declspec(align(16))
 struct ConstantBuffer
 {
     Matrix4x4 WorldMatrix;
@@ -43,6 +55,7 @@ struct ConstantBuffer
     float Time = 0.0f;
     float GlobalAmbient = 0.1f;
     Vector3 DirectionalLightDirection;
+    PointLight PointLights[MAX_LIGHTS];
 };
 
 __declspec(align(16))

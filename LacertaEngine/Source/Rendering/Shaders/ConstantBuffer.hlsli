@@ -1,3 +1,14 @@
+#define MAX_LIGHTS 8
+
+struct PointLight
+{
+    float3 Position;
+    float4 Color;
+    float ConstantAttenuation;
+    float LinearAttenuation;
+    float QuadraticAttenuation;
+};
+
 cbuffer CBuffer : register(b0)
 {
     row_major float4x4 World;
@@ -7,4 +18,5 @@ cbuffer CBuffer : register(b0)
     float Time;
     float GlobalAmbient;
     float3 DirectionalLightDirection;
+    PointLight PointLights[MAX_LIGHTS];
 };
