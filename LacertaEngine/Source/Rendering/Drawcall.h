@@ -47,7 +47,9 @@ struct PointLight
     float LinearAttenuation;
     float QuadraticAttenuation;
     float Padding3;
-    // 16 bytes boundary 
+    // 16 bytes boundary
+    int Enabled;
+    float Padding4[3];
 };
 
 // __declspec(align(16))
@@ -62,7 +64,10 @@ struct ConstantBuffer
     // 16 bytes boundary 
     float GlobalAmbient = 0.1f;
     Vector3 DirectionalLightDirection;
-    // 16 bytes boundary 
+    // 16 bytes boundary
+    float DirectionalIntensity = 1.0f;
+    float padding1[3];
+    // 16 bytes boundary
     PointLight PointLights[MAX_LIGHTS];
 };
 

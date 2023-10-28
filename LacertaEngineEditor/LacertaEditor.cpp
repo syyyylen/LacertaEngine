@@ -90,11 +90,15 @@ void LacertaEditor::Start()
     GameObject& sphere2Go = AddMeshToScene(L"Assets/Meshes/spheregreg.obj", spawnLocation);
     TransformComponent& sphere2TfComp = sphere2Go.GetComponent<TransformComponent>();
     sphere2TfComp.SetScale(Vector3(2.0f, 2.0f, 2.0f));
+    
+    GameObject& groundGo = AddMeshToScene(L"Assets/Meshes/cube.obj", Vector3(0.0f, -14.0f, 0.0f));
+    TransformComponent& groundGoTf = groundGo.GetComponent<TransformComponent>();
+    groundGoTf.SetScale(Vector3(1000.0f, 0.5f, 1000.0f));
 
     // -------------------------- Adding Point Lights --------------------------
 
-    AddPointLightToScene(Vector3(25.0f, 8.0f, -20.0f));
-    AddPointLightToScene(Vector3(65.0f, 2.0f, -20.0f));
+    AddPointLightToScene(Vector3(25.0f, 8.0f, 20.0f));
+    AddPointLightToScene(Vector3(65.0f, 2.0f, 30.0f));
 
     // --------------------------- Camera Default Position ---------------------
 
@@ -188,9 +192,17 @@ void LacertaEditor::Update()
     Matrix4x4 lightRotationMatrix;
     lightRotationMatrix.SetIdentity();
     if(m_directionalLightAutoRotate)
-        m_lightRotation = m_lightRotation + m_deltaTime * m_directionalLightAutoRotateScalar;
-    lightRotationMatrix.SetRotationY(m_lightRotation);
+        m_lightRotationY = m_lightRotationY + m_deltaTime * m_directionalLightAutoRotateScalar;
+
+    temp.SetIdentity();
+    temp.SetRotationY(m_lightRotationY);
+    lightRotationMatrix *= temp;
+    temp.SetIdentity();
+    temp.SetRotationX(m_lightRotationX);
+    lightRotationMatrix *= temp;
+    
     cc.DirectionalLightDirection = lightRotationMatrix.GetZDirection();
+    cc.DirectionalIntensity = m_lightIntensity;
 
     // Let's add the point lights to the Constant Buffer
     const auto pointLightsView = m_activeScene->m_registry.group<PointLightComponent>(entt::get<TransformComponent>);
@@ -203,6 +215,7 @@ void LacertaEditor::Update()
         auto[transform, pointLightComp] = pointLightsView.get<TransformComponent, PointLightComponent>(pointLightGo);
         
         PointLight pointLight;
+        pointLight.Enabled = true;
         pointLight.Position = transform.Position();
         pointLight.Color = pointLightComp.GetColor();
         pointLight.ConstantAttenuation = pointLightComp.GetConstantAttenuation();
@@ -298,7 +311,7 @@ GameObject& LacertaEditor::AddMeshToScene(const wchar_t* meshPath, Vector3 posit
 
 GameObject& LacertaEditor::AddPointLightToScene(Vector3 position, Vector4 color)
 {
-    std::string name = "GameObject";
+    std::string name = "PointLight";
     name += std::to_string(m_activeScene->m_gameObjects.size());
     GameObject* go = m_activeScene->CreateGameObject(name, position);
 

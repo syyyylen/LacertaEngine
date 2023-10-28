@@ -32,8 +32,10 @@ void GlobalSettingsPanel::Update()
 
         ImGui::Text("Lighting");
         ImGui::Checkbox("Direction auto rotate", &editor->m_directionalLightAutoRotate);
+        ImGui::SliderFloat("Directional intensity", &editor->m_lightIntensity, 0.0f, 1.0f);
+        ImGui::SliderFloat("Directional rotation X", &editor->m_lightRotationX, 0.0f, 6.28f);
+        ImGui::SliderFloat("Directional rotation Y", &editor->m_lightRotationY, 0.0f, 6.28f);
         ImGui::SliderFloat("Directional auto rotate speed", &editor->m_directionalLightAutoRotateScalar, 0.1f, 3.0f);
-        ImGui::SliderFloat("Directional rotation", &editor->m_lightRotation, 0.0f, 6.28f);
         ImGui::SliderFloat("Ambient", &editor->m_ambient, 0.0f, 1.0f);
         ImGui::Separator();
 

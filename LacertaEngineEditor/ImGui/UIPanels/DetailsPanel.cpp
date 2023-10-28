@@ -85,6 +85,10 @@ void DetailsPanel::Update()
             
             PointLightComponent& lightComp = selectedGo->GetComponent<PointLightComponent>();
 
+            float color[4] = { lightComp.GetColor().X, lightComp.GetColor().Y, lightComp.GetColor().Z, lightComp.GetColor().W };
+            ImGui::ColorEdit4("Color", color);
+            lightComp.SetColor(Vector4(color[0], color[1], color[2], color[3]));
+
             float constant = lightComp.GetConstantAttenuation();
             float linear = lightComp.GetLinearAttenuation();
             float quadratic = lightComp.GetQuadraticAttenuation();
