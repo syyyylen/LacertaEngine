@@ -2,6 +2,7 @@
 
 #include <execution>
 
+#include "ECS/Components/PointLightComponent.h"
 #include "ImGui/UIRenderer.h"
 #include "Rendering/Drawcall.h"
 
@@ -89,7 +90,12 @@ void LacertaEditor::Start()
     GameObject& sphere2Go = AddMeshToScene(L"Assets/Meshes/spheregreg.obj", spawnLocation);
     TransformComponent& sphere2TfComp = sphere2Go.GetComponent<TransformComponent>();
     sphere2TfComp.SetScale(Vector3(2.0f, 2.0f, 2.0f));
-    
+
+    // -------------------------- Adding Point Lights --------------------------
+
+    AddPointLightToScene(Vector3(25.0f, 8.0f, -20.0f));
+    AddPointLightToScene(Vector3(65.0f, 2.0f, -20.0f));
+
     // --------------------------- Camera Default Position ---------------------
 
     m_sceneCamera.SetTranslation(Vector3(0.0f, 15.0f, -35.0f));
@@ -266,6 +272,18 @@ GameObject& LacertaEditor::AddMeshToScene(const wchar_t* meshPath, Vector3 posit
     MatLightProperties properties;
     newMat->InitializeProperties(properties, "MeshShader");
     meshComp.SetMaterial(newMat);
+
+    return *go;
+}
+
+GameObject& LacertaEditor::AddPointLightToScene(Vector3 position, Vector4 color)
+{
+    std::string name = "GameObject";
+    name += std::to_string(m_activeScene->m_gameObjects.size());
+    GameObject* go = m_activeScene->CreateGameObject(name, position);
+
+    PointLightComponent& lightComp = go->AddComponent<PointLightComponent>();
+    lightComp.SetColor(color);
 
     return *go;
 }
