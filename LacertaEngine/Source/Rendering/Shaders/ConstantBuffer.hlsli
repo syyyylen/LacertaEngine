@@ -11,7 +11,10 @@ struct PointLight
     float LinearAttenuation;
     float QuadraticAttenuation;
     float Padding3;
-    // 16 bytes boundary 
+    // 16 bytes boundary
+    bool Enabled;
+    float3 Padding4;
+    // 16 bytes boundary
 }; // size 48 bytes (16 * 3)
 
 cbuffer CBuffer : register(b0)
@@ -25,6 +28,6 @@ cbuffer CBuffer : register(b0)
     // 16 bytes boundary 
     float GlobalAmbient;
     float3 DirectionalLightDirection;
-    // 16 bytes boundary 
+    // 16 bytes boundary
     PointLight PointLights[MAX_LIGHTS]; // 348 bytes (8 * 48 bytes)
 }; // size 572 bytes (348 + 16 + 16 + 192)

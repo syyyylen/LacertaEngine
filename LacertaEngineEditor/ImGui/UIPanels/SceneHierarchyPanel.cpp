@@ -52,6 +52,10 @@ void SceneHierarchyPanel::Update()
     {
         editor->SetSelectedGo(&editor->AddMeshToScene(L"Assets/Meshes/cube.obj"));
     }
+    if(ImGui::Button("Create Light"))
+    {
+        editor->SetSelectedGo(&editor->AddPointLightToScene());
+    }
     ImGui::Separator();
 
     if(ImGui::Button("Delete"))

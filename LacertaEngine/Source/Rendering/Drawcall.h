@@ -47,7 +47,9 @@ struct PointLight
     float LinearAttenuation;
     float QuadraticAttenuation;
     float Padding3;
-    // 16 bytes boundary 
+    // 16 bytes boundary
+    int Enabled;
+    float Padding4[3];
 };
 
 // __declspec(align(16))

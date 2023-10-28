@@ -45,9 +45,13 @@ float4 main(VertexOutput input) : SV_Target
     float3 finalLight = ambiantLight + diffuseLight + specularLight;
 
     // test 
-    for(int i = 0; i < 1; i++)
+    for(int i = 0; i < MAX_LIGHTS; i++)
     {
         PointLight light = PointLights[i];
+        
+        if(!light.Enabled)
+            continue;
+        
         float3 l = (light.Position - input.positionWS);
         float3 lightDirection = normalize(l);
         float distance = length(l);

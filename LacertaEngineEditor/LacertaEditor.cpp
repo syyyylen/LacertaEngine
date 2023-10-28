@@ -203,6 +203,7 @@ void LacertaEditor::Update()
         auto[transform, pointLightComp] = pointLightsView.get<TransformComponent, PointLightComponent>(pointLightGo);
         
         PointLight pointLight;
+        pointLight.Enabled = true;
         pointLight.Position = transform.Position();
         pointLight.Color = pointLightComp.GetColor();
         pointLight.ConstantAttenuation = pointLightComp.GetConstantAttenuation();
@@ -298,7 +299,7 @@ GameObject& LacertaEditor::AddMeshToScene(const wchar_t* meshPath, Vector3 posit
 
 GameObject& LacertaEditor::AddPointLightToScene(Vector3 position, Vector4 color)
 {
-    std::string name = "GameObject";
+    std::string name = "PointLight";
     name += std::to_string(m_activeScene->m_gameObjects.size());
     GameObject* go = m_activeScene->CreateGameObject(name, position);
 
