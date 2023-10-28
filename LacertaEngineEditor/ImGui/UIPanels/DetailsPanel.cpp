@@ -2,6 +2,7 @@
 
 #include "../UIRenderer.h"
 #include "../imgui_src/imgui.h"
+#include "ECS/Components/PointLightComponent.h"
 
 namespace LacertaEngineEditor
 {
@@ -73,6 +74,26 @@ void DetailsPanel::Update()
 
                 mat->SetMatLightProperties(lightProperties);
             }
+        }
+
+        ImGui::Separator();
+
+        if(selectedGo->HasComponent<PointLightComponent>())
+        {
+            ImGui::Text("Point Light");
+            ImGui::Spacing();
+            
+            PointLightComponent& lightComp = selectedGo->GetComponent<PointLightComponent>();
+
+            float constant = lightComp.GetConstantAttenuation();
+            float linear = lightComp.GetLinearAttenuation();
+            float quadratic = lightComp.GetQuadraticAttenuation();
+
+            ImGui::Text("Attenuation : ");
+            ImGui::SliderFloat("Constant", &constant, 0.0f, 1.0f);
+            ImGui::SliderFloat("Linear", &linear, 0.0f, 1.0f);
+            ImGui::SliderFloat("Quadratic", &quadratic, 0.0f, 1.0f);
+            lightComp.SetAttenuation(constant, linear, quadratic);
         }
 
         ImGui::Separator();

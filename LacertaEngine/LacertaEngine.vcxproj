@@ -111,6 +111,7 @@
   <ItemGroup>
     <ClCompile Include="Source\ECS\Component.cpp" />
     <ClCompile Include="Source\ECS\Components\MeshComponent.cpp" />
+    <ClCompile Include="Source\ECS\Components\PointLightComponent.cpp" />
     <ClCompile Include="Source\ECS\Components\TransformComponent.cpp">
       <RuntimeLibrary>MultiThreadedDebugDll</RuntimeLibrary>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
@@ -216,6 +217,7 @@
     <ClInclude Include="Source\Core.h" />
     <ClInclude Include="Source\ECS\Component.h" />
     <ClInclude Include="Source\ECS\Components\MeshComponent.h" />
+    <ClInclude Include="Source\ECS\Components\PointLightComponent.h" />
     <ClInclude Include="Source\ECS\Components\TransformComponent.h" />
     <ClInclude Include="Source\ECS\ECS.h" />
     <ClInclude Include="Source\ECS\Entt\entt.hpp" />

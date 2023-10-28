@@ -1,7 +1,6 @@
 ﻿#pragma once
 #include "../Component.h"
 #include "../../Rendering/Material.h"
-#include "../../RessourcesManager/Resources.h"
 #include "../../RessourcesManager/Mesh/Mesh.h"
 
 namespace LacertaEngine
