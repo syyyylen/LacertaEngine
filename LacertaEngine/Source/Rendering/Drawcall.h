@@ -35,26 +35,34 @@ struct DrawcallData
     Material* Material;
 };
 
-__declspec(align(16))
+
 struct PointLight
 {
     Vector3 Position;
+    float Padding1 = 0.0f;
+    // 16 bytes boundary 
     Vector4 Color;
+    // 16 bytes boundary 
     float ConstantAttenuation;
     float LinearAttenuation;
     float QuadraticAttenuation;
+    float Padding3;
+    // 16 bytes boundary 
 };
 
-__declspec(align(16))
+// __declspec(align(16))
 struct ConstantBuffer
 {
     Matrix4x4 WorldMatrix;
     Matrix4x4 ViewMatrix;
     Matrix4x4 ProjectionMatrix;
+    // 3 * 64 bytes
     Vector3 CameraPosition;
     float Time = 0.0f;
+    // 16 bytes boundary 
     float GlobalAmbient = 0.1f;
     Vector3 DirectionalLightDirection;
+    // 16 bytes boundary 
     PointLight PointLights[MAX_LIGHTS];
 };
 

@@ -90,9 +90,9 @@ void DetailsPanel::Update()
             float quadratic = lightComp.GetQuadraticAttenuation();
 
             ImGui::Text("Attenuation : ");
-            ImGui::SliderFloat("Constant", &constant, 0.0f, 10.0f);
-            ImGui::SliderFloat("Linear", &linear, 0.0f, 10.0f);
-            ImGui::SliderFloat("Quadratic", &quadratic, 0.0f, 10.0f);
+            ImGui::SliderFloat("Constant", &constant, 0.0f, 1.0f);
+            ImGui::SliderFloat("Linear", &linear, 0.0f, 1.0f);
+            ImGui::SliderFloat("Quadratic", &quadratic, 0.0f, 1.0f);
             lightComp.SetAttenuation(constant, linear, quadratic);
         }
 

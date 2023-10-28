@@ -29,6 +29,11 @@ public:
     {
     }
 
+    Vector3 XYZ()
+    {
+        return Vector3(X, Y, Z);
+    }
+
     void Cross(Vector4 &v1, Vector4 &v2, Vector4 &v3)
     {
         this->X = v1.Y * (v2.Z * v3.W - v3.Z * v2.W) - v1.Z * (v2.Y * v3.W - v3.Y * v2.W) + v1.W * (v2.Y * v3.Z - v2.Z *v3.Y);

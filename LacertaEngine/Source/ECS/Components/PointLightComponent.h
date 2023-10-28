@@ -22,8 +22,8 @@ public:
 private:
     Vector4 m_color;
     float m_constantAttenuation = 1.0f;
-    float m_linearAttenuation = 1.0f;
-    float m_quadraticAttenuation = 1.0f;
+    float m_linearAttenuation = 0.3f;
+    float m_quadraticAttenuation = 0.2f;
 };
     
 }
