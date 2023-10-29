@@ -231,6 +231,10 @@ void LacertaEditor::Update()
         cc.PointLights[i] = pointLight;
     }
 
+    cc.Metallic = m_metallic;
+    cc.Roughness = m_roughness;
+    cc.Reflectance = m_reflectance;
+    
     GraphicsEngine::Get()->UpdateShaderConstants(&cc);
 
     GraphicsEngine::Get()->RenderScene(m_viewportCachedSize);

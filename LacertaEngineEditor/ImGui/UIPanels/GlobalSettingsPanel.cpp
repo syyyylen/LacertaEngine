@@ -37,6 +37,9 @@ void GlobalSettingsPanel::Update()
         ImGui::SliderFloat("Directional rotation Y", &editor->m_lightRotationY, 0.0f, 6.28f);
         ImGui::SliderFloat("Directional auto rotate speed", &editor->m_directionalLightAutoRotateScalar, 0.1f, 3.0f);
         ImGui::SliderFloat("Ambient", &editor->m_ambient, 0.0f, 1.0f);
+        ImGui::SliderFloat("Metallic", &editor->m_metallic, 0.0f, 1.0f);
+        ImGui::SliderFloat("Roughness", &editor->m_roughness, 0.0f, 1.0f);
+        ImGui::SliderFloat("Reflectance", &editor->m_reflectance, 0.0f, 1.0f);
         ImGui::Separator();
 
         ImGui::Text("Controls");
