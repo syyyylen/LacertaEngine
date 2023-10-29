@@ -35,6 +35,8 @@ float4 main(VertexOutput input) : SV_Target
         normal = normalSampled.xyz;
     }
 
+    normal = normalize(normal);
+
     float4 color = DefaultColor;
     
     if(HasAlbedo)

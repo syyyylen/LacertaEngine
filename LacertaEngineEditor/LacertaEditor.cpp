@@ -210,6 +210,11 @@ void LacertaEditor::Update()
     cc.DirectionalLightDirection = lightRotationMatrix.GetZDirection();
     cc.DirectionalIntensity = m_lightIntensity;
 
+    for(int i = 0; i < MAX_LIGHTS; i++)
+    {
+        cc.PointLights[i].Enabled = false;
+    }
+
     // Let's add the point lights to the Constant Buffer
     const auto pointLightsView = m_activeScene->m_registry.group<PointLightComponent>(entt::get<TransformComponent>);
     for(int i = 0; i < pointLightsView.size(); i++)
