@@ -68,6 +68,13 @@ struct ConstantBuffer
     float DirectionalIntensity = 1.0f;
     float padding1[3];
     // 16 bytes boundary
+    float Metallic;
+    float Roughness;
+    float Padding2;
+    float Padding3;
+    // 16 bytes boundary
+    Vector4 DefaultColor;
+    // 16 bytes boundary
     PointLight PointLights[MAX_LIGHTS];
 };
 

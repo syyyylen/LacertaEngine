@@ -32,5 +32,12 @@ cbuffer CBuffer : register(b0)
     float DirectionalIntensity;
     float3 Padding1;
     // 16 bytes boundary
+    float Metallic;
+    float Roughness;
+    float Reflectance;
+    float Padding2;
+    // 16 bytes boundary
+    float4 DefaultColor;
+    // 16 bytes boundary
     PointLight PointLights[MAX_LIGHTS]; // 348 bytes (8 * 48 bytes)
 }; // size 572 bytes (348 + 16 + 16 + 192)

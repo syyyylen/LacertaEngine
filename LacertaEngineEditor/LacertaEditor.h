@@ -37,7 +37,7 @@ public:
     GameObject* GetSelectedGo() { return m_selectedObject; }
     void DestroyGo(GameObject* goToDestroy);
 
-    GameObject& AddMeshToScene(const wchar_t* meshPath, Vector3 position = Vector3(0.0f, 0.0f, 0.0f));
+    GameObject& AddMeshToScene(const wchar_t* meshPath, Vector3 position = Vector3(0.0f, 0.0f, 0.0f), std::string shader = "MeshShader");
     GameObject& AddPointLightToScene(Vector3 position = Vector3(0.0f, 0.0f, 0.0f), Vector4 color = Vector4(1.0f, 1.0f, 1.0f, 1.0f));
     // end Scene Utilities
 
@@ -70,6 +70,12 @@ public:
     bool m_translate = true;
     bool m_directionalLightAutoRotate = false;
     float m_directionalLightAutoRotateScalar = 0.8f;
+
+    float m_metallic = 0.0f;
+    float m_roughness = 0.5f;
+    float m_reflectance = 0.5f;
+
+    Vector4 m_defaultColor = Vector4(1.0f, 1.0f, 1.0f, 1.0f);
 
 private:
     EditorWindow* m_editorWindow;

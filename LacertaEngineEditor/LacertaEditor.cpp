@@ -90,6 +90,12 @@ void LacertaEditor::Start()
     GameObject& sphere2Go = AddMeshToScene(L"Assets/Meshes/spheregreg.obj", spawnLocation);
     TransformComponent& sphere2TfComp = sphere2Go.GetComponent<TransformComponent>();
     sphere2TfComp.SetScale(Vector3(2.0f, 2.0f, 2.0f));
+
+    spawnLocation = Vector3(spawnLocation.X + 25.0f, spawnLocation.Y, spawnLocation.Z);
+
+    GameObject& sphere3Go = AddMeshToScene(L"Assets/Meshes/spheregreg.obj", spawnLocation, "MeshPBRShader");
+    TransformComponent& sphere3TfComp = sphere3Go.GetComponent<TransformComponent>();
+    sphere3TfComp.SetScale(Vector3(2.0f, 2.0f, 2.0f));
     
     GameObject& groundGo = AddMeshToScene(L"Assets/Meshes/cube.obj", Vector3(0.0f, -14.0f, 0.0f));
     TransformComponent& groundGoTf = groundGo.GetComponent<TransformComponent>();
@@ -204,6 +210,11 @@ void LacertaEditor::Update()
     cc.DirectionalLightDirection = lightRotationMatrix.GetZDirection();
     cc.DirectionalIntensity = m_lightIntensity;
 
+    for(int i = 0; i < MAX_LIGHTS; i++)
+    {
+        cc.PointLights[i].Enabled = false;
+    }
+
     // Let's add the point lights to the Constant Buffer
     const auto pointLightsView = m_activeScene->m_registry.group<PointLightComponent>(entt::get<TransformComponent>);
     for(int i = 0; i < pointLightsView.size(); i++)
@@ -225,6 +236,10 @@ void LacertaEditor::Update()
         cc.PointLights[i] = pointLight;
     }
 
+    cc.Metallic = m_metallic;
+    cc.Roughness = m_roughness;
+    cc.DefaultColor = m_defaultColor;
+    
     GraphicsEngine::Get()->UpdateShaderConstants(&cc);
 
     GraphicsEngine::Get()->RenderScene(m_viewportCachedSize);
@@ -290,7 +305,7 @@ void LacertaEditor::DestroyGo(GameObject* goToDestroy)
     delete goToDestroy;
 }
 
-GameObject& LacertaEditor::AddMeshToScene(const wchar_t* meshPath, Vector3 position)
+GameObject& LacertaEditor::AddMeshToScene(const wchar_t* meshPath, Vector3 position, std::string shader)
 {
     Mesh* mesh = ResourceManager::Get()->CreateResource<Mesh>(meshPath);
     
@@ -303,7 +318,7 @@ GameObject& LacertaEditor::AddMeshToScene(const wchar_t* meshPath, Vector3 posit
     
     Material* newMat = new Material();
     MatLightProperties properties;
-    newMat->InitializeProperties(properties, "MeshShader");
+    newMat->InitializeProperties(properties, shader);
     meshComp.SetMaterial(newMat);
 
     return *go;

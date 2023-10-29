@@ -168,6 +168,7 @@ void WinDX11Renderer::LoadShaders()
     LOG(Debug, "Loading Shaders");
     
     WinDX11Shader* MeshShader = new WinDX11Shader();
+    WinDX11Shader* MeshPbrShader = new WinDX11Shader();
 
     // Compiling & Creating Vertex Shader
     ID3DBlob* vertexErrorBlob = nullptr;
@@ -189,6 +190,7 @@ void WinDX11Renderer::LoadShaders()
     }
 
     MeshShader->SetVSData(vertexBlob->GetBufferPointer(), vertexBlob->GetBufferSize());
+    MeshPbrShader->SetVSData(vertexBlob->GetBufferPointer(), vertexBlob->GetBufferSize());
 
     // Compiling & Creating Pixel Shader
     ID3DBlob* pixelErrorBlob = nullptr;
@@ -201,7 +203,7 @@ void WinDX11Renderer::LoadShaders()
         std::string errorMsg = std::system_category().message(hr);
         LOG(Error, errorMsg);
 
-        if (vertexErrorBlob) 
+        if (pixelErrorBlob) 
         {
             std::string errorMessage(static_cast<const char*>(pixelErrorBlob->GetBufferPointer()), pixelErrorBlob->GetBufferSize());
             LOG(Error, errorMessage);
@@ -212,6 +214,28 @@ void WinDX11Renderer::LoadShaders()
     MeshShader->SetPSData(pixelBlob->GetBufferPointer(), pixelBlob->GetBufferSize());
 
     m_shaders.emplace("MeshShader", MeshShader);
+
+    ID3DBlob* pixelPbrErrorBlob = nullptr;
+    ID3DBlob* pixelPbrBlob;
+
+    hr = D3DCompileFromFile(L"../LacertaEngine/Source/Rendering/Shaders/MeshPBRPixelShader.hlsl", nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, "main", "ps_5_0", 0, 0, &pixelPbrBlob, &pixelPbrErrorBlob);
+    if(FAILED(hr))
+    {
+        LOG(Error, "WinDX11Shader : Failed pixel PBR shader compilation !");
+        std::string errorMsg = std::system_category().message(hr);
+        LOG(Error, errorMsg);
+
+        if (pixelPbrErrorBlob) 
+        {
+            std::string errorMessage(static_cast<const char*>(pixelPbrErrorBlob->GetBufferPointer()), pixelPbrErrorBlob->GetBufferSize());
+            LOG(Error, errorMessage);
+            pixelPbrErrorBlob->Release();
+        }
+    }
+
+    MeshPbrShader->SetPSData(pixelPbrBlob->GetBufferPointer(), pixelPbrBlob->GetBufferSize());
+
+    m_shaders.emplace("MeshPBRShader", MeshPbrShader);
 }
 
 void WinDX11Renderer::AddDrawcall(DrawcallData* dcData)
