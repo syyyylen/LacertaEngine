@@ -26,10 +26,37 @@ float DistributionGGX(float3 N, float3 H, float a)
     return nom / max(denom, 0.00001f);
 }
 
+float GeometryShlickGGX(float a, float3 N, float3 X)
+{
+    float nom = max(dot(N, X), 0.0f);
+
+    float k = a / 2.0f;
+    float denom = max(dot(N, X), 0.0f) * (1.0f - k) + k;
+    denom = max(denom, 0.00001f);
+
+    return nom / denom;
+}
+
+float GeometrySmith(float a, float3 N, float3 V, float3 L)
+{
+    return GeometryShlickGGX(a, N, V) * GeometryShlickGGX(a, N, L);
+}
+
+float3 FresnelShlick(float3 F0, float3 V, float3 H)
+{
+    return F0 + (1.0f - F0) * pow(1.0f - max(dot(V, H), 0.0f), 5.0f);
+}
+
 float3 PBR(float3 F0, float3 N, float3 V, float3 L, float3 H, float3 radiance)
 {
-    float normalDistribution = DistributionGGX(N, H, Roughness);
-    return normalDistribution;
+    // float3 Fresnel = FresnelShlick(F0, V, H);
+    // return Fresnel;
+    
+    float k = ((Roughness + 1) * (Roughness + 1)) / 8.0f;
+    return GeometrySmith(k, N, V, L);
+    
+    // float normalDistribution = DistributionGGX(N, H, Roughness);
+    // return normalDistribution;
 }
 
 float4 main(VertexOutput input) : SV_Target
