@@ -75,6 +75,8 @@ public:
     float m_roughness = 0.5f;
     float m_reflectance = 0.5f;
 
+    Vector4 m_defaultColor = Vector4(1.0f, 1.0f, 1.0f, 1.0f);
+
 private:
     EditorWindow* m_editorWindow;
     Timer* m_globalTimer;

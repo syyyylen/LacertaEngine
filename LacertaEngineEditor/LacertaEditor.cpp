@@ -233,7 +233,7 @@ void LacertaEditor::Update()
 
     cc.Metallic = m_metallic;
     cc.Roughness = m_roughness;
-    cc.Reflectance = m_reflectance;
+    cc.DefaultColor = m_defaultColor;
     
     GraphicsEngine::Get()->UpdateShaderConstants(&cc);
 

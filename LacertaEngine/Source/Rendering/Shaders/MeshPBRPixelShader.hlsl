@@ -2,60 +2,20 @@
 #include "ConstantBuffer.hlsli"
 #include "MeshConstantBuffer.hlsli"
 
-#define PI 3.1415926
+static const float PI = 3.1415926;
+static const float Epsilon = 0.00001;
 
-float NormalDistribution(float alpha, float3 normal, float3 fresnel) // D (GGX/Trowbridge-Reitz Normal Distribution Function)
+// Constant normal incidence Fresnel factor for all dielectrics.
+static const float3 Fdielectric = 0.04;
+
+float DoAttenuation(PointLight light, float distance)
 {
-    float numerator = pow(alpha, 2.0f);
-
-    float normalDotFresnel = max(dot(normal, fresnel), 0.0f);
-    float denominator = PI * pow(pow(normalDotFresnel, 2.0f) * (pow(alpha, 2.0f) - 1.0f) + 1.0f, 2.0f);
-    denominator = max(denominator, 0.000001f);
-
-    return numerator / denominator;
+    return 1.0f / (light.ConstantAttenuation + light.LinearAttenuation * distance + light.QuadraticAttenuation * distance * distance);
 }
 
-float GeometryShadowing(float alpha, float3 normal, float3 v) // G1 (Shlick-Beckmann)
+float3 PBR(float3 F0, float3 N, float3 V, float3 L, float3 H, float3 radiance)
 {
-    float numerator = max(dot(normal, v), 0.0f);
-
-    float k = alpha / 2.0f;
-    float denominator = max(dot(normal, v), 0.0f) * (1.0f - k) + k;
-    denominator = max(denominator, 0.000001f);
-
-    return numerator / denominator;
-}
-
-float G(float alpha, float3 normal, float3 viewVector, float3 lightVector) // (Smith model)
-{
-    return GeometryShadowing(alpha, normal, viewVector) * GeometryShadowing(alpha, normal, lightVector);
-}
-
-float3 Fresnel(float3 f, float3 viewVector, float3 fresnel) // (Shlick approximation)
-{
-    return f + (float3(1.0f, 1.0f, 1.0f) - f) * pow(1.0f - max(dot(viewVector, fresnel), 0.0f), 5.0f);
-}
-
-float3 PBR(float3 normal, float3 viewVector, float3 lightVector, float3 fresnel, float3 albedo, float3 lightColor)
-{
-    float alpha = Roughness;
-    float metallic = Metallic;
-    float3 f0 = Reflectance;
-    
-    float3 ks = Fresnel(f0, viewVector, fresnel);
-    float3 kd = (float3(1.0f, 1.0f, 1.0f) - ks) * (1.0f - metallic);
-
-    float3 lambert = albedo / PI;
-
-    float3 cookTorranceNumerator = NormalDistribution(alpha, normal, fresnel) * G(alpha, normal, viewVector, lightVector) * Fresnel(f0, viewVector, fresnel);
-    float cookTorranceDenominator = 4.0f * max(dot(normal, viewVector), 0.0f) * max(dot(normal, lightVector), 0.0f);
-    cookTorranceDenominator = max(cookTorranceDenominator, 0.000001f);
-    float3 cookTorrance = cookTorranceNumerator / cookTorranceDenominator;
-
-    float3 BRDF = kd * lambert + cookTorrance;
-    float3 outgoingLight = 0.0f /* emissive */ + BRDF * lightColor * max(dot(lightVector, normal), 0.0f);
-
-    return outgoingLight;
+    return float3(1.0f, 1.0f, 1.0f);
 }
 
 float4 main(VertexOutput input) : SV_Target
@@ -71,12 +31,18 @@ float4 main(VertexOutput input) : SV_Target
         normal = normalSampled.xyz;
     }
 
-    float4 color = float4(1.0f, 1.0f, 1.0f, 1.0f);
+    float4 albedo = DefaultColor;
     
     if(HasAlbedo)
-        color = BaseColor.Sample(TextureSampler,  float2(input.texcoord.x, 1.0 - input.texcoord.y));
+        albedo = BaseColor.Sample(TextureSampler,  float2(input.texcoord.x, 1.0 - input.texcoord.y));
 
-    float3 finalLight = PBR(normal, input.viewVector, DirectionalLightDirection * -1.0f, normalize(input.viewVector + DirectionalLightDirection * -1.0f), color.xyz, directionalColor);
+    // Fresnel reflectance at normal incidence (for metals use albedo color).
+    float3 F0 = lerp(Fdielectric, albedo, Metallic);
+    float3 v = CameraPosition.xyz - input.positionWS;
+    float dirl = DirectionalLightDirection * -1.0f;
+
+    // Directional light 
+    float3 finalLight = PBR(F0, normal, v, dirl, normalize(v + dirl), directionalColor);
     
     for(int i = 0; i < MAX_LIGHTS; i++)
     {
@@ -86,10 +52,13 @@ float4 main(VertexOutput input) : SV_Target
             continue;
         
         float3 l = (light.Position - input.positionWS);
-        float3 lightVector = normalize(l);
-        
-        finalLight += PBR(normal, input.viewVector, lightVector, normalize(input.viewVector + lightVector), color.xyz, light.Color);
+        float3 lnorm = normalize(l);
+        float distance = length(l);
+        float attenuation = DoAttenuation(light, distance);
+        float3 radiance = light.Color * attenuation;
+
+        finalLight += PBR(F0, normal, v, lnorm, normalize(v + lnorm), radiance);
     }
 
-    return color * float4(finalLight, color.a);
+    return float4(finalLight, 1.0);
 }

@@ -35,7 +35,7 @@ float4 main(VertexOutput input) : SV_Target
         normal = normalSampled.xyz;
     }
 
-    float4 color = float4(1.0f, 1.0f, 1.0f, 1.0f);
+    float4 color = DefaultColor;
     
     if(HasAlbedo)
         color = BaseColor.Sample(TextureSampler,  float2(input.texcoord.x, 1.0 - input.texcoord.y));
