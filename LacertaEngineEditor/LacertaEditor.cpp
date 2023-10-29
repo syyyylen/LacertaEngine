@@ -58,7 +58,7 @@ void LacertaEditor::Start()
 
     Vector3 spawnLocation = Vector3(0.0f, 0.0f, 0.0f);
 
-    GameObject& sphereGo = AddMeshToScene(L"Assets/Meshes/spheregreg.obj", spawnLocation);
+    GameObject& sphereGo = AddMeshToScene(L"Assets/Meshes/spheregreg.obj", spawnLocation, "MeshPBRShader");
     TransformComponent& sphereTfComp = sphereGo.GetComponent<TransformComponent>();
     sphereTfComp.SetScale(Vector3(2.0f, 2.0f, 2.0f));
     Texture* tex = ResourceManager::Get()->CreateTexture(L"Assets/Textures/gregcolor.png");
