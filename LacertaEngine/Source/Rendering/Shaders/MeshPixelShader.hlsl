@@ -40,13 +40,14 @@ float4 main(VertexOutput input) : SV_Target
     if(HasAlbedo)
         color = BaseColor.Sample(TextureSampler,  float2(input.texcoord.x, 1.0 - input.texcoord.y));
 
+    // Directional light 
     float3 ambiantLight = GlobalAmbient * float3(color.x, color.y, color.z); // Ambient is texture color
     float3 diffuseLight = DoDiffuse(directionalColor, DirectionalLightDirection * -1.0f, normal);
     float specularLight = DoSpecular(directionalColor, DirectionalLightDirection * -1.0f, normal, input.viewVector, input.normal);
 
     float3 finalLight = ambiantLight + diffuseLight + specularLight;
 
-    // test 
+    // Point lights
     for(int i = 0; i < MAX_LIGHTS; i++)
     {
         PointLight light = PointLights[i];

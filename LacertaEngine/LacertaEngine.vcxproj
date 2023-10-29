@@ -201,6 +201,7 @@
     <ClCompile Include="Source\Rendering\Shader.cpp" />
     <AdditionalFiles Include="Source\Rendering\Shaders\MeshVertex.hlsl" />
     <AdditionalFiles Include="Source\Rendering\Shaders\MeshPixelShader.hlsl" />
+    <AdditionalFiles Include="Source\Rendering\Shaders\MeshPBRPixelShader.hlsl" />
     <ClCompile Include="Source\Rendering\WinDX11\WinDX11Drawcall.cpp" />
     <ClCompile Include="Source\Rendering\WinDX11\WinDX11Renderer.cpp" />
     <ClCompile Include="Source\Rendering\WinDX11\WinDX11RenderTarget.cpp" />

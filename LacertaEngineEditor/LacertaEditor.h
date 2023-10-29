@@ -37,7 +37,7 @@ public:
     GameObject* GetSelectedGo() { return m_selectedObject; }
     void DestroyGo(GameObject* goToDestroy);
 
-    GameObject& AddMeshToScene(const wchar_t* meshPath, Vector3 position = Vector3(0.0f, 0.0f, 0.0f));
+    GameObject& AddMeshToScene(const wchar_t* meshPath, Vector3 position = Vector3(0.0f, 0.0f, 0.0f), std::string shader = "MeshShader");
     GameObject& AddPointLightToScene(Vector3 position = Vector3(0.0f, 0.0f, 0.0f), Vector4 color = Vector4(1.0f, 1.0f, 1.0f, 1.0f));
     // end Scene Utilities
 
