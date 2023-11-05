@@ -229,7 +229,7 @@ void LacertaEditor::Update()
         pointLight.Enabled = true;
         pointLight.Position = transform.Position();
         pointLight.Color = pointLightComp.GetColor();
-        pointLight.ConstantAttenuation = pointLightComp.GetConstantAttenuation();
+        pointLight.ConstantAttenuation = pointLightComp.GetConstantAttenuation() * 0.1f;
         pointLight.LinearAttenuation = pointLightComp.GetLinearAttenuation() * 0.01f;
         pointLight.QuadraticAttenuation = pointLightComp.GetQuadraticAttenuation() * 0.01f;
 

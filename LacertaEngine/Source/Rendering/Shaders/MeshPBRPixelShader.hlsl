@@ -110,5 +110,8 @@ float4 main(VertexOutput input) : SV_Target
         finalLight += PBR(F0, normal, v, lnorm, normalize(lnorm + v), radiance, albedo);
     }
 
+    float3 ambiantLight = GlobalAmbient * float3(albedo.x, albedo.y, albedo.z); // Ambient is texture color
+    finalLight += ambiantLight;
+
     return float4(finalLight, 1.0);
 }
