@@ -9,12 +9,19 @@ struct MaterialLightProperties
     float DiffuseIntensity;
     float SpecularIntensity;
     float Shininess;
-};
+    float Metallic;
+    // 16 bytes
+    float Roughness;
+    float3 Padding1;
+    // 16 bytes
+}; // 32 bytes
 
 cbuffer MeshCBuffer : register(b1)
 {
     row_major float4x4 Local;
+    // 64 bytes
     MaterialLightProperties MatLightProperties;
+    // 64 + 32 bytes
     bool HasAlbedo;
     bool HasNormalMap;
 };

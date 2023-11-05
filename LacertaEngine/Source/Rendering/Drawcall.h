@@ -22,7 +22,12 @@ struct MatLightProperties
     float DiffuseIntensity = 1.0f;
     float SpecularIntensity = 1.0f;
     float Shininess = 10.0f;
-};
+    float Metallic = 0.0f;
+    // 16 bytes
+    float Roughness = 0.6f;
+    float Padding1[3];
+    // 16 bytes
+}; // 32 bytes
 
 struct DrawcallData
 {
@@ -34,8 +39,7 @@ struct DrawcallData
     Matrix4x4 LocalMatrix;
     Material* Material;
 };
-
-
+    
 struct PointLight
 {
     Vector3 Position;
@@ -68,11 +72,6 @@ struct ConstantBuffer
     float DirectionalIntensity = 1.0f;
     float padding1[3];
     // 16 bytes boundary
-    float Metallic;
-    float Roughness;
-    float Padding2;
-    float Padding3;
-    // 16 bytes boundary
     Vector4 DefaultColor;
     // 16 bytes boundary
     PointLight PointLights[MAX_LIGHTS];
@@ -82,7 +81,9 @@ __declspec(align(16))
 struct MeshConstantBuffer
 {
     Matrix4x4 LocalMatrix;
+    // 64 bytes
     MatLightProperties LightProperties;
+    // 64 + 32 bytes
     int HasAlbedo;
     int HasNormalMap;
 };

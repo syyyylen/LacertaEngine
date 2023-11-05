@@ -54,7 +54,7 @@ float3 PBR(float3 F0, float3 N, float3 V, float3 L, float3 H, float3 radiance, f
     
     float3 lambert = albedo / PI;
     
-    float3 cookTorranceNumerator = DistributionGGX(N, H, Roughness) * GeometrySmith(Roughness, N, V, L) * FresnelShlick(F0, V, H);
+    float3 cookTorranceNumerator = DistributionGGX(N, H, MatLightProperties.Roughness) * GeometrySmith(MatLightProperties.Roughness, N, V, L) * FresnelShlick(F0, V, H);
     float cookTorranceDenominator = 4.0f * max(dot(V, N), 0.0f) * max(dot(L, N), 0.0f);
     cookTorranceDenominator = max(cookTorranceDenominator, 0.00001f);
     float3 cookTorrance = cookTorranceNumerator / cookTorranceDenominator;
@@ -86,7 +86,7 @@ float4 main(VertexOutput input) : SV_Target
         albedo = BaseColor.Sample(TextureSampler,  float2(input.texcoord.x, 1.0 - input.texcoord.y));
 
     // Fresnel reflectance at normal incidence (for metals use albedo color).
-    float3 F0 = lerp(Fdielectric, albedo, Metallic);
+    float3 F0 = lerp(Fdielectric, albedo, MatLightProperties.Metallic);
     
     float3 v = normalize(CameraPosition - input.positionWS);
     float3 dirl = DirectionalLightDirection * -1.0f;

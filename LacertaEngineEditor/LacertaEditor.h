@@ -71,10 +71,6 @@ public:
     bool m_directionalLightAutoRotate = false;
     float m_directionalLightAutoRotateScalar = 0.8f;
 
-    float m_metallic = 0.0f;
-    float m_roughness = 0.5f;
-    float m_reflectance = 0.5f;
-
     Vector4 m_defaultColor = Vector4(1.0f, 1.0f, 1.0f, 1.0f);
 
 private:

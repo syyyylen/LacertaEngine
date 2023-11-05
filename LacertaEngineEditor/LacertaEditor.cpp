@@ -235,9 +235,7 @@ void LacertaEditor::Update()
 
         cc.PointLights[i] = pointLight;
     }
-
-    cc.Metallic = m_metallic;
-    cc.Roughness = m_roughness;
+    
     cc.DefaultColor = m_defaultColor;
     
     GraphicsEngine::Get()->UpdateShaderConstants(&cc);

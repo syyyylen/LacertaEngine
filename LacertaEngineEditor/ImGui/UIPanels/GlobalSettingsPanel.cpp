@@ -36,8 +36,6 @@ void GlobalSettingsPanel::Update()
         ImGui::SliderFloat("Directional rotation X", &editor->m_lightRotationX, 0.0f, 6.28f);
         ImGui::SliderFloat("Directional rotation Y", &editor->m_lightRotationY, 0.0f, 6.28f);
         ImGui::SliderFloat("Ambient", &editor->m_ambient, 0.0f, 1.0f);
-        ImGui::SliderFloat("Metallic", &editor->m_metallic, 0.0f, 1.0f);
-        ImGui::SliderFloat("Roughness", &editor->m_roughness, 0.0f, 1.0f);
         float color[4] = { editor->m_defaultColor.X, editor->m_defaultColor.Y, editor->m_defaultColor.Z, editor->m_defaultColor.W };
         ImGui::ColorEdit4("Color", color);
         editor->m_defaultColor = Vector4(color[0], color[1], color[2], color[3]);
