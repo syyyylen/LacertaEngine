@@ -93,7 +93,7 @@ void LacertaEditor::Start()
 
     spawnLocation = Vector3(spawnLocation.X + 25.0f, spawnLocation.Y, spawnLocation.Z);
 
-    GameObject& sphere3Go = AddMeshToScene(L"Assets/Meshes/spheregreg.obj", spawnLocation, "MeshPBRShader");
+    GameObject& sphere3Go = AddMeshToScene(L"Assets/Meshes/spheregreg.obj", spawnLocation);
     TransformComponent& sphere3TfComp = sphere3Go.GetComponent<TransformComponent>();
     sphere3TfComp.SetScale(Vector3(2.0f, 2.0f, 2.0f));
     
@@ -235,9 +235,7 @@ void LacertaEditor::Update()
 
         cc.PointLights[i] = pointLight;
     }
-
-    cc.Metallic = m_metallic;
-    cc.Roughness = m_roughness;
+    
     cc.DefaultColor = m_defaultColor;
     
     GraphicsEngine::Get()->UpdateShaderConstants(&cc);

@@ -89,6 +89,8 @@ void WinDX11Renderer::Initialize(int* context, int width, int height, int target
 
     if(FAILED(m_device->CreateBuffer(&bufferDesc, &initData, &m_constantBuffer)))
     {
+        std::string errorMsg = std::system_category().message(hr);
+        LOG(Error, errorMsg);
         LOG(Error, "Create Constant Buffer failed");
         throw std::exception("Create Constant Buffer failed");
     }
@@ -107,6 +109,8 @@ void WinDX11Renderer::Initialize(int* context, int width, int height, int target
 
     if(FAILED(m_device->CreateBuffer(&meshBufferDesc, &meshInitData, &m_meshConstantBuffer)))
     {
+        std::string errorMsg = std::system_category().message(hr);
+        LOG(Error, errorMsg);
         LOG(Error, "Create Mesh Constant Buffer failed");
         throw std::exception("Create Mesh Constant Buffer failed");
     }
