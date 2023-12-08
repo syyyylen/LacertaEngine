@@ -118,10 +118,10 @@
       <Optimization>Disabled</Optimization>
       <SupportJustMyCode>true</SupportJustMyCode>
       <AssemblerOutput>NoListing</AssemblerOutput>
-      <AssemblerListingLocation>D:\Work\LacertaEngine\int\Debug\LacertaEngine\</AssemblerListingLocation>
+      <AssemblerListingLocation>C:\Users\jules\Desktop\W\LacertaEngine\int\Debug\LacertaEngine\</AssemblerListingLocation>
       <UndefineAllPreprocessorDefinitions>false</UndefineAllPreprocessorDefinitions>
       <BrowseInformation>false</BrowseInformation>
-      <BrowseInformationFile>D:\Work\LacertaEngine\int\Debug\LacertaEngine\</BrowseInformationFile>
+      <BrowseInformationFile>C:\Users\jules\Desktop\W\LacertaEngine\int\Debug\LacertaEngine\</BrowseInformationFile>
       <CompileAs>Default</CompileAs>
       <ConformanceMode>true</ConformanceMode>
       <DiagnosticsFormat>Column</DiagnosticsFormat>
@@ -144,37 +144,37 @@
       <LanguageStandard>stdcpp17</LanguageStandard>
       <LanguageStandard_C>Default</LanguageStandard_C>
       <MinimalRebuild>false</MinimalRebuild>
-      <ModuleDependenciesFile>D:\Work\LacertaEngine\int\Debug\LacertaEngine\</ModuleDependenciesFile>
-      <ModuleOutputFile>D:\Work\LacertaEngine\int\Debug\LacertaEngine\</ModuleOutputFile>
+      <ModuleDependenciesFile>C:\Users\jules\Desktop\W\LacertaEngine\int\Debug\LacertaEngine\</ModuleDependenciesFile>
+      <ModuleOutputFile>C:\Users\jules\Desktop\W\LacertaEngine\int\Debug\LacertaEngine\</ModuleOutputFile>
       <OmitDefaultLibName>false</OmitDefaultLibName>
       <FavorSizeOrSpeed>Neither</FavorSizeOrSpeed>
       <WholeProgramOptimization>false</WholeProgramOptimization>
-      <ObjectFileName>D:\Work\LacertaEngine\int\Debug\LacertaEngine\</ObjectFileName>
+      <ObjectFileName>C:\Users\jules\Desktop\W\LacertaEngine\int\Debug\LacertaEngine\</ObjectFileName>
       <CallingConvention>Cdecl</CallingConvention>
-      <ProgramDataBaseFileName>D:\Work\LacertaEngine\int\Debug\LacertaEngine\vc143.pdb</ProgramDataBaseFileName>
+      <ProgramDataBaseFileName>C:\Users\jules\Desktop\W\LacertaEngine\int\Debug\LacertaEngine\vc143.pdb</ProgramDataBaseFileName>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <PrecompiledHeaderOutputFile>D:\Work\LacertaEngine\int\Debug\LacertaEngine\LacertaEngine.pch</PrecompiledHeaderOutputFile>
+      <PrecompiledHeaderOutputFile>C:\Users\jules\Desktop\W\LacertaEngine\int\Debug\LacertaEngine\LacertaEngine.pch</PrecompiledHeaderOutputFile>
       <PreprocessToFile>false</PreprocessToFile>
       <PreprocessKeepComments>false</PreprocessKeepComments>
       <PreprocessSuppressLineNumbers>false</PreprocessSuppressLineNumbers>
       <RemoveUnreferencedCodeData>true</RemoveUnreferencedCodeData>
       <ScanSourceForModuleDependencies>false</ScanSourceForModuleDependencies>
       <ShowIncludes>false</ShowIncludes>
-      <SourceDependenciesFile>D:\Work\LacertaEngine\int\Debug\LacertaEngine\</SourceDependenciesFile>
+      <SourceDependenciesFile>C:\Users\jules\Desktop\W\LacertaEngine\int\Debug\LacertaEngine\</SourceDependenciesFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <BufferSecurityCheck>true</BufferSecurityCheck>
       <SmallerTypeCheck>false</SmallerTypeCheck>
       <SpectreMitigation>false</SpectreMitigation>
       <StructMemberAlignment>Default</StructMemberAlignment>
-      <TrackerLogDirectory>D:\Work\LacertaEngine\int\Debug\LacertaEngine\LacertaEngine.tlog\</TrackerLogDirectory>
+      <TrackerLogDirectory>C:\Users\jules\Desktop\W\LacertaEngine\int\Debug\LacertaEngine\LacertaEngine.tlog\</TrackerLogDirectory>
       <TranslateIncludes>false</TranslateIncludes>
       <MinimalRebuildFromTracking>true</MinimalRebuildFromTracking>
       <TreatWarningAsError>false</TreatWarningAsError>
       <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
       <UseFullPaths>true</UseFullPaths>
       <WarningLevel>Level3</WarningLevel>
-      <XMLDocumentationFileName>D:\Work\LacertaEngine\int\Debug\LacertaEngine\</XMLDocumentationFileName>
+      <XMLDocumentationFileName>C:\Users\jules\Desktop\W\LacertaEngine\int\Debug\LacertaEngine\</XMLDocumentationFileName>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <IntelJCCErratum>false</IntelJCCErratum>
       <TreatAngleIncludeAsExternal>false</TreatAngleIncludeAsExternal>
@@ -268,10 +268,10 @@
       <Optimization>Disabled</Optimization>
       <SupportJustMyCode>true</SupportJustMyCode>
       <AssemblerOutput>NoListing</AssemblerOutput>
-      <AssemblerListingLocation>D:\Work\LacertaEngine\int\Debug\LacertaEngine\</AssemblerListingLocation>
+      <AssemblerListingLocation>C:\Users\jules\Desktop\W\LacertaEngine\int\Debug\LacertaEngine\</AssemblerListingLocation>
       <UndefineAllPreprocessorDefinitions>false</UndefineAllPreprocessorDefinitions>
       <BrowseInformation>false</BrowseInformation>
-      <BrowseInformationFile>D:\Work\LacertaEngine\int\Debug\LacertaEngine\</BrowseInformationFile>
+      <BrowseInformationFile>C:\Users\jules\Desktop\W\LacertaEngine\int\Debug\LacertaEngine\</BrowseInformationFile>
       <CompileAs>Default</CompileAs>
       <ConformanceMode>true</ConformanceMode>
       <DiagnosticsFormat>Column</DiagnosticsFormat>
@@ -294,37 +294,37 @@
       <LanguageStandard>stdcpp17</LanguageStandard>
       <LanguageStandard_C>Default</LanguageStandard_C>
       <MinimalRebuild>false</MinimalRebuild>
-      <ModuleDependenciesFile>D:\Work\LacertaEngine\int\Debug\LacertaEngine\</ModuleDependenciesFile>
-      <ModuleOutputFile>D:\Work\LacertaEngine\int\Debug\LacertaEngine\</ModuleOutputFile>
+      <ModuleDependenciesFile>C:\Users\jules\Desktop\W\LacertaEngine\int\Debug\LacertaEngine\</ModuleDependenciesFile>
+      <ModuleOutputFile>C:\Users\jules\Desktop\W\LacertaEngine\int\Debug\LacertaEngine\</ModuleOutputFile>
       <OmitDefaultLibName>false</OmitDefaultLibName>
       <FavorSizeOrSpeed>Neither</FavorSizeOrSpeed>
       <WholeProgramOptimization>false</WholeProgramOptimization>
-      <ObjectFileName>D:\Work\LacertaEngine\int\Debug\LacertaEngine\</ObjectFileName>
+      <ObjectFileName>C:\Users\jules\Desktop\W\LacertaEngine\int\Debug\LacertaEngine\</ObjectFileName>
       <CallingConvention>Cdecl</CallingConvention>
-      <ProgramDataBaseFileName>D:\Work\LacertaEngine\int\Debug\LacertaEngine\vc143.pdb</ProgramDataBaseFileName>
+      <ProgramDataBaseFileName>C:\Users\jules\Desktop\W\LacertaEngine\int\Debug\LacertaEngine\vc143.pdb</ProgramDataBaseFileName>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <PrecompiledHeaderOutputFile>D:\Work\LacertaEngine\int\Debug\LacertaEngine\LacertaEngine.pch</PrecompiledHeaderOutputFile>
+      <PrecompiledHeaderOutputFile>C:\Users\jules\Desktop\W\LacertaEngine\int\Debug\LacertaEngine\LacertaEngine.pch</PrecompiledHeaderOutputFile>
       <PreprocessToFile>false</PreprocessToFile>
       <PreprocessKeepComments>false</PreprocessKeepComments>
       <PreprocessSuppressLineNumbers>false</PreprocessSuppressLineNumbers>
       <RemoveUnreferencedCodeData>true</RemoveUnreferencedCodeData>
       <ScanSourceForModuleDependencies>false</ScanSourceForModuleDependencies>
       <ShowIncludes>false</ShowIncludes>
-      <SourceDependenciesFile>D:\Work\LacertaEngine\int\Debug\LacertaEngine\</SourceDependenciesFile>
+      <SourceDependenciesFile>C:\Users\jules\Desktop\W\LacertaEngine\int\Debug\LacertaEngine\</SourceDependenciesFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <BufferSecurityCheck>true</BufferSecurityCheck>
       <SmallerTypeCheck>false</SmallerTypeCheck>
       <SpectreMitigation>false</SpectreMitigation>
       <StructMemberAlignment>Default</StructMemberAlignment>
-      <TrackerLogDirectory>D:\Work\LacertaEngine\int\Debug\LacertaEngine\LacertaEngine.tlog\</TrackerLogDirectory>
+      <TrackerLogDirectory>C:\Users\jules\Desktop\W\LacertaEngine\int\Debug\LacertaEngine\LacertaEngine.tlog\</TrackerLogDirectory>
       <TranslateIncludes>false</TranslateIncludes>
       <MinimalRebuildFromTracking>true</MinimalRebuildFromTracking>
       <TreatWarningAsError>false</TreatWarningAsError>
       <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
       <UseFullPaths>true</UseFullPaths>
       <WarningLevel>Level3</WarningLevel>
-      <XMLDocumentationFileName>D:\Work\LacertaEngine\int\Debug\LacertaEngine\</XMLDocumentationFileName>
+      <XMLDocumentationFileName>C:\Users\jules\Desktop\W\LacertaEngine\int\Debug\LacertaEngine\</XMLDocumentationFileName>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <IntelJCCErratum>false</IntelJCCErratum>
       <TreatAngleIncludeAsExternal>false</TreatAngleIncludeAsExternal>
@@ -342,10 +342,10 @@
       <Optimization>Disabled</Optimization>
       <SupportJustMyCode>true</SupportJustMyCode>
       <AssemblerOutput>NoListing</AssemblerOutput>
-      <AssemblerListingLocation>D:\Work\LacertaEngine\int\Debug\LacertaEngine\</AssemblerListingLocation>
+      <AssemblerListingLocation>C:\Users\jules\Desktop\W\LacertaEngine\int\Debug\LacertaEngine\</AssemblerListingLocation>
       <UndefineAllPreprocessorDefinitions>false</UndefineAllPreprocessorDefinitions>
       <BrowseInformation>false</BrowseInformation>
-      <BrowseInformationFile>D:\Work\LacertaEngine\int\Debug\LacertaEngine\</BrowseInformationFile>
+      <BrowseInformationFile>C:\Users\jules\Desktop\W\LacertaEngine\int\Debug\LacertaEngine\</BrowseInformationFile>
       <CompileAs>Default</CompileAs>
       <ConformanceMode>true</ConformanceMode>
       <DiagnosticsFormat>Column</DiagnosticsFormat>
@@ -368,37 +368,37 @@
       <LanguageStandard>stdcpp17</LanguageStandard>
       <LanguageStandard_C>Default</LanguageStandard_C>
       <MinimalRebuild>false</MinimalRebuild>
-      <ModuleDependenciesFile>D:\Work\LacertaEngine\int\Debug\LacertaEngine\</ModuleDependenciesFile>
-      <ModuleOutputFile>D:\Work\LacertaEngine\int\Debug\LacertaEngine\</ModuleOutputFile>
+      <ModuleDependenciesFile>C:\Users\jules\Desktop\W\LacertaEngine\int\Debug\LacertaEngine\</ModuleDependenciesFile>
+      <ModuleOutputFile>C:\Users\jules\Desktop\W\LacertaEngine\int\Debug\LacertaEngine\</ModuleOutputFile>
       <OmitDefaultLibName>false</OmitDefaultLibName>
       <FavorSizeOrSpeed>Neither</FavorSizeOrSpeed>
       <WholeProgramOptimization>false</WholeProgramOptimization>
-      <ObjectFileName>D:\Work\LacertaEngine\int\Debug\LacertaEngine\</ObjectFileName>
+      <ObjectFileName>C:\Users\jules\Desktop\W\LacertaEngine\int\Debug\LacertaEngine\</ObjectFileName>
       <CallingConvention>Cdecl</CallingConvention>
-      <ProgramDataBaseFileName>D:\Work\LacertaEngine\int\Debug\LacertaEngine\vc143.pdb</ProgramDataBaseFileName>
+      <ProgramDataBaseFileName>C:\Users\jules\Desktop\W\LacertaEngine\int\Debug\LacertaEngine\vc143.pdb</ProgramDataBaseFileName>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <PrecompiledHeaderOutputFile>D:\Work\LacertaEngine\int\Debug\LacertaEngine\LacertaEngine.pch</PrecompiledHeaderOutputFile>
+      <PrecompiledHeaderOutputFile>C:\Users\jules\Desktop\W\LacertaEngine\int\Debug\LacertaEngine\LacertaEngine.pch</PrecompiledHeaderOutputFile>
       <PreprocessToFile>false</PreprocessToFile>
       <PreprocessKeepComments>false</PreprocessKeepComments>
       <PreprocessSuppressLineNumbers>false</PreprocessSuppressLineNumbers>
       <RemoveUnreferencedCodeData>true</RemoveUnreferencedCodeData>
       <ScanSourceForModuleDependencies>false</ScanSourceForModuleDependencies>
       <ShowIncludes>false</ShowIncludes>
-      <SourceDependenciesFile>D:\Work\LacertaEngine\int\Debug\LacertaEngine\</SourceDependenciesFile>
+      <SourceDependenciesFile>C:\Users\jules\Desktop\W\LacertaEngine\int\Debug\LacertaEngine\</SourceDependenciesFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <BufferSecurityCheck>true</BufferSecurityCheck>
       <SmallerTypeCheck>false</SmallerTypeCheck>
       <SpectreMitigation>false</SpectreMitigation>
       <StructMemberAlignment>Default</StructMemberAlignment>
-      <TrackerLogDirectory>D:\Work\LacertaEngine\int\Debug\LacertaEngine\LacertaEngine.tlog\</TrackerLogDirectory>
+      <TrackerLogDirectory>C:\Users\jules\Desktop\W\LacertaEngine\int\Debug\LacertaEngine\LacertaEngine.tlog\</TrackerLogDirectory>
       <TranslateIncludes>false</TranslateIncludes>
       <MinimalRebuildFromTracking>true</MinimalRebuildFromTracking>
       <TreatWarningAsError>false</TreatWarningAsError>
       <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
       <UseFullPaths>true</UseFullPaths>
       <WarningLevel>Level3</WarningLevel>
-      <XMLDocumentationFileName>D:\Work\LacertaEngine\int\Debug\LacertaEngine\</XMLDocumentationFileName>
+      <XMLDocumentationFileName>C:\Users\jules\Desktop\W\LacertaEngine\int\Debug\LacertaEngine\</XMLDocumentationFileName>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <IntelJCCErratum>false</IntelJCCErratum>
       <TreatAngleIncludeAsExternal>false</TreatAngleIncludeAsExternal>
