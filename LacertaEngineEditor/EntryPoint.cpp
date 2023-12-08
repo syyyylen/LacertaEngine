@@ -18,6 +18,5 @@ int main(int argc, char* argv[])
     }
     LacertaEditor.Quit();
 
-    std::cin.get();
     return 0;
 }
