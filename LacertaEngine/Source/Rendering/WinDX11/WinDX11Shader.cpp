@@ -6,7 +6,6 @@
 #include <d3dcompiler.h>
 #include "../GraphicsEngine.h"
 #include "../Material.h"
-#include "../../RessourcesManager/Texture/DX11Texture.h"
 
 namespace LacertaEngine
 {
@@ -126,29 +125,37 @@ void WinDX11Shader::PreparePass(Renderer* renderer, Drawcall* dc)
         meshCb.LocalMatrix = dc->LocalMatrix();
         meshCb.LightProperties = dc->GetMaterial()->GetMatLightProperties();
 
-        const DX11Texture* BaseColor = dynamic_cast<DX11Texture*>(dc->GetMaterial()->GetTexture(0));
-        if(BaseColor != nullptr)
+        const auto baseColor = dc->GetMaterial()->GetTexture(0);
+        if(baseColor != nullptr)
         {
-            meshCb.HasAlbedo = true;
-            ctx->VSSetShaderResources(0, 1, &BaseColor->m_shaderResView);
-            ctx->PSSetShaderResources(0, 1, &BaseColor->m_shaderResView);
+            const auto baseColorSrv = static_cast<ID3D11ShaderResourceView*>(baseColor->m_resourceView);
+            if(baseColorSrv != nullptr)
+            {
+                meshCb.HasAlbedo = true;
+                ctx->VSSetShaderResources(0, 1, &baseColorSrv);
+                ctx->PSSetShaderResources(0, 1, &baseColorSrv);
+            }
         }
         else
         {
             meshCb.HasAlbedo = false;
         }
 
-        const DX11Texture* NormalMap = dynamic_cast<DX11Texture*>(dc->GetMaterial()->GetTexture(1));
-        if(NormalMap != nullptr)
+        const auto normalMap = dc->GetMaterial()->GetTexture(1);
+        if(normalMap != nullptr)
         {
-            meshCb.HasNormalMap = true;
-            ctx->VSSetShaderResources(1, 1, &NormalMap->m_shaderResView);
-            ctx->PSSetShaderResources(1, 1, &NormalMap->m_shaderResView);
+            const auto normalMapSrv = static_cast<ID3D11ShaderResourceView*>(normalMap->m_resourceView);
+            if(normalMapSrv != nullptr)
+            {
+                meshCb.HasNormalMap = true;
+                ctx->VSSetShaderResources(1, 1, &normalMapSrv);
+                ctx->PSSetShaderResources(1, 1, &normalMapSrv);
+            }
         }
         else
         {
             meshCb.HasNormalMap = false;
-        }
+        } 
 
         GraphicsEngine::Get()->UpdateMeshConstants(&meshCb);
         ctx->IASetIndexBuffer((ID3D11Buffer*)dc->GetIBO(), DXGI_FORMAT_R32_UINT, 0);

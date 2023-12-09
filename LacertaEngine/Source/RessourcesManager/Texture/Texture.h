@@ -11,6 +11,9 @@ public:
     ~Texture();
 
     void CreateResource(const wchar_t* filePath) override;
+
+    void* m_resource = nullptr;
+    void* m_resourceView = nullptr;
 };
     
 }

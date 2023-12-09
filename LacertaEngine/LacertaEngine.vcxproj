@@ -209,7 +209,6 @@
     <ClCompile Include="Source\RessourcesManager\Mesh\Mesh.cpp" />
     <ClCompile Include="Source\RessourcesManager\Resource.cpp" />
     <ClCompile Include="Source\RessourcesManager\ResourceManager.cpp" />
-    <ClCompile Include="Source\RessourcesManager\Texture\DX11Texture.cpp" />
     <ClCompile Include="Source\RessourcesManager\Texture\Texture.cpp" />
     <ClCompile Include="Source\Window\Window.cpp" />
   </ItemGroup>
@@ -253,7 +252,6 @@
     <ClInclude Include="Source\RessourcesManager\Resource.h" />
     <ClInclude Include="Source\RessourcesManager\ResourceManager.h" />
     <ClInclude Include="Source\RessourcesManager\Resources.h" />
-    <ClInclude Include="Source\RessourcesManager\Texture\DX11Texture.h" />
     <ClInclude Include="Source\RessourcesManager\Texture\Texture.h" />
     <ClInclude Include="Source\Utilities.h" />
     <ClInclude Include="Source\Window\Window.h" />

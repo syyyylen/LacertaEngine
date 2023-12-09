@@ -61,8 +61,8 @@ void LacertaEditor::Start()
     GameObject& sphereGo = AddMeshToScene(L"Assets/Meshes/spheregreg.obj", spawnLocation, "MeshPBRShader");
     TransformComponent& sphereTfComp = sphereGo.GetComponent<TransformComponent>();
     sphereTfComp.SetScale(Vector3(2.0f, 2.0f, 2.0f));
-    Texture* tex = ResourceManager::Get()->CreateTexture(L"Assets/Textures/gregcolor.png");
-    Texture* normalMap = ResourceManager::Get()->CreateTexture(L"Assets/Textures/gregnormal.png");
+    Texture* tex = ResourceManager::Get()->CreateResource<Texture>(L"Assets/Textures/gregcolor.png");
+    Texture* normalMap = ResourceManager::Get()->CreateResource<Texture>(L"Assets/Textures/gregnormal.png");
     MeshComponent& meshComp = sphereGo.GetComponent<MeshComponent>();
     meshComp.GetMaterial()->SetTexture(0, tex);
     meshComp.GetMaterial()->SetTexture(1, normalMap);
@@ -103,8 +103,8 @@ void LacertaEditor::Start()
 
     // -------------------------- Adding Point Lights --------------------------
 
-    AddPointLightToScene(Vector3(25.0f, 8.0f, 20.0f));
-    AddPointLightToScene(Vector3(65.0f, 2.0f, 30.0f));
+    AddPointLightToScene(Vector3(60.0f, 8.0f, 20.0f));
+    AddPointLightToScene(Vector3(8.0f, 9.0f, -14.0f));
 
     // --------------------------- Camera Default Position ---------------------
 
