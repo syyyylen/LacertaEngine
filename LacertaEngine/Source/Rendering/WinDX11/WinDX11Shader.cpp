@@ -122,41 +122,67 @@ void WinDX11Shader::PreparePass(Renderer* renderer, Drawcall* dc)
     if(dc->GetType() == DrawcallType::dcMesh)
     {
         MeshConstantBuffer meshCb;
-        meshCb.LocalMatrix = dc->LocalMatrix();
-        meshCb.LightProperties = dc->GetMaterial()->GetMatLightProperties();
 
-        const auto baseColor = dc->GetMaterial()->GetTexture(0);
-        if(baseColor != nullptr)
+        if(dc->GetMaterial()->IsSkyBox())
         {
-            const auto baseColorSrv = static_cast<ID3D11ShaderResourceView*>(baseColor->m_resourceView);
-            if(baseColorSrv != nullptr)
-            {
-                meshCb.HasAlbedo = true;
-                ctx->VSSetShaderResources(0, 1, &baseColorSrv);
-                ctx->PSSetShaderResources(0, 1, &baseColorSrv);
-            }
-        }
-        else
-        {
+            meshCb.LocalMatrix = dc->LocalMatrix();
             meshCb.HasAlbedo = false;
-        }
+            meshCb.HasNormalMap = false;
 
-        const auto normalMap = dc->GetMaterial()->GetTexture(1);
-        if(normalMap != nullptr)
-        {
-            const auto normalMapSrv = static_cast<ID3D11ShaderResourceView*>(normalMap->m_resourceView);
-            if(normalMapSrv != nullptr)
+            const auto skyboxTex = dc->GetMaterial()->GetTexture(0);
+            if(skyboxTex != nullptr)
             {
-                meshCb.HasNormalMap = true;
-                ctx->VSSetShaderResources(1, 1, &normalMapSrv);
-                ctx->PSSetShaderResources(1, 1, &normalMapSrv);
+                const auto baseColorSrv = static_cast<ID3D11ShaderResourceView*>(skyboxTex->m_resourceView);
+                if(baseColorSrv != nullptr)
+                {
+                    meshCb.HasAlbedo = true;
+                    ctx->VSSetShaderResources(0, 1, &baseColorSrv);
+                    ctx->PSSetShaderResources(0, 1, &baseColorSrv);
+                }
             }
+
+            GraphicsEngine::Get()->SetRasterizerState(true);
         }
         else
         {
-            meshCb.HasNormalMap = false;
-        } 
+            meshCb.LocalMatrix = dc->LocalMatrix();
+            meshCb.LightProperties = dc->GetMaterial()->GetMatLightProperties();
 
+            const auto baseColor = dc->GetMaterial()->GetTexture(0);
+            if(baseColor != nullptr)
+            {
+                const auto baseColorSrv = static_cast<ID3D11ShaderResourceView*>(baseColor->m_resourceView);
+                if(baseColorSrv != nullptr)
+                {
+                    meshCb.HasAlbedo = true;
+                    ctx->VSSetShaderResources(0, 1, &baseColorSrv);
+                    ctx->PSSetShaderResources(0, 1, &baseColorSrv);
+                }
+            }
+            else
+            {
+                meshCb.HasAlbedo = false;
+            }
+
+            const auto normalMap = dc->GetMaterial()->GetTexture(1);
+            if(normalMap != nullptr)
+            {
+                const auto normalMapSrv = static_cast<ID3D11ShaderResourceView*>(normalMap->m_resourceView);
+                if(normalMapSrv != nullptr)
+                {
+                    meshCb.HasNormalMap = true;
+                    ctx->VSSetShaderResources(1, 1, &normalMapSrv);
+                    ctx->PSSetShaderResources(1, 1, &normalMapSrv);
+                }
+            }
+            else
+            {
+                meshCb.HasNormalMap = false;
+            }
+
+            GraphicsEngine::Get()->SetRasterizerState(false);
+        }
+            
         GraphicsEngine::Get()->UpdateMeshConstants(&meshCb);
         ctx->IASetIndexBuffer((ID3D11Buffer*)dc->GetIBO(), DXGI_FORMAT_R32_UINT, 0);
     }

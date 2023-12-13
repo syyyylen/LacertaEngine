@@ -83,7 +83,7 @@ float4 main(VertexOutput input) : SV_Target
     float4 albedo = DefaultColor;
     
     if(HasAlbedo)
-        albedo = BaseColor.Sample(TextureSampler,  float2(input.texcoord.x, 1.0 - input.texcoord.y));
+        albedo = BaseColor.Sample(TextureSampler, float2(input.texcoord.x, 1.0 - input.texcoord.y));
 
     // Fresnel reflectance at normal incidence (for metals use albedo color).
     float3 F0 = lerp(Fdielectric, albedo, MatLightProperties.Metallic);

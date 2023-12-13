@@ -84,6 +84,8 @@ private:
     Scene* m_activeScene;
     GameObject* m_selectedObject;
 
+    GameObject* m_skyBoxGo;
+
     // TODO handle scene Camera
     bool m_isMouseLocked = true;
     Matrix4x4 m_sceneCamera;
