@@ -81,8 +81,6 @@ void Texture::CreateResource(const wchar_t* filePath)
             m_resourceView = (void*)Srv;
         }
     }
-
-    
 }
 
 }

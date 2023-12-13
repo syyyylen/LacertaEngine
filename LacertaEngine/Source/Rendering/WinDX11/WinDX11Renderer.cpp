@@ -129,9 +129,26 @@ void WinDX11Renderer::Initialize(int* context, int width, int height, int target
     rasterizerDesc.MultisampleEnable = false;
     rasterizerDesc.AntialiasedLineEnable = false;
 
-    ID3D11RasterizerState* rasterizerState;
-    m_device->CreateRasterizerState(&rasterizerDesc, &rasterizerState);
-    m_deviceContext->RSSetState(rasterizerState);
+    m_device->CreateRasterizerState(&rasterizerDesc, &m_rasterizerCullBackState);
+
+    // We create a cullback state for cases when we need to render inside a mesh (skybox)
+    D3D11_RASTERIZER_DESC cullfrontRasterizerDesc;
+    ZeroMemory(&cullfrontRasterizerDesc, sizeof(D3D11_RASTERIZER_DESC));
+    cullfrontRasterizerDesc.FillMode = D3D11_FILL_SOLID;
+    cullfrontRasterizerDesc.CullMode = D3D11_CULL_FRONT;
+    cullfrontRasterizerDesc.FrontCounterClockwise = false;
+    cullfrontRasterizerDesc.DepthBias = 0;
+    cullfrontRasterizerDesc.SlopeScaledDepthBias = 0.0f;
+    cullfrontRasterizerDesc.DepthBiasClamp = 0.0f;
+    cullfrontRasterizerDesc.DepthClipEnable = true;
+    cullfrontRasterizerDesc.ScissorEnable = false;
+    cullfrontRasterizerDesc.MultisampleEnable = false;
+    cullfrontRasterizerDesc.AntialiasedLineEnable = false;
+
+    m_device->CreateRasterizerState(&cullfrontRasterizerDesc, &m_rasterizerCullFrontState);
+
+    // Set default state to cull back
+    m_deviceContext->RSSetState(m_rasterizerCullBackState);
 
     D3D11_SAMPLER_DESC samplerDesc;
     ZeroMemory(&samplerDesc, sizeof(D3D11_SAMPLER_DESC));
@@ -343,5 +360,9 @@ void WinDX11Renderer::UpdateMeshConstantBuffer(void* buffer)
     m_deviceContext->VSSetConstantBuffers(1, 1, &m_meshConstantBuffer);
     m_deviceContext->PSSetConstantBuffers(1, 1, &m_meshConstantBuffer);
 }
-    
+
+void WinDX11Renderer::SetRasterizerCullState(bool cullFront)
+{
+    cullFront ? m_deviceContext->RSSetState(m_rasterizerCullFrontState) :  m_deviceContext->RSSetState(m_rasterizerCullBackState); 
+}
 }

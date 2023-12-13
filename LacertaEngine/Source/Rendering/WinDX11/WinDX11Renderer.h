@@ -25,6 +25,7 @@ public:
     void OnResizeWindow(unsigned width, unsigned height) override;
     void UpdateConstantBuffer(void* buffer) override;
     void UpdateMeshConstantBuffer(void* buffer) override;
+    void SetRasterizerCullState(bool cullFront) override;
     void AddDrawcall(DrawcallData* dcData) override;
     void CreateBuffers(ShapeData& shapeData, std::vector<VertexMesh> vertices, std::vector<unsigned> indices) override;
 
@@ -37,6 +38,8 @@ public:
 private:
     ID3D11Device* m_device;
     ID3D11DeviceContext* m_deviceContext;
+    ID3D11RasterizerState* m_rasterizerCullBackState;
+    ID3D11RasterizerState* m_rasterizerCullFrontState;
     IDXGISwapChain* m_dxgiSwapChain;
     ID3D11SamplerState* m_samplerState;
     D3D_FEATURE_LEVEL m_featureLevel;

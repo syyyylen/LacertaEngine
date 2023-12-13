@@ -31,6 +31,7 @@ public:
     void RenderScene(Vector2 ViewportSize);
     void Resize(unsigned width, unsigned height);
     void SetBackbufferViewportSize(int width, int height);
+    void SetRasterizerState(bool cullFront);
     void PresentSwapChain();
     void UpdateShaderConstants(void* buffer);
     void UpdateMeshConstants(void* buffer);

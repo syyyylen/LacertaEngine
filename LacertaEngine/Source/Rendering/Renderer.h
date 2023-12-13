@@ -29,6 +29,7 @@ public:
     virtual void PresentSwapChain() = 0;
     virtual void UpdateConstantBuffer(void* buffer) = 0;
     virtual void UpdateMeshConstantBuffer(void* buffer) = 0;
+    virtual void SetRasterizerCullState(bool cullFront) = 0;
     virtual void AddDrawcall(DrawcallData* dcData) = 0;
     virtual void ClearDrawcalls();
     virtual void CreateBuffers(ShapeData& shapeData, std::vector<VertexMesh> vertices, std::vector<unsigned int> indices) = 0;
