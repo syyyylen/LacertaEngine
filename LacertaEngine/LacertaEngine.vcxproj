@@ -245,6 +245,7 @@
     <ClInclude Include="Source\Rendering\Shaders\ConstantBuffer.hlsli" />
     <AdditionalFiles Include="Source\Rendering\Shaders\MeshConstantBuffer.hlsli" />
     <AdditionalFiles Include="Source\Rendering\Shaders\MeshShadersLayouts.hlsli" />
+    <AdditionalFiles Include="Source\Rendering\Shaders\SkyBoxPixelShader.hlsl" />
     <ClInclude Include="Source\Rendering\WinDX11\WinDX11Drawcall.h" />
     <ClInclude Include="Source\Rendering\WinDX11\WinDX11Renderer.h" />
     <ClInclude Include="Source\Rendering\WinDX11\WinDX11RenderTarget.h" />
@@ -410,6 +411,9 @@
       <SDLCheck>true</SDLCheck>
       <LinkCompiled>true</LinkCompiled>
     </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <AdditionalFiles Include="Source\Rendering\Shaders\SkyBoxPixelShader.hlsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

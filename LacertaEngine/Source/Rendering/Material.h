@@ -23,6 +23,9 @@ public:
 
     void SetTexture(size_t index, Texture* texture);
 
+    void SetIsSkyBox(bool skyBox) { m_isSkyBox = skyBox; }
+    bool IsSkyBox() const { return m_isSkyBox; }
+
     Texture* GetTexture(size_t index)
     {
         if (index < m_textures.size())
@@ -35,6 +38,7 @@ private:
     MatLightProperties m_lightProperties;
     std::string m_shaderName;
     std::vector<Texture*> m_textures;
+    bool m_isSkyBox = false; // TODO this is beyond cringe
 };
 
 }

@@ -83,7 +83,7 @@ float4 main(VertexOutput input) : SV_Target
     float4 albedo = DefaultColor;
     
     if(HasAlbedo)
-        albedo = BaseColor.Sample(TextureSampler,  float2(input.texcoord.x, 1.0 - input.texcoord.y));
+        albedo = BaseColor.Sample(TextureSampler, float2(input.texcoord.x, 1.0 - input.texcoord.y));
 
     // Fresnel reflectance at normal incidence (for metals use albedo color).
     float3 F0 = lerp(Fdielectric, albedo, MatLightProperties.Metallic);
@@ -112,6 +112,20 @@ float4 main(VertexOutput input) : SV_Target
 
     float3 ambiantLight = GlobalAmbient * float3(albedo.x, albedo.y, albedo.z); // Ambient is texture color
     finalLight += ambiantLight;
+
+    if(MatLightProperties.Shininess > 0.0f)
+    {
+        float3 r = reflect(v, input.normal);
+        float theta = atan2(r.z, r.x);
+        float phi = acos(r.y);
+
+        float u = 0.5f + (theta / (2 * PI));
+        float v2 = 0.5f - (phi / PI);
+
+        float4 reflectionColor = float4(Enviro.Sample(EnviroSampler, float2(u, v2)));
+
+        return lerp(float4(finalLight, 1.0f), reflectionColor, MatLightProperties.Shininess);
+    }
 
     return float4(finalLight, 1.0);
 }

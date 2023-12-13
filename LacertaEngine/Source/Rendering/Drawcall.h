@@ -21,7 +21,7 @@ struct MatLightProperties
 {
     float DiffuseIntensity = 1.0f;
     float SpecularIntensity = 1.0f;
-    float Shininess = 10.0f;
+    float Shininess = 0.0f;
     float Metallic = 0.0f;
     // 16 bytes
     float Roughness = 0.6f;
