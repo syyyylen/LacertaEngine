@@ -138,6 +138,10 @@ void WinDX11Shader::PreparePass(Renderer* renderer, Drawcall* dc)
                     meshCb.HasAlbedo = true;
                     ctx->VSSetShaderResources(0, 1, &baseColorSrv);
                     ctx->PSSetShaderResources(0, 1, &baseColorSrv);
+
+                    // TODO debug enviro reflections, to remove and clean
+                    ctx->VSSetShaderResources(2, 1, &baseColorSrv);
+                    ctx->PSSetShaderResources(2, 1, &baseColorSrv);
                 }
             }
 

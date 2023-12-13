@@ -335,6 +335,7 @@ GameObject& LacertaEditor::AddMeshToScene(const wchar_t* meshPath, Vector3 posit
     
     Material* newMat = new Material();
     MatLightProperties properties;
+    properties.Shininess = 0.0f; // TODO shininess is 10 by default, find why
     newMat->InitializeProperties(properties, shader);
     meshComp.SetMaterial(newMat);
 
