@@ -82,6 +82,12 @@ void GraphicsEngine::SetBackbufferViewportSize(int width, int height)
         m_renderer->GetRenderTarget(0)->SetViewportSize(m_renderer, width, height);
 }
 
+void GraphicsEngine::SetRasterizerState(bool cullFront)
+{
+    if(m_renderer)
+        m_renderer->SetRasterizerCullState(cullFront);
+}
+
 void GraphicsEngine::PresentSwapChain()
 {
     if(m_renderer)
