@@ -5,7 +5,6 @@ struct VertexInput
     float3 normal : NORMAL0;
     float3 tangent : TANGENT0;
     float3 binormal : BINORMAL0;
-    
 };
 
 struct VertexOutput

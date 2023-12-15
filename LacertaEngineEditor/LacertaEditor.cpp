@@ -201,7 +201,8 @@ void LacertaEditor::Update()
     {
         cc.PointLights[i].Enabled = false;
     }
-
+    
+    // TODO remove this, render the skybox mesh with a different approach 
     // We move the sphere skybox at camera pos
     auto& skyboxTf = m_skyBoxGo->GetComponent<TransformComponent>();
     skyboxTf.SetPosition(m_sceneCamera.GetTranslation());

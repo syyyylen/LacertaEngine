@@ -5,9 +5,10 @@
 
 namespace LacertaEngine
 {
-    class SkyBoxTexture;
+    
+class SkyBoxTexture;
 
-    class LACERTAENGINE_API Material
+class LACERTAENGINE_API Material
 {
 public:
     Material();
@@ -15,7 +16,7 @@ public:
 
     void InitializeProperties(MatLightProperties properties, std::string shaderName, Texture* baseColor);
     void InitializeProperties(MatLightProperties properties, std::string shaderName);
-    
+     
     void SetMatLightProperties(MatLightProperties properties) { m_lightProperties = properties; }
     MatLightProperties GetMatLightProperties() { return m_lightProperties; }
 
