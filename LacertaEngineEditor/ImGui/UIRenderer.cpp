@@ -159,7 +159,7 @@ void UIRenderer::Update()
         {
             {
                 ImGui::Begin("Viewport");
-                
+
                 ImVec2 viewportSize = ImGui::GetContentRegionAvail();
                 m_editor->SetViewportCachedSize(Vector2(viewportSize.x, viewportSize.y));
                 ImGui::Image((void*)SceneTextureRenderTarget->GetTextureShaderResView(), viewportSize);

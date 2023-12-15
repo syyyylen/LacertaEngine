@@ -2,8 +2,7 @@
 #include "../Core.h"
 #include "Resource.h"
 #include "../Logger/Logger.h"
-#include "Texture/Texture.h"
-
+#include "Resources.h"
 
 namespace LacertaEngine
 {

@@ -6,6 +6,7 @@
 #include <d3dcompiler.h>
 #include "../GraphicsEngine.h"
 #include "../Material.h"
+#include "../../RessourcesManager/Texture/SkyBoxTexture.h"
 
 namespace LacertaEngine
 {
@@ -129,17 +130,13 @@ void WinDX11Shader::PreparePass(Renderer* renderer, Drawcall* dc)
             meshCb.HasAlbedo = false;
             meshCb.HasNormalMap = false;
 
-            const auto skyboxTex = dc->GetMaterial()->GetTexture(0);
+            const auto skyboxTex = dc->GetMaterial()->GetSkyBoxTex();
             if(skyboxTex != nullptr)
             {
                 const auto baseColorSrv = static_cast<ID3D11ShaderResourceView*>(skyboxTex->m_resourceView);
                 if(baseColorSrv != nullptr)
                 {
                     meshCb.HasAlbedo = true;
-                    ctx->VSSetShaderResources(0, 1, &baseColorSrv);
-                    ctx->PSSetShaderResources(0, 1, &baseColorSrv);
-
-                    // TODO debug enviro reflections, to remove and clean
                     ctx->VSSetShaderResources(2, 1, &baseColorSrv);
                     ctx->PSSetShaderResources(2, 1, &baseColorSrv);
                 }

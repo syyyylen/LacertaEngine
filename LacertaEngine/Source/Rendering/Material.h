@@ -5,8 +5,9 @@
 
 namespace LacertaEngine
 {
+    class SkyBoxTexture;
 
-class LACERTAENGINE_API Material
+    class LACERTAENGINE_API Material
 {
 public:
     Material();
@@ -23,8 +24,12 @@ public:
 
     void SetTexture(size_t index, Texture* texture);
 
+    // TODO clean this
     void SetIsSkyBox(bool skyBox) { m_isSkyBox = skyBox; }
     bool IsSkyBox() const { return m_isSkyBox; }
+    SkyBoxTexture* GetSkyBoxTex() { return m_skyBoxTex; }
+    void SetSkyBoxTexture(SkyBoxTexture* tex) { m_skyBoxTex = tex; }
+    // TODO clean this
 
     Texture* GetTexture(size_t index)
     {
@@ -38,6 +43,8 @@ private:
     MatLightProperties m_lightProperties;
     std::string m_shaderName;
     std::vector<Texture*> m_textures;
+
+    SkyBoxTexture* m_skyBoxTex = nullptr; // TODO clean this plz
     bool m_isSkyBox = false; // TODO this is beyond cringe
 };
 
