@@ -4,8 +4,8 @@ sampler TextureSampler: register(s0);
 Texture2D NormalMap: register(t1);
 sampler NormalSampler: register(s1);
 
-Texture2D Enviro: register(t2);
-sampler EnviroSampler: register(s2);
+TextureCube SkyBox: register(t2);
+sampler SkyBoxSampler: register(s2);
 
 struct MaterialLightProperties
 {

@@ -68,10 +68,10 @@ void DetailsPanel::Update()
 
                 MatLightProperties lightProperties = mat->GetMatLightProperties();
 
-                // TODO old phong uniforms
+                // TODO remove old phong uniforms
                 // ImGui::SliderFloat("Diffuse", &lightProperties.DiffuseIntensity, 0.0f, 5.0f);
                 // ImGui::SliderFloat("Specular", &lightProperties.SpecularIntensity, 0.0f, 5.0f);
-                ImGui::SliderFloat("Shininess", &lightProperties.Shininess, 0.0f, 1.0f);
+                // ImGui::SliderFloat("Shininess", &lightProperties.Shininess, 0.0f, 1.0f);
                 ImGui::SliderFloat("Metallic", &lightProperties.Metallic, 0.0f, 1.0f);
                 ImGui::SliderFloat("Roughness", &lightProperties.Roughness, 0.0f, 1.0f);
 

@@ -61,8 +61,8 @@ void LacertaEditor::Start()
     auto& skyboxTf = m_skyBoxGo->GetComponent<TransformComponent>();
     skyboxTf.SetScale(Vector3(500.0f, 500.0f, 500.0f));
     auto& skyBoxMeshComp = m_skyBoxGo->GetComponent<MeshComponent>();
-    Texture* skyboxTex = ResourceManager::Get()->CreateResource<Texture>(L"Assets/Textures/sky.jpg");
-    skyBoxMeshComp.GetMaterial()->SetTexture(0, skyboxTex);
+    SkyBoxTexture* skyBoxTex = ResourceManager::Get()->CreateResource<SkyBoxTexture>(L"Assets/Textures/skymap.dds");
+    skyBoxMeshComp.GetMaterial()->SetSkyBoxTexture(skyBoxTex);
     skyBoxMeshComp.GetMaterial()->SetShader("SkyboxShader");
     skyBoxMeshComp.GetMaterial()->SetIsSkyBox(true);
 
@@ -114,9 +114,9 @@ void LacertaEditor::Start()
     sphere3MeshComp.GetMaterial()->SetTexture(0, brickTex);
     sphere3MeshComp.GetMaterial()->SetTexture(1, brickNormal);
     
-    GameObject& groundGo = AddMeshToScene(L"Assets/Meshes/cube.obj", Vector3(0.0f, -14.0f, 0.0f));
+    GameObject& groundGo = AddMeshToScene(L"Assets/Meshes/cube.obj", Vector3(80.0f, -14.0f, 0.0f));
     TransformComponent& groundGoTf = groundGo.GetComponent<TransformComponent>();
-    groundGoTf.SetScale(Vector3(1000.0f, 0.5f, 1000.0f));
+    groundGoTf.SetScale(Vector3(145.0f, 0.5f, 45.0f));
 
     // -------------------------- Adding Point Lights --------------------------
 
