@@ -113,5 +113,13 @@ float4 main(VertexOutput input) : SV_Target
     float3 ambiantLight = GlobalAmbient * float3(albedo.x, albedo.y, albedo.z); // Ambient is texture color
     finalLight += ambiantLight;
 
+    if(MatLightProperties.Shininess > 0.0f)
+    {
+        float3 r = reflect(-v, normal);
+        float4 reflectionColor = float4(SkyBox.Sample(SkyBoxSampler, r));
+
+        return lerp(float4(finalLight, 1.0f), reflectionColor, MatLightProperties.Shininess);
+    }
+
     return float4(finalLight, 1.0);
 }

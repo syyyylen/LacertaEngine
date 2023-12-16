@@ -59,7 +59,7 @@ void LacertaEditor::Start()
 
     m_skyBoxGo = &AddMeshToScene(L"Assets/Meshes/sphere_hq.obj", Vector3(0.0f, 0.0f, 0.0f));
     auto& skyboxTf = m_skyBoxGo->GetComponent<TransformComponent>();
-    skyboxTf.SetScale(Vector3(500.0f, 500.0f, 500.0f));
+    skyboxTf.SetScale(Vector3(1000.0f, 1000.0f, 1000.0f));
     auto& skyBoxMeshComp = m_skyBoxGo->GetComponent<MeshComponent>();
     SkyBoxTexture* skyBoxTex = ResourceManager::Get()->CreateResource<SkyBoxTexture>(L"Assets/Textures/skymap.dds");
     skyBoxMeshComp.GetMaterial()->SetSkyBoxTexture(skyBoxTex);
@@ -175,7 +175,7 @@ void LacertaEditor::Update()
     cc.ViewMatrix = worldCam;
     
     // Update the perspective projection to the ImGui viewport size
-    cc.ProjectionMatrix.SetPerspectiveFovLH(1.57f, (m_viewportCachedSize.X / m_viewportCachedSize.Y), 0.1f, 3000.0f);
+    cc.ProjectionMatrix.SetPerspectiveFovLH(1.57f, (m_viewportCachedSize.X / m_viewportCachedSize.Y), 0.1f, 5000.0f);
     m_sceneCameraProjection = cc.ProjectionMatrix;
 
     // Ambient lighting constant
