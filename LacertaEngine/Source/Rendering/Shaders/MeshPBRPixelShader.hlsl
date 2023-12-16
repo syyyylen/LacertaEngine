@@ -118,6 +118,12 @@ float4 main(VertexOutput input) : SV_Target
         float3 r = reflect(-v, normal);
         float4 reflectionColor = float4(SkyBox.Sample(SkyBoxSampler, r));
 
+        reflectionColor *= float4(finalLight, 1.0f);
+        
+        float NdotV = max(dot(normal, v), 0.0f);
+        float f = 1.0f - NdotV;
+        reflectionColor = lerp(reflectionColor, float4(finalLight, 1.0), pow(f, 3.0f));
+        
         return lerp(float4(finalLight, 1.0f), reflectionColor, MatLightProperties.Shininess);
     }
 
