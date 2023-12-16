@@ -202,6 +202,7 @@
     <AdditionalFiles Include="Source\Rendering\Shaders\MeshVertex.hlsl" />
     <AdditionalFiles Include="Source\Rendering\Shaders\MeshPixelShader.hlsl" />
     <AdditionalFiles Include="Source\Rendering\Shaders\MeshPBRPixelShader.hlsl" />
+    <Content Include="Source\Rendering\Shaders\SkyBoxVertexShader.hlsl" />
     <ClCompile Include="Source\Rendering\WinDX11\WinDX11Drawcall.cpp" />
     <ClCompile Include="Source\Rendering\WinDX11\WinDX11Renderer.cpp" />
     <ClCompile Include="Source\Rendering\WinDX11\WinDX11RenderTarget.cpp" />

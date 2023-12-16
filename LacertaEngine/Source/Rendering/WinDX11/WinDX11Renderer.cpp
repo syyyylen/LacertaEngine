@@ -213,7 +213,6 @@ void WinDX11Renderer::LoadShaders()
 
     MeshShader->SetVSData(vertexBlob->GetBufferPointer(), vertexBlob->GetBufferSize());
     MeshPbrShader->SetVSData(vertexBlob->GetBufferPointer(), vertexBlob->GetBufferSize());
-    SkyboxShader->SetVSData(vertexBlob->GetBufferPointer(), vertexBlob->GetBufferSize());
 
     // Compiling & Creating Pixel Shader
     ID3DBlob* pixelErrorBlob = nullptr;
@@ -259,6 +258,26 @@ void WinDX11Renderer::LoadShaders()
     MeshPbrShader->SetPSData(pixelPbrBlob->GetBufferPointer(), pixelPbrBlob->GetBufferSize());
 
     m_shaders.emplace("MeshPBRShader", MeshPbrShader);
+
+    ID3DBlob* skyboxVertexErrorBlob = nullptr;
+    ID3DBlob* skyboxVertexBlob;
+
+    hr = D3DCompileFromFile(L"../LacertaEngine/Source/Rendering/Shaders/SkyBoxVertexShader.hlsl", nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, "main", "vs_5_0", 0, 0, &skyboxVertexBlob, &skyboxVertexErrorBlob);
+    if(FAILED(hr))
+    {
+        LOG(Error, "WinDX11Shader : Failed vertex shader compilation !");
+        std::string errorMsg = std::system_category().message(hr);
+        LOG(Error, errorMsg);
+
+        if (vertexErrorBlob) 
+        {
+            std::string errorMessage(static_cast<const char*>(skyboxVertexErrorBlob->GetBufferPointer()), skyboxVertexErrorBlob->GetBufferSize());
+            LOG(Error, errorMessage);
+            skyboxVertexErrorBlob->Release();
+        }
+    }
+    
+    SkyboxShader->SetVSData(skyboxVertexBlob->GetBufferPointer(), skyboxVertexBlob->GetBufferSize());
     
     ID3DBlob* skyboxErrorBlob = nullptr;
     ID3DBlob* skyboxBlob;
