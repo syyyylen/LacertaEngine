@@ -14,7 +14,6 @@ VertexOutput main(VertexInput input)
     ret.position = mul(ret.position, Projection);
     ret.texcoord = input.texcoord;
     ret.normal = normalize(mul(input.normal, (float3x3)World));
-    // ret.normal = input.normal;
     
     ret.tbn[0] = normalize(mul(input.tangent, World));
     ret.tbn[1] = normalize(mul(input.binormal, World));

@@ -1,14 +1,15 @@
-#include "MeshShadersLayouts.hlsli"
 #include "ConstantBuffer.hlsli"
 #include "MeshConstantBuffer.hlsli"
 
-float4 main(VertexOutput input) : SV_Target
+struct SkyboxVertexOutput
 {
-    float3 sampleV = input.positionWS;
+    float4 position : SV_POSITION;
+    float3 texcoord : TEXCOORD0;
+};
 
-    return SkyBox.Sample(SkyBoxSampler, sampleV);
-    
-    float4 texColor = BaseColor.Sample(TextureSampler, float2(input.texcoord.x, 1.0 - input.texcoord.y));
+float4 main(SkyboxVertexOutput input) : SV_Target
+{
+    float4 texColor = SkyBox.Sample(SkyBoxSampler, input.texcoord);
     texColor *= clamp(DirectionalIntensity, 0.0f, 1.0f);
-    return float4(texColor.xyz, 1.0f);
+    return texColor;
 }
