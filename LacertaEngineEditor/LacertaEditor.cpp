@@ -52,7 +52,7 @@ void LacertaEditor::Start()
 
     // ---------------------------- Debug Scene Creation --------------------
 
-    m_activeScene = new Scene();
+    m_activeScene = new Scene("Demo scene");
 
     // TODO this needs to be created first bc we want it to be rendered first. Isn't it stupid ? (rhetorical question, it is.)
     // -------------------------- Skybox Sphere Creation -----------------------
@@ -314,6 +314,22 @@ bool LacertaEditor::IsRunning()
 EditorWindow* LacertaEditor::GetEditorWindow()
 {
     return m_editorWindow;
+}
+
+void LacertaEditor::SaveActiveScene()
+{
+    if(m_activeScene == nullptr)
+        return;
+
+    SceneSerializer Serializer;
+    Serializer.Serialize(*m_activeScene, nullptr);
+}
+
+Scene* LacertaEditor::LoadSceneFromFile(const wchar_t* filePath)
+{
+    // TODO parse scene file and create scene obj fully loaded from it
+    
+    return nullptr;
 }
 
 void LacertaEditor::DestroyGo(GameObject* goToDestroy)

@@ -137,9 +137,12 @@ void UIRenderer::Update()
         {
             if (ImGui::BeginMenu("File"))
             {
+                if (ImGui::MenuItem("Save", NULL, false))
+                    m_editor->SaveActiveScene();
+                
                 if (ImGui::MenuItem("Exit", NULL, false))
                     m_editor->Close();
-                
+
                 ImGui::EndMenu();
             }
 

@@ -113,6 +113,7 @@ float4 main(VertexOutput input) : SV_Target
     float3 ambiantLight = GlobalAmbient * float3(albedo.x, albedo.y, albedo.z); // Ambient is texture color
     finalLight += ambiantLight;
 
+    // TODO remove this and add proper IBL
     if(MatLightProperties.Shininess > 0.0f)
     {
         float3 r = reflect(-v, normal);
@@ -126,6 +127,7 @@ float4 main(VertexOutput input) : SV_Target
         
         return lerp(float4(finalLight, 1.0f), reflectionColor, MatLightProperties.Shininess);
     }
+    // TODO remove this and add proper IBL
 
     return float4(finalLight, 1.0);
 }

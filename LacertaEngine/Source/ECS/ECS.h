@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #include "Scene.h"
+#include "SceneSerializer.h"
 #include "GameObject.h"
 #include "Component.h"
 

@@ -11,7 +11,7 @@ namespace LacertaEngine
 class LACERTAENGINE_API Scene
 {
 public:
-    Scene();
+    Scene(std::string name);
     ~Scene();
 
     GameObject* CreateGameObject(std::string name, Vector3 position);
@@ -20,6 +20,11 @@ public:
 public:
     entt::registry m_registry;
     std::vector<GameObject*> m_gameObjects;
+
+private:
+    std::string m_name;
+
+    friend class SceneSerializer;
 };
     
 }
