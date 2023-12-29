@@ -188,6 +188,7 @@
     </ClCompile>
     <ClCompile Include="Source\ECS\GameObject.cpp" />
     <ClCompile Include="Source\ECS\Scene.cpp" />
+    <ClCompile Include="Source\ECS\SceneSerializer.cpp" />
     <ClCompile Include="Source\InputSystem\InputSystem.cpp" />
     <ClCompile Include="Source\LacertaEngine.cpp" />
     <ClCompile Include="Source\Logger\Logger.cpp" />
@@ -225,6 +226,7 @@
     <ClInclude Include="Source\ECS\Entt\entt.hpp" />
     <ClInclude Include="Source\ECS\GameObject.h" />
     <ClInclude Include="Source\ECS\Scene.h" />
+    <ClInclude Include="Source\ECS\SceneSerializer.h" />
     <ClInclude Include="Source\InputSystem\InputListener.h" />
     <ClInclude Include="Source\InputSystem\InputSystem.h" />
     <ClInclude Include="Source\LacertaEngine.h" />

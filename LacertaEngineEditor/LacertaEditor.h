@@ -32,6 +32,9 @@ public:
     // Scene Utilities
     Scene* GetActiveScene() { return m_activeScene; }
     
+    void SaveActiveScene();
+    Scene* LoadSceneFromFile(const wchar_t* filePath);
+    
     bool HasSelectedGo() { return m_selectedObject != nullptr; }
     void SetSelectedGo(GameObject* selectedGo) { m_selectedObject = selectedGo; }
     GameObject* GetSelectedGo() { return m_selectedObject; }

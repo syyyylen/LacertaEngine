@@ -52,7 +52,7 @@ void LacertaEditor::Start()
 
     // ---------------------------- Debug Scene Creation --------------------
 
-    m_activeScene = new Scene();
+    m_activeScene = new Scene("Demo scene");
 
     // TODO this needs to be created first bc we want it to be rendered first. Isn't it stupid ? (rhetorical question, it is.)
     // -------------------------- Skybox Sphere Creation -----------------------
@@ -102,6 +102,10 @@ void LacertaEditor::Start()
     GameObject& sphere2Go = AddMeshToScene(L"Assets/Meshes/spheregreg.obj", spawnLocation);
     TransformComponent& sphere2TfComp = sphere2Go.GetComponent<TransformComponent>();
     sphere2TfComp.SetScale(Vector3(2.0f, 2.0f, 2.0f));
+    auto& sphere2MeshComp = sphere2Go.GetComponent<MeshComponent>();
+    MatLightProperties properties;
+    properties.Shininess = 1.0f;
+    sphere2MeshComp.GetMaterial()->SetMatLightProperties(properties);
 
     spawnLocation = Vector3(spawnLocation.X + 30.0f, spawnLocation.Y, spawnLocation.Z);
 
@@ -114,9 +118,9 @@ void LacertaEditor::Start()
     sphere3MeshComp.GetMaterial()->SetTexture(0, brickTex);
     sphere3MeshComp.GetMaterial()->SetTexture(1, brickNormal);
     
-    GameObject& groundGo = AddMeshToScene(L"Assets/Meshes/cube.obj", Vector3(80.0f, -14.0f, 0.0f));
+    GameObject& groundGo = AddMeshToScene(L"Assets/Meshes/cube.obj", Vector3(35.0f, -16.0f, 9.0f));
     TransformComponent& groundGoTf = groundGo.GetComponent<TransformComponent>();
-    groundGoTf.SetScale(Vector3(145.0f, 0.5f, 45.0f));
+    groundGoTf.SetScale(Vector3(62.0f, 1.5f, 42.0f));
 
     // -------------------------- Adding Point Lights --------------------------
 
@@ -310,6 +314,22 @@ bool LacertaEditor::IsRunning()
 EditorWindow* LacertaEditor::GetEditorWindow()
 {
     return m_editorWindow;
+}
+
+void LacertaEditor::SaveActiveScene()
+{
+    if(m_activeScene == nullptr)
+        return;
+
+    SceneSerializer Serializer;
+    Serializer.Serialize(*m_activeScene, nullptr);
+}
+
+Scene* LacertaEditor::LoadSceneFromFile(const wchar_t* filePath)
+{
+    // TODO parse scene file and create scene obj fully loaded from it
+    
+    return nullptr;
 }
 
 void LacertaEditor::DestroyGo(GameObject* goToDestroy)

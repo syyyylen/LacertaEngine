@@ -120,7 +120,7 @@ void WinDX11Shader::PreparePass(Renderer* renderer, Drawcall* dc)
 
     ctx->IASetVertexBuffers(0, 1, &vbo, &m_vertexLayoutStride, &offsets);
 
-    if(dc->GetType() == DrawcallType::dcMesh)
+    if(dc->GetType() == DrawcallType::dcMesh) // TODO clean all this
     {
         MeshConstantBuffer meshCb;
 
