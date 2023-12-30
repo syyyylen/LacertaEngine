@@ -27,7 +27,7 @@ void GlobalSettingsPanel::Update()
         
         ImGui::Text("Inputs");
         ImGui::SliderFloat("Mouse Sensivity", &editor->m_mouseSensivity, 0.1f, 5.0f);
-        ImGui::SliderFloat("Move Speed", &editor->m_moveSpeed, 0.1f, 50.0f);
+        ImGui::SliderFloat("Move Speed", &editor->m_moveSpeed, 0.1f, 80.0f);
         ImGui::Separator();
 
         ImGui::Text("Lighting");

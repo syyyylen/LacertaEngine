@@ -57,7 +57,7 @@ void LacertaEditor::Start()
     // TODO this needs to be created first bc we want it to be rendered first. Isn't it stupid ? (rhetorical question, it is.)
     // -------------------------- Skybox Sphere Creation -----------------------
 
-    m_skyBoxGo = &AddMeshToScene(L"Assets/Meshes/sphere_hq.obj", Vector3(0.0f, 0.0f, 0.0f));
+    m_skyBoxGo = &AddMeshToScene("Skybox", L"Assets/Meshes/sphere_hq.obj", Vector3(0.0f, 0.0f, 0.0f));
     auto& skyboxTf = m_skyBoxGo->GetComponent<TransformComponent>();
     skyboxTf.SetScale(Vector3(1000.0f, 1000.0f, 1000.0f));
     auto& skyBoxMeshComp = m_skyBoxGo->GetComponent<MeshComponent>();
@@ -70,7 +70,7 @@ void LacertaEditor::Start()
 
     Vector3 spawnLocation = Vector3(0.0f, 0.0f, 0.0f);
 
-    GameObject& sphereGo = AddMeshToScene(L"Assets/Meshes/spheregreg.obj", spawnLocation, "MeshPBRShader");
+    GameObject& sphereGo = AddMeshToScene("GregSphere", L"Assets/Meshes/spheregreg.obj", spawnLocation, "MeshPBRShader");
     TransformComponent& sphereTfComp = sphereGo.GetComponent<TransformComponent>();
     sphereTfComp.SetScale(Vector3(2.0f, 2.0f, 2.0f));
     Texture* tex = ResourceManager::Get()->CreateResource<Texture>(L"Assets/Textures/gregcolor.png");
@@ -81,25 +81,25 @@ void LacertaEditor::Start()
     
     spawnLocation = Vector3(spawnLocation.X + 25.0f, spawnLocation.Y, spawnLocation.Z);
     
-    GameObject& dragonGo = AddMeshToScene(L"Assets/Meshes/dragon.obj", spawnLocation);
+    GameObject& dragonGo = AddMeshToScene("Dragon", L"Assets/Meshes/dragon.obj", spawnLocation);
     TransformComponent& dragonTfComp = dragonGo.GetComponent<TransformComponent>();
     dragonTfComp.SetScale(Vector3(1.5f, 1.5f, 1.5f));
 
     spawnLocation = Vector3(spawnLocation.X + 25.0f, spawnLocation.Y, spawnLocation.Z);
 
-    GameObject& teapotGo = AddMeshToScene(L"Assets/Meshes/teapot.obj", spawnLocation);
+    GameObject& teapotGo = AddMeshToScene("Teapot", L"Assets/Meshes/teapot.obj", spawnLocation);
     TransformComponent& teapotTfComp = teapotGo.GetComponent<TransformComponent>();
     teapotTfComp.SetScale(Vector3(10.0f, 10.0f, 10.0f));
 
     spawnLocation = Vector3(spawnLocation.X + 25.0f, spawnLocation.Y, spawnLocation.Z);
 
-    GameObject& statueGo = AddMeshToScene(L"Assets/Meshes/statue.obj", spawnLocation);
+    GameObject& statueGo = AddMeshToScene("Statue", L"Assets/Meshes/statue.obj", spawnLocation);
     TransformComponent& statueTfComp = statueGo.GetComponent<TransformComponent>();
     statueTfComp.SetScale(Vector3(30.0f, 30.0f, 30.0f));
 
     spawnLocation = Vector3(spawnLocation.X + 25.0f, spawnLocation.Y, spawnLocation.Z);
 
-    GameObject& sphere2Go = AddMeshToScene(L"Assets/Meshes/spheregreg.obj", spawnLocation);
+    GameObject& sphere2Go = AddMeshToScene("Sphere", L"Assets/Meshes/spheregreg.obj", spawnLocation);
     TransformComponent& sphere2TfComp = sphere2Go.GetComponent<TransformComponent>();
     sphere2TfComp.SetScale(Vector3(2.0f, 2.0f, 2.0f));
     auto& sphere2MeshComp = sphere2Go.GetComponent<MeshComponent>();
@@ -109,7 +109,7 @@ void LacertaEditor::Start()
 
     spawnLocation = Vector3(spawnLocation.X + 30.0f, spawnLocation.Y, spawnLocation.Z);
 
-    GameObject& sphere3Go = AddMeshToScene(L"Assets/Meshes/sphere_hq.obj", spawnLocation);
+    GameObject& sphere3Go = AddMeshToScene("Sphere", L"Assets/Meshes/sphere_hq.obj", spawnLocation);
     auto& sphere3TfComp = sphere3Go.GetComponent<TransformComponent>();
     sphere3TfComp.SetScale(Vector3(12.0f, 12.0f, 12.0f));
     auto brickTex = ResourceManager::Get()->CreateResource<Texture>(L"Assets/Textures/brick_d.jpg");
@@ -118,7 +118,7 @@ void LacertaEditor::Start()
     sphere3MeshComp.GetMaterial()->SetTexture(0, brickTex);
     sphere3MeshComp.GetMaterial()->SetTexture(1, brickNormal);
     
-    GameObject& groundGo = AddMeshToScene(L"Assets/Meshes/cube.obj", Vector3(35.0f, -16.0f, 9.0f));
+    GameObject& groundGo = AddMeshToScene("Ground", L"Assets/Meshes/cube.obj", Vector3(35.0f, -16.0f, 9.0f));
     TransformComponent& groundGoTf = groundGo.GetComponent<TransformComponent>();
     groundGoTf.SetScale(Vector3(62.0f, 1.5f, 42.0f));
 
@@ -343,11 +343,11 @@ void LacertaEditor::DestroyGo(GameObject* goToDestroy)
     m_activeScene->RemoveGameObject(goToDestroy);
 }
 
-GameObject& LacertaEditor::AddMeshToScene(const wchar_t* meshPath, Vector3 position, std::string shader)
+GameObject& LacertaEditor::AddMeshToScene(std::string name, const wchar_t* meshPath, Vector3 position, std::string shader)
 {
     Mesh* mesh = ResourceManager::Get()->CreateResource<Mesh>(meshPath);
-    
-    std::string name = "GameObject";
+
+    name += "_";
     name += std::to_string(m_activeScene->m_gameObjects.size());
     GameObject* go = m_activeScene->CreateGameObject(name, position);
     
@@ -365,7 +365,7 @@ GameObject& LacertaEditor::AddMeshToScene(const wchar_t* meshPath, Vector3 posit
 
 GameObject& LacertaEditor::AddPointLightToScene(Vector3 position, Vector4 color)
 {
-    std::string name = "PointLight";
+    std::string name = "PointLight_";
     name += std::to_string(m_activeScene->m_gameObjects.size());
     GameObject* go = m_activeScene->CreateGameObject(name, position);
 
