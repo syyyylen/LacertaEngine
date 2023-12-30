@@ -40,7 +40,7 @@ public:
     GameObject* GetSelectedGo() { return m_selectedObject; }
     void DestroyGo(GameObject* goToDestroy);
 
-    GameObject& AddMeshToScene(const wchar_t* meshPath, Vector3 position = Vector3(0.0f, 0.0f, 0.0f), std::string shader = "MeshPBRShader");
+    GameObject& AddMeshToScene(std::string name, const wchar_t* meshPath, Vector3 position = Vector3(0.0f, 0.0f, 0.0f), std::string shader = "MeshPBRShader");
     GameObject& AddPointLightToScene(Vector3 position = Vector3(0.0f, 0.0f, 0.0f), Vector4 color = Vector4(1.0f, 1.0f, 1.0f, 1.0f));
     // end Scene Utilities
 
@@ -62,7 +62,7 @@ public:
     // Temporary constants, exposed for UI panels
 public:
     float m_mouseSensivity = 3.0f;
-    float m_moveSpeed = 12.5f;
+    float m_moveSpeed = 18.5f;
     float m_inputDownScalar = 0.03f;
 
     float m_lightIntensity = 2.5f;

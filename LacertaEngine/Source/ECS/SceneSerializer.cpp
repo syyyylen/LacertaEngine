@@ -4,22 +4,24 @@
 
 namespace LacertaEngine
 {
-    SceneSerializer::SceneSerializer()
-    {
-    }
+    
+SceneSerializer::SceneSerializer()
+{
+}
 
-    SceneSerializer::~SceneSerializer()
-    {
-    }
+SceneSerializer::~SceneSerializer()
+{
+}
 
-    bool SceneSerializer::Serialize(Scene& Scene, const wchar_t* filePath)
-    {
-        LOG(Warning, "Serializing : " + Scene.m_name);
-        return false;
-    }
+bool SceneSerializer::Serialize(Scene& Scene, const wchar_t* filePath)
+{
+    LOG(Warning, "Serializing : " + Scene.m_name);
+    return false;
+}
 
-    bool SceneSerializer::Deserialize(Scene& Scene, const wchar_t* filePath)
-    {
-        return false;
-    }
+bool SceneSerializer::Deserialize(Scene& Scene, const wchar_t* filePath)
+{
+    return false;
+}
+    
 }
