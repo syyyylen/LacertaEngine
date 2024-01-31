@@ -102,10 +102,6 @@ void LacertaEditor::Start()
     GameObject& sphere2Go = AddMeshToScene("Sphere", L"Assets/Meshes/spheregreg.obj", spawnLocation);
     TransformComponent& sphere2TfComp = sphere2Go.GetComponent<TransformComponent>();
     sphere2TfComp.SetScale(Vector3(2.0f, 2.0f, 2.0f));
-    auto& sphere2MeshComp = sphere2Go.GetComponent<MeshComponent>();
-    MatLightProperties properties;
-    properties.Shininess = 1.0f;
-    sphere2MeshComp.GetMaterial()->SetMatLightProperties(properties);
 
     spawnLocation = Vector3(spawnLocation.X + 30.0f, spawnLocation.Y, spawnLocation.Z);
 
