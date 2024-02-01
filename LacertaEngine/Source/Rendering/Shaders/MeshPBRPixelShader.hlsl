@@ -115,17 +115,16 @@ float4 main(VertexOutput input) : SV_Target
         finalLight += PBR(F0, normal, v, lnorm, normalize(lnorm + v), radiance, albedo);
     }
 
-    // TODO compute irradiance map
-    
     float3 Ks = FresnelSchlickRoughness(max(dot(normal, v), 0.0f), F0,  MatLightProperties.Roughness);
     float3 Kd = 1.0f - Ks;
+    // Kd *= 1.0 - MatLightProperties.Metallic;
     float3 r = reflect(-v, normal);
-    float3 irradiance = float4(SkyBox.Sample(SkyBoxSampler, r));
+    float3 irradiance = float3(IrradianceMap.Sample(IrradianceSampler, r).rgb);
     float3 diffuse = albedo * irradiance;
 
     // TODO Specular IBL with pre filtered enviro map
 
-    float3 ambiantLight = (Kd * diffuse) * GlobalAmbient;
+    float3 ambiantLight = (Kd * diffuse) * 1.0f; // TODO replace 1 by ao
 
     finalLight += ambiantLight;
 

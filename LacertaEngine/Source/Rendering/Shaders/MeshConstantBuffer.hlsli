@@ -7,6 +7,9 @@ sampler NormalSampler: register(s1);
 TextureCube SkyBox: register(t2);
 sampler SkyBoxSampler: register(s2);
 
+TextureCube IrradianceMap: register(t3);
+sampler IrradianceSampler: register(s3);
+
 struct MaterialLightProperties
 {
     float DiffuseIntensity;

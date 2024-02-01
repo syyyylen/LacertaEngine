@@ -142,6 +142,17 @@ void WinDX11Shader::PreparePass(Renderer* renderer, Drawcall* dc)
                 }
             }
 
+            const auto irradianceTex = dc->GetMaterial()->GetIrradianceTexture();
+            if(irradianceTex != nullptr)
+            {
+                const auto irrSrv = static_cast<ID3D11ShaderResourceView*>(irradianceTex->m_resourceView);
+                if(irrSrv != nullptr)
+                {
+                    ctx->VSSetShaderResources(3, 1, &irrSrv);
+                    ctx->PSSetShaderResources(3, 1, &irrSrv);
+                }
+            }
+
             GraphicsEngine::Get()->SetRasterizerState(true);
         }
         else

@@ -29,7 +29,9 @@ public:
     void SetIsSkyBox(bool skyBox) { m_isSkyBox = skyBox; }
     bool IsSkyBox() const { return m_isSkyBox; }
     SkyBoxTexture* GetSkyBoxTex() { return m_skyBoxTex; }
+    SkyBoxTexture* GetIrradianceTexture() { return m_irradianceTex; }
     void SetSkyBoxTexture(SkyBoxTexture* tex) { m_skyBoxTex = tex; }
+    void SetIrradianceTexture(SkyBoxTexture* tex) { m_irradianceTex = tex; }
     // TODO clean this
 
     Texture* GetTexture(size_t index)
@@ -46,6 +48,7 @@ private:
     std::vector<Texture*> m_textures;
 
     SkyBoxTexture* m_skyBoxTex = nullptr; // TODO clean this plz
+    SkyBoxTexture* m_irradianceTex = nullptr; // TODO clean this plz
     bool m_isSkyBox = false; // TODO this is beyond cringe
 };
 

@@ -65,7 +65,7 @@ public:
     float m_moveSpeed = 18.5f;
     float m_inputDownScalar = 0.03f;
 
-    float m_lightIntensity = 2.5f;
+    float m_lightIntensity = 1.0f;
     float m_lightRotationX = 0.8f;
     float m_lightRotationY = 0.0f;
     float m_ambient = 0.1f;
