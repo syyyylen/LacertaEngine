@@ -5,6 +5,7 @@
 #include "../../Logger/Logger.h"
 #include "../../Rendering/GraphicsEngine.h"
 #include "../../Rendering/WinDX11/WinDX11Renderer.h"
+#include "../../../Libs/DirectXTextureLoader/DDSTextureLoader.h"
 
 namespace LacertaEngine
 {

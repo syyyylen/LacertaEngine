@@ -47,10 +47,15 @@ float3 FresnelShlick(float3 F0, float3 V, float3 H)
     return F0 + (1.0f - F0) * pow(1.0f - max(dot(V, H), 0.0f), 5.0f);
 }
 
+float3 FresnelSchlickRoughness(float cosTheta, float3 F0, float roughness)   // cosTheta is n.v
+{
+    return F0 + (max(float3(1.0f - roughness, 1.0f - roughness, 1.0f - roughness), F0) - F0) * pow(1.0 - cosTheta, 5.0f);
+}
+
 float3 PBR(float3 F0, float3 N, float3 V, float3 L, float3 H, float3 radiance, float3 albedo)
 {
     float3 Ks = FresnelShlick(F0, V, H);
-    float3 Kd = 1.0f - Ks;
+    float3 Kd = float3(1.0f, 1.0f, 1.0f) - Ks;
     
     float3 lambert = albedo / PI;
     
@@ -109,19 +114,19 @@ float4 main(VertexOutput input) : SV_Target
 
         finalLight += PBR(F0, normal, v, lnorm, normalize(lnorm + v), radiance, albedo);
     }
+
+    // TODO compute irradiance map
     
-    // TODO WIP IBL 
-    float3 Ks = FresnelShlick(F0, v, normalize(dirl + v));
+    float3 Ks = FresnelSchlickRoughness(max(dot(normal, v), 0.0f), F0,  MatLightProperties.Roughness);
     float3 Kd = 1.0f - Ks;
     float3 r = reflect(-v, normal);
     float3 irradiance = float4(SkyBox.Sample(SkyBoxSampler, r));
     float3 diffuse = albedo * irradiance;
 
-    float3 ambiantLight = Kd * diffuse * GlobalAmbient;
-    // TODO WIP IBL
-    
-    // float3 ambiantLight = GlobalAmbient * float3(albedo.x, albedo.y, albedo.z); // Ambient is texture color
-    
+    // TODO Specular IBL with pre filtered enviro map
+
+    float3 ambiantLight = (Kd * diffuse) * GlobalAmbient;
+
     finalLight += ambiantLight;
 
     return float4(finalLight, 1.0);
