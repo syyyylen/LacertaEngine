@@ -61,10 +61,14 @@ void LacertaEditor::Start()
     auto& skyboxTf = m_skyBoxGo->GetComponent<TransformComponent>();
     skyboxTf.SetScale(Vector3(1000.0f, 1000.0f, 1000.0f));
     auto& skyBoxMeshComp = m_skyBoxGo->GetComponent<MeshComponent>();
-    SkyBoxTexture* skyBoxTex = ResourceManager::Get()->CreateResource<SkyBoxTexture>(L"Assets/Textures/skymap.dds");
+    SkyBoxTexture* skyBoxTex = ResourceManager::Get()->CreateResource<SkyBoxTexture>(L"Assets/Textures/skybox1.dds");
+    SkyBoxTexture* irradianceTex = ResourceManager::Get()->CreateResource<SkyBoxTexture>(L"Assets/Textures/skybox1IR.dds");
     skyBoxMeshComp.GetMaterial()->SetSkyBoxTexture(skyBoxTex);
     skyBoxMeshComp.GetMaterial()->SetShader("SkyboxShader");
     skyBoxMeshComp.GetMaterial()->SetIsSkyBox(true);
+    skyBoxMeshComp.GetMaterial()->SetIrradianceTexture(irradianceTex);
+
+    // TODO compute irradiance texture instead of use pre computed dds file
 
     // ----------------------------- Debug GO Creation -----------------------
 

@@ -37,7 +37,7 @@ public:
     void UpdateMeshConstants(void* buffer);
 
     void CreateBuffers(ShapeData& mesh, std::vector<VertexMesh> vertices, std::vector<unsigned int> indices);
-    
+
     Renderer* GetRenderer() { return m_renderer; }
     RendererType GetRendererType() { return m_rendererType; }
     
