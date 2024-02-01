@@ -117,7 +117,7 @@ float4 main(VertexOutput input) : SV_Target
 
     float3 Ks = FresnelSchlickRoughness(max(dot(normal, v), 0.0f), F0,  MatLightProperties.Roughness);
     float3 Kd = 1.0f - Ks;
-    Kd *= 1.0 - MatLightProperties.Metallic;
+    // Kd *= 1.0 - MatLightProperties.Metallic;
     float3 r = reflect(-v, normal);
     float3 irradiance = float3(IrradianceMap.Sample(IrradianceSampler, r).rgb);
     float3 diffuse = albedo * irradiance;
