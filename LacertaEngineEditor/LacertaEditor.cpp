@@ -118,20 +118,20 @@ void LacertaEditor::Start()
     AddPBRSphereToScene("SpherePBR2", spawnLocation,
         L"Assets/Textures/PBR/worn-factory-siding_albedo.png",
         L"Assets/Textures/PBR/worn-factory-siding_normal-ogl.png",
-        L"Assets/Textures/PBR/worn-factory-siding_Roughness.png",
-        L"Assets/Textures/PBR/worn-factory-siding_Metallic.png");
+        L"Assets/Textures/PBR/worn-factory-siding_roughness.png",
+        L"Assets/Textures/PBR/worn-factory-siding_metallic.png");
     spawnLocation = Vector3(spawnLocation.X + 30.0f, spawnLocation.Y, spawnLocation.Z);
     AddPBRSphereToScene("SpherePBR3", spawnLocation,
-        L"Assets/Textures/PBR/Copper-scuffed_basecolor.png",
+        L"Assets/Textures/PBR/Copper-scuffed_basecolor-boosted.png",
         L"Assets/Textures/PBR/Copper-scuffed_normal.png",
-        L"Assets/Textures/PBR/Copper-scuffed_Roughness.png",
-        L"Assets/Textures/PBR/Copper-scuffed_Metallic.png");
+        L"Assets/Textures/PBR/Copper-scuffed_roughness.png",
+        L"Assets/Textures/PBR/Copper-scuffed_metallic.png");
     spawnLocation = Vector3(spawnLocation.X + 30.0f, spawnLocation.Y, spawnLocation.Z);
     AddPBRSphereToScene("SpherePBR4", spawnLocation,
         L"Assets/Textures/PBR/black-leather_albedo.png",
         L"Assets/Textures/PBR/black-leather_normal-ogl.png",
-        L"Assets/Textures/PBR/black-leather_Roughness.png",
-        L"Assets/Textures/PBR/black-leather_Metallic.png");
+        L"Assets/Textures/PBR/black-leather_roughness.png",
+        L"Assets/Textures/PBR/black-leather_metallic.png");
     spawnLocation = Vector3(spawnLocation.X + 30.0f, spawnLocation.Y, spawnLocation.Z);
     AddPBRSphereToScene("SpherePBR4", spawnLocation,
         L"Assets/Textures/PBR/worn-shiny-metal-albedo.png",

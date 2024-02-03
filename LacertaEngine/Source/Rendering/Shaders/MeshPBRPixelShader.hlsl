@@ -99,10 +99,13 @@ float4 main(VertexOutput input) : SV_Target
 
     float metallic = MatLightProperties.Metallic;
     if(HasMetallic)
-        metallic = MetallicMap.Sample(TextureSampler, uv).r;
+        metallic = MetallicMap.Sample(TextureSampler, uv);
+
+    // float f = metallic;
+    // return float4(f, f, f, 1.0);
 
     // Fresnel reflectance at normal incidence (for metals use albedo color).
-    float3 F0 = lerp(Fdielectric, albedo, MatLightProperties.Metallic);
+    float3 F0 = lerp(Fdielectric, albedo, metallic);
     
     float3 v = normalize(CameraPosition - input.positionWS);
     float3 dirl = DirectionalLightDirection * -1.0f;
