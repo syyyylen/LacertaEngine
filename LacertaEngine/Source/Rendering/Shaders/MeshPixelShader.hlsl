@@ -29,7 +29,7 @@ float4 main(VertexOutput input) : SV_Target
 
     if(HasNormalMap)
     {
-        float4 normalSampled = NormalMap.Sample(NormalSampler, float2(input.texcoord.x, 1.0 - input.texcoord.y));
+        float4 normalSampled = NormalMap.Sample(TextureSampler, float2(input.texcoord.x, 1.0 - input.texcoord.y));
         normalSampled.xyz = (normalSampled.xyz * 2.0) - 1.0;
         normalSampled.xyz = mul(normalSampled.xyz, input.tbn);
         normal = normalSampled.xyz;
