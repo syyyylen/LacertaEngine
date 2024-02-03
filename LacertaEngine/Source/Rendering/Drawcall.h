@@ -86,6 +86,9 @@ struct MeshConstantBuffer
     // 64 + 32 bytes
     int HasAlbedo;
     int HasNormalMap;
+    int HasRoughness;
+    int HasMetallic;
+    // 16 bytes
 };
 
 struct VertexDataScreen

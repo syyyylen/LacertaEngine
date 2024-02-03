@@ -50,19 +50,19 @@ float3 FresnelShlick(float3 F0, float3 V, float3 H)
     return F0 + (1.0f - F0) * pow(1.0f - max(dot(V, H), 0.0f), 5.0f);
 }
 
-float3 FresnelSchlickRoughness(float cosTheta, float3 F0, float roughness)   // cosTheta is n.v
+float3 FresnelSchlickRoughness(float cosTheta, float3 F0, float r)   // cosTheta is n.v
 {
-    return F0 + (max(float3(1.0f - roughness, 1.0f - roughness, 1.0f - roughness), F0) - F0) * pow(1.0 - cosTheta, 5.0f);
+    return F0 + (max(float3(1.0f - r, 1.0f - r, 1.0f - r), F0) - F0) * pow(1.0 - cosTheta, 5.0f);
 }
 
-float3 PBR(float3 F0, float3 N, float3 V, float3 L, float3 H, float3 radiance, float3 albedo)
+float3 PBR(float3 F0, float3 N, float3 V, float3 L, float3 H, float3 radiance, float3 albedo, float roughness)
 {
     float3 Ks = FresnelShlick(F0, V, H);
     float3 Kd = float3(1.0f, 1.0f, 1.0f) - Ks;
     
     float3 lambert = albedo / PI;
     
-    float3 cookTorranceNumerator = DistributionGGX(N, H, MatLightProperties.Roughness) * GeometrySmith(MatLightProperties.Roughness, N, V, L) * FresnelShlick(F0, V, H);
+    float3 cookTorranceNumerator = DistributionGGX(N, H, roughness) * GeometrySmith(roughness, N, V, L) * FresnelShlick(F0, V, H);
     float cookTorranceDenominator = 4.0f * max(dot(V, N), 0.0f) * max(dot(L, N), 0.0f);
     cookTorranceDenominator = max(cookTorranceDenominator, 0.00001f);
     float3 cookTorrance = cookTorranceNumerator / cookTorranceDenominator;
@@ -77,11 +77,11 @@ float4 main(VertexOutput input) : SV_Target
 {
     float4 directionalColor = float4(1.0f, 1.0f, 1.0f, 1.0f) * DirectionalIntensity; // default white color
     float3 normal = input.normal;
-    float UVTilingMult = 1.0f;
+    float2 uv = float2(input.texcoord.x, 1.0 - input.texcoord.y);
 
     if(HasNormalMap)
     {
-        float4 normalSampled = NormalMap.Sample(NormalSampler, float2(input.texcoord.x, 1.0 - input.texcoord.y) * UVTilingMult);
+        float4 normalSampled = NormalMap.Sample(TextureSampler, uv);
         normalSampled.xyz = (normalSampled.xyz * 2.0) - 1.0;
         normalSampled.xyz = mul(normalSampled.xyz, input.tbn);
         normal = normalSampled.xyz;
@@ -90,20 +90,28 @@ float4 main(VertexOutput input) : SV_Target
     normal = normalize(normal);
 
     float4 albedo = DefaultColor;
-    
     if(HasAlbedo)
-        albedo = BaseColor.Sample(TextureSampler, float2(input.texcoord.x, 1.0 - input.texcoord.y) * UVTilingMult);
+        albedo = BaseColor.Sample(TextureSampler, uv);
 
-    // TODO Sample Metallic, Roughness & AO 
+    float roughness = MatLightProperties.Roughness;
+    if(HasRoughness)
+        roughness = RoughnessMap.Sample(TextureSampler, uv);
+
+    float metallic = MatLightProperties.Metallic;
+    if(HasMetallic)
+        metallic = MetallicMap.Sample(TextureSampler, uv);
+
+    // float f = metallic;
+    // return float4(f, f, f, 1.0);
 
     // Fresnel reflectance at normal incidence (for metals use albedo color).
-    float3 F0 = lerp(Fdielectric, albedo, MatLightProperties.Metallic);
+    float3 F0 = lerp(Fdielectric, albedo, metallic);
     
     float3 v = normalize(CameraPosition - input.positionWS);
     float3 dirl = DirectionalLightDirection * -1.0f;
     
     // Directional light 
-    float3 finalLight = PBR(F0, normal, v, dirl, normalize(dirl + v), directionalColor.xyz, albedo);
+    float3 finalLight = PBR(F0, normal, v, dirl, normalize(dirl + v), directionalColor.xyz, albedo, roughness);
 
     for(int i = 0; i < MAX_LIGHTS; i++)
     {
@@ -118,14 +126,14 @@ float4 main(VertexOutput input) : SV_Target
         float attenuation = DoAttenuation(light, distance);
         float3 radiance = light.Color * attenuation;
 
-        finalLight += PBR(F0, normal, v, lnorm, normalize(lnorm + v), radiance, albedo);
+        finalLight += PBR(F0, normal, v, lnorm, normalize(lnorm + v), radiance, albedo, roughness);
     }
 
-    float3 Ks = FresnelSchlickRoughness(max(dot(normal, v), 0.0f), F0,  MatLightProperties.Roughness);
+    float3 Ks = FresnelSchlickRoughness(max(dot(normal, v), 0.0f), F0,  roughness);
     float3 Kd = 1.0f - Ks;
-    Kd *= 1.0 - MatLightProperties.Metallic;
+    // Kd *= 1.0 - metallic;
     float3 r = reflect(-v, normal);
-    float3 irradiance = float3(IrradianceMap.Sample(IrradianceSampler, r).rgb);
+    float3 irradiance = float3(IrradianceMap.Sample(TextureSampler, r).rgb);
     float3 diffuse = albedo * irradiance;
 
     // TODO Specular IBL with pre filtered enviro map

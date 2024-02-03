@@ -109,13 +109,35 @@ void LacertaEditor::Start()
 
     spawnLocation = Vector3(spawnLocation.X + 30.0f, spawnLocation.Y, spawnLocation.Z);
 
-    AddPBRSphereToScene("SpherePBR1", spawnLocation, L"Assets/Textures/PBR/limestone5_albedo.png", L"Assets/Textures/PBR/limestone5_Normal-ogl.png");
+    AddPBRSphereToScene("SpherePBR1", spawnLocation,
+        L"Assets/Textures/PBR/limestone5_albedo.png",
+        L"Assets/Textures/PBR/limestone5_Normal-ogl.png",
+        L"Assets/Textures/PBR/limestone5_Roughness.png",
+        L"Assets/Textures/PBR/limestone5_Metallic.png");
     spawnLocation = Vector3(spawnLocation.X + 30.0f, spawnLocation.Y, spawnLocation.Z);
-    AddPBRSphereToScene("SpherePBR2", spawnLocation, L"Assets/Textures/PBR/redbricks2b-albedo.png", L"Assets/Textures/PBR/redbricks2b-normal.png");
+    AddPBRSphereToScene("SpherePBR2", spawnLocation,
+        L"Assets/Textures/PBR/worn-factory-siding_albedo.png",
+        L"Assets/Textures/PBR/worn-factory-siding_normal-ogl.png",
+        L"Assets/Textures/PBR/worn-factory-siding_roughness.png",
+        L"Assets/Textures/PBR/worn-factory-siding_metallic.png");
     spawnLocation = Vector3(spawnLocation.X + 30.0f, spawnLocation.Y, spawnLocation.Z);
-    AddPBRSphereToScene("SpherePBR3", spawnLocation, L"Assets/Textures/PBR/Copper-scuffed_basecolor.png", L"Assets/Textures/PBR/Copper-scuffed_normal.png");
+    AddPBRSphereToScene("SpherePBR3", spawnLocation,
+        L"Assets/Textures/PBR/Copper-scuffed_basecolor-boosted.png",
+        L"Assets/Textures/PBR/Copper-scuffed_normal.png",
+        L"Assets/Textures/PBR/Copper-scuffed_roughness.png",
+        L"Assets/Textures/PBR/Copper-scuffed_metallic.png");
     spawnLocation = Vector3(spawnLocation.X + 30.0f, spawnLocation.Y, spawnLocation.Z);
-    AddPBRSphereToScene("SpherePBR4", spawnLocation, L"Assets/Textures/PBR/black-leather_albedo.png", L"Assets/Textures/PBR/black-leather_normal-ogl.png");
+    AddPBRSphereToScene("SpherePBR4", spawnLocation,
+        L"Assets/Textures/PBR/black-leather_albedo.png",
+        L"Assets/Textures/PBR/black-leather_normal-ogl.png",
+        L"Assets/Textures/PBR/black-leather_roughness.png",
+        L"Assets/Textures/PBR/black-leather_metallic.png");
+    spawnLocation = Vector3(spawnLocation.X + 30.0f, spawnLocation.Y, spawnLocation.Z);
+    AddPBRSphereToScene("SpherePBR4", spawnLocation,
+        L"Assets/Textures/PBR/worn-shiny-metal-albedo.png",
+        L"Assets/Textures/PBR/worn-shiny-metal-Normal-ogl.png",
+        L"Assets/Textures/PBR/worn-shiny-metal-Roughness.png",
+        L"Assets/Textures/PBR/worn-shiny-metal-Metallic.png");
     
     GameObject& groundGo = AddMeshToScene("Ground", L"Assets/Meshes/cube.obj", Vector3(35.0f, -16.0f, 9.0f));
     TransformComponent& groundGoTf = groundGo.GetComponent<TransformComponent>();
@@ -374,17 +396,21 @@ GameObject& LacertaEditor::AddPointLightToScene(Vector3 position, Vector4 color)
     return *go;
 }
 
-GameObject& LacertaEditor::AddPBRSphereToScene(std::string name, Vector3 position, const wchar_t* albedo, const wchar_t* normal)
+GameObject& LacertaEditor::AddPBRSphereToScene(std::string name, Vector3 position, const wchar_t* albedo, const wchar_t* normal, const wchar_t* roughness, const wchar_t* metallic)
 {
     GameObject& sphere = AddMeshToScene(name, L"Assets/Meshes/sphere_hq.obj", position);
     
     auto& sphereTf = sphere.GetComponent<TransformComponent>();
     sphereTf.SetScale(Vector3(12.0f, 12.0f, 12.0f));
-    auto Tex = ResourceManager::Get()->CreateResource<Texture>(albedo);
-    auto Norm = ResourceManager::Get()->CreateResource<Texture>(normal);
+    auto tex = ResourceManager::Get()->CreateResource<Texture>(albedo);
+    auto norm = ResourceManager::Get()->CreateResource<Texture>(normal);
+    auto rough = ResourceManager::Get()->CreateResource<Texture>(roughness);
+    auto met = ResourceManager::Get()->CreateResource<Texture>(metallic);
     auto& sphereMesh = sphere.GetComponent<MeshComponent>();
-    sphereMesh.GetMaterial()->SetTexture(0, Tex);
-    sphereMesh.GetMaterial()->SetTexture(1, Norm);
+    sphereMesh.GetMaterial()->SetTexture(0, tex);
+    sphereMesh.GetMaterial()->SetTexture(1, norm);
+    sphereMesh.GetMaterial()->SetTexture(2, rough);
+    sphereMesh.GetMaterial()->SetTexture(3, met);
 
     return sphere;
 }

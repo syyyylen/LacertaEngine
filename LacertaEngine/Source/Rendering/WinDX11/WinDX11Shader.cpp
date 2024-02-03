@@ -192,6 +192,38 @@ void WinDX11Shader::PreparePass(Renderer* renderer, Drawcall* dc)
                 meshCb.HasNormalMap = false;
             }
 
+            const auto roughness = dc->GetMaterial()->GetTexture(2);
+            if(roughness != nullptr)
+            {
+                const auto roughnessSrv = static_cast<ID3D11ShaderResourceView*>(roughness->m_resourceView);
+                if(roughnessSrv != nullptr)
+                {
+                    meshCb.HasRoughness = true;
+                    ctx->VSSetShaderResources(4, 1, &roughnessSrv);
+                    ctx->PSSetShaderResources(4, 1, &roughnessSrv);
+                }
+            }
+            else
+            {
+                meshCb.HasRoughness = false;
+            }
+
+            const auto metallic = dc->GetMaterial()->GetTexture(3);
+            if(metallic != nullptr)
+            {
+                const auto metallicSrv = static_cast<ID3D11ShaderResourceView*>(metallic->m_resourceView);
+                if(metallicSrv != nullptr)
+                {
+                    meshCb.HasMetallic = true;
+                    ctx->VSSetShaderResources(5, 1, &metallicSrv);
+                    ctx->PSSetShaderResources(5, 1, &metallicSrv);
+                }
+            }
+            else
+            {
+                meshCb.HasMetallic = false;
+            }
+
             GraphicsEngine::Get()->SetRasterizerState(false);
         }
             

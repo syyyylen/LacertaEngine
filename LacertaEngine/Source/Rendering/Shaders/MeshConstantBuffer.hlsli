@@ -1,14 +1,11 @@
 Texture2D BaseColor: register(t0);
-sampler TextureSampler: register(s0);
-
 Texture2D NormalMap: register(t1);
-sampler NormalSampler: register(s1);
-
 TextureCube SkyBox: register(t2);
-sampler SkyBoxSampler: register(s2);
-
 TextureCube IrradianceMap: register(t3);
-sampler IrradianceSampler: register(s3);
+Texture2D RoughnessMap: register(t4);
+Texture2D MetallicMap: register(t5);
+
+sampler TextureSampler: register(s0);
 
 struct MaterialLightProperties
 {
@@ -30,4 +27,6 @@ cbuffer MeshCBuffer : register(b1)
     // 64 + 32 bytes
     bool HasAlbedo;
     bool HasNormalMap;
+    bool HasRoughness;
+    bool HasMetallic;
 };
