@@ -109,14 +109,13 @@ void LacertaEditor::Start()
 
     spawnLocation = Vector3(spawnLocation.X + 30.0f, spawnLocation.Y, spawnLocation.Z);
 
-    GameObject& sphere3Go = AddMeshToScene("Sphere", L"Assets/Meshes/sphere_hq.obj", spawnLocation);
-    auto& sphere3TfComp = sphere3Go.GetComponent<TransformComponent>();
-    sphere3TfComp.SetScale(Vector3(12.0f, 12.0f, 12.0f));
-    auto brickTex = ResourceManager::Get()->CreateResource<Texture>(L"Assets/Textures/brick_d.jpg");
-    auto brickNormal = ResourceManager::Get()->CreateResource<Texture>(L"Assets/Textures/brick_n.jpg");
-    auto& sphere3MeshComp = sphere3Go.GetComponent<MeshComponent>();
-    sphere3MeshComp.GetMaterial()->SetTexture(0, brickTex);
-    sphere3MeshComp.GetMaterial()->SetTexture(1, brickNormal);
+    AddPBRSphereToScene("SpherePBR1", spawnLocation, L"Assets/Textures/PBR/limestone5_albedo.png", L"Assets/Textures/PBR/limestone5_Normal-ogl.png");
+    spawnLocation = Vector3(spawnLocation.X + 30.0f, spawnLocation.Y, spawnLocation.Z);
+    AddPBRSphereToScene("SpherePBR2", spawnLocation, L"Assets/Textures/PBR/redbricks2b-albedo.png", L"Assets/Textures/PBR/redbricks2b-normal.png");
+    spawnLocation = Vector3(spawnLocation.X + 30.0f, spawnLocation.Y, spawnLocation.Z);
+    AddPBRSphereToScene("SpherePBR3", spawnLocation, L"Assets/Textures/PBR/Copper-scuffed_basecolor.png", L"Assets/Textures/PBR/Copper-scuffed_normal.png");
+    spawnLocation = Vector3(spawnLocation.X + 30.0f, spawnLocation.Y, spawnLocation.Z);
+    AddPBRSphereToScene("SpherePBR4", spawnLocation, L"Assets/Textures/PBR/black-leather_albedo.png", L"Assets/Textures/PBR/black-leather_normal-ogl.png");
     
     GameObject& groundGo = AddMeshToScene("Ground", L"Assets/Meshes/cube.obj", Vector3(35.0f, -16.0f, 9.0f));
     TransformComponent& groundGoTf = groundGo.GetComponent<TransformComponent>();
@@ -373,6 +372,21 @@ GameObject& LacertaEditor::AddPointLightToScene(Vector3 position, Vector4 color)
     lightComp.SetColor(color);
 
     return *go;
+}
+
+GameObject& LacertaEditor::AddPBRSphereToScene(std::string name, Vector3 position, const wchar_t* albedo, const wchar_t* normal)
+{
+    GameObject& sphere = AddMeshToScene(name, L"Assets/Meshes/sphere_hq.obj", position);
+    
+    auto& sphereTf = sphere.GetComponent<TransformComponent>();
+    sphereTf.SetScale(Vector3(12.0f, 12.0f, 12.0f));
+    auto Tex = ResourceManager::Get()->CreateResource<Texture>(albedo);
+    auto Norm = ResourceManager::Get()->CreateResource<Texture>(normal);
+    auto& sphereMesh = sphere.GetComponent<MeshComponent>();
+    sphereMesh.GetMaterial()->SetTexture(0, Tex);
+    sphereMesh.GetMaterial()->SetTexture(1, Norm);
+
+    return sphere;
 }
 
 void LacertaEditor::OnKeyDown(int key)

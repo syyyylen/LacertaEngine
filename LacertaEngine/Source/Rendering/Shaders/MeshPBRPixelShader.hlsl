@@ -15,6 +15,7 @@ float DoAttenuation(PointLight light, float distance)
 
 float DistributionGGX(float3 N, float3 H, float a)
 {
+    a = a * a;
     float a2 = a * a;
     float NdotH = max(dot(N, H), 0.0f);
     float NdotH2 = NdotH * NdotH;
@@ -29,8 +30,10 @@ float DistributionGGX(float3 N, float3 H, float a)
 float GeometryShlickGGX(float a, float3 N, float3 X)
 {
     float nom = max(dot(N, X), 0.0f);
-
-    float k = a / 2.0f;
+    
+    float r = (a + 1.0);
+    float k = (r*r) / 8.0;
+    
     float denom = max(dot(N, X), 0.0f) * (1.0f - k) + k;
     denom = max(denom, 0.00001f);
 
@@ -74,10 +77,11 @@ float4 main(VertexOutput input) : SV_Target
 {
     float4 directionalColor = float4(1.0f, 1.0f, 1.0f, 1.0f) * DirectionalIntensity; // default white color
     float3 normal = input.normal;
+    float UVTilingMult = 1.0f;
 
     if(HasNormalMap)
     {
-        float4 normalSampled = NormalMap.Sample(NormalSampler, float2(input.texcoord.x, 1.0 - input.texcoord.y));
+        float4 normalSampled = NormalMap.Sample(NormalSampler, float2(input.texcoord.x, 1.0 - input.texcoord.y) * UVTilingMult);
         normalSampled.xyz = (normalSampled.xyz * 2.0) - 1.0;
         normalSampled.xyz = mul(normalSampled.xyz, input.tbn);
         normal = normalSampled.xyz;
@@ -88,7 +92,9 @@ float4 main(VertexOutput input) : SV_Target
     float4 albedo = DefaultColor;
     
     if(HasAlbedo)
-        albedo = BaseColor.Sample(TextureSampler, float2(input.texcoord.x, 1.0 - input.texcoord.y));
+        albedo = BaseColor.Sample(TextureSampler, float2(input.texcoord.x, 1.0 - input.texcoord.y) * UVTilingMult);
+
+    // TODO Sample Metallic, Roughness & AO 
 
     // Fresnel reflectance at normal incidence (for metals use albedo color).
     float3 F0 = lerp(Fdielectric, albedo, MatLightProperties.Metallic);
@@ -98,7 +104,7 @@ float4 main(VertexOutput input) : SV_Target
     
     // Directional light 
     float3 finalLight = PBR(F0, normal, v, dirl, normalize(dirl + v), directionalColor.xyz, albedo);
-    
+
     for(int i = 0; i < MAX_LIGHTS; i++)
     {
         PointLight light = PointLights[i];
@@ -117,7 +123,7 @@ float4 main(VertexOutput input) : SV_Target
 
     float3 Ks = FresnelSchlickRoughness(max(dot(normal, v), 0.0f), F0,  MatLightProperties.Roughness);
     float3 Kd = 1.0f - Ks;
-    // Kd *= 1.0 - MatLightProperties.Metallic;
+    Kd *= 1.0 - MatLightProperties.Metallic;
     float3 r = reflect(-v, normal);
     float3 irradiance = float3(IrradianceMap.Sample(IrradianceSampler, r).rgb);
     float3 diffuse = albedo * irradiance;
@@ -126,7 +132,7 @@ float4 main(VertexOutput input) : SV_Target
 
     float3 ambiantLight = (Kd * diffuse) * 1.0f; // TODO replace 1 by ao
 
-    finalLight += ambiantLight;
+    finalLight += ambiantLight * GlobalAmbient;
 
     return float4(finalLight, 1.0);
 }
