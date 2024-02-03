@@ -224,6 +224,22 @@ void WinDX11Shader::PreparePass(Renderer* renderer, Drawcall* dc)
                 meshCb.HasMetallic = false;
             }
 
+            const auto ao = dc->GetMaterial()->GetTexture(4);
+            if(ao != nullptr)
+            {
+                const auto aoSrv = static_cast<ID3D11ShaderResourceView*>(ao->m_resourceView);
+                if(aoSrv != nullptr)
+                {
+                    meshCb.HasAmbiant = true;
+                    ctx->VSSetShaderResources(6, 1, &aoSrv);
+                    ctx->PSSetShaderResources(6, 1, &aoSrv);
+                }
+            }
+            else
+            {
+                meshCb.HasAmbiant = false;
+            }
+
             GraphicsEngine::Get()->SetRasterizerState(false);
         }
             

@@ -4,6 +4,7 @@ TextureCube SkyBox: register(t2);
 TextureCube IrradianceMap: register(t3);
 Texture2D RoughnessMap: register(t4);
 Texture2D MetallicMap: register(t5);
+Texture2D AmbiantOcclusionMap: register(t6);
 
 sampler TextureSampler: register(s0);
 
@@ -29,4 +30,5 @@ cbuffer MeshCBuffer : register(b1)
     bool HasNormalMap;
     bool HasRoughness;
     bool HasMetallic;
+    bool HasAmbiant;
 };

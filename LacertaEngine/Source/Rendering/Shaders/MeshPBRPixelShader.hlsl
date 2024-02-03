@@ -102,8 +102,9 @@ float4 main(VertexOutput input) : SV_Target
     if(HasMetallic)
         metallic = MetallicMap.Sample(TextureSampler, uv);
 
-    // float f = metallic;
-    // return float4(f, f, f, 1.0);
+    float ao = 1.0f;
+    if(HasAmbiant)
+        ao = AmbiantOcclusionMap.Sample(TextureSampler, uv);
 
     // Fresnel reflectance at normal incidence (for metals use albedo color).
     float3 F0 = lerp(Fdielectric, albedo.xyz, metallic);
@@ -140,7 +141,7 @@ float4 main(VertexOutput input) : SV_Target
     // TODO Specular IBL with pre filtered enviro map + brdf LUT
     float3 specular = Ks * irradiance;
 
-    float3 ambiantLight = (Kd * diffuse + specular) * 1.0f; // TODO replace 1 by ao
+    float3 ambiantLight = (Kd * diffuse + specular) * ao; // TODO replace 1 by ao
 
     finalLight += ambiantLight * GlobalAmbient;
 
