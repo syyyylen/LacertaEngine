@@ -42,6 +42,7 @@ public:
 
     GameObject& AddMeshToScene(std::string name, const wchar_t* meshPath, Vector3 position = Vector3(0.0f, 0.0f, 0.0f), std::string shader = "MeshPBRShader");
     GameObject& AddPointLightToScene(Vector3 position = Vector3(0.0f, 0.0f, 0.0f), Vector4 color = Vector4(1.0f, 1.0f, 1.0f, 1.0f));
+    GameObject& AddPBRSphereToScene(std::string name, Vector3 position, const wchar_t* albedo, const wchar_t* normal);
     // end Scene Utilities
 
     // Camera Utilities
