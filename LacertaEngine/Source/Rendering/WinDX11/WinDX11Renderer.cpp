@@ -45,7 +45,7 @@ void WinDX11Renderer::Initialize(int* context, int width, int height, int target
     desc.BufferDesc.Height = height;
     desc.BufferDesc.RefreshRate.Numerator = targetRefreshRate;
     desc.BufferDesc.RefreshRate.Denominator = 1;
-    desc.BufferDesc.Format = DXGI_FORMAT_B8G8R8A8_UNORM;
+    desc.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
     desc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
     desc.SampleDesc.Count = 1;      
     desc.SampleDesc.Quality = 0; 

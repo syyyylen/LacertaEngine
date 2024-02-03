@@ -10,6 +10,6 @@ struct SkyboxVertexOutput
 float4 main(SkyboxVertexOutput input) : SV_Target
 {
     float4 texColor = SkyBox.Sample(SkyBoxSampler, input.texcoord);
-    texColor *= clamp(DirectionalIntensity, 0.0f, 1.0f);
+    texColor *= clamp(GlobalAmbient, 0.0f, 1.0f);
     return texColor;
 }

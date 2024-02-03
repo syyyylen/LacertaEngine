@@ -69,7 +69,7 @@ public:
     float m_lightIntensity = 1.0f;
     float m_lightRotationX = 0.8f;
     float m_lightRotationY = 0.0f;
-    float m_ambient = 0.1f;
+    float m_ambient = 1.0f;
 
     bool m_translate = true;
     bool m_directionalLightAutoRotate = false;

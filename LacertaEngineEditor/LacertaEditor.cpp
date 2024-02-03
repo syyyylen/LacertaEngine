@@ -114,6 +114,8 @@ void LacertaEditor::Start()
     AddPBRSphereToScene("SpherePBR2", spawnLocation, L"Assets/Textures/PBR/redbricks2b-albedo.png", L"Assets/Textures/PBR/redbricks2b-normal.png");
     spawnLocation = Vector3(spawnLocation.X + 30.0f, spawnLocation.Y, spawnLocation.Z);
     AddPBRSphereToScene("SpherePBR3", spawnLocation, L"Assets/Textures/PBR/Copper-scuffed_basecolor.png", L"Assets/Textures/PBR/Copper-scuffed_normal.png");
+    spawnLocation = Vector3(spawnLocation.X + 30.0f, spawnLocation.Y, spawnLocation.Z);
+    AddPBRSphereToScene("SpherePBR4", spawnLocation, L"Assets/Textures/PBR/black-leather_albedo.png", L"Assets/Textures/PBR/black-leather_normal-ogl.png");
     
     GameObject& groundGo = AddMeshToScene("Ground", L"Assets/Meshes/cube.obj", Vector3(35.0f, -16.0f, 9.0f));
     TransformComponent& groundGoTf = groundGo.GetComponent<TransformComponent>();
