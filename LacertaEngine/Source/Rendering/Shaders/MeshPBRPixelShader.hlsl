@@ -99,10 +99,7 @@ float4 main(VertexOutput input) : SV_Target
 
     float metallic = MatLightProperties.Metallic;
     if(HasMetallic)
-        metallic = MetallicMap.Sample(TextureSampler, uv);
-
-    // float f = roughness;
-    // return float4(f, f, f, 1.0);
+        metallic = MetallicMap.Sample(TextureSampler, uv).r;
 
     // Fresnel reflectance at normal incidence (for metals use albedo color).
     float3 F0 = lerp(Fdielectric, albedo, MatLightProperties.Metallic);
@@ -131,7 +128,7 @@ float4 main(VertexOutput input) : SV_Target
 
     float3 Ks = FresnelSchlickRoughness(max(dot(normal, v), 0.0f), F0,  roughness);
     float3 Kd = 1.0f - Ks;
-    Kd *= 1.0 - metallic;
+    // Kd *= 1.0 - metallic;
     float3 r = reflect(-v, normal);
     float3 irradiance = float3(IrradianceMap.Sample(TextureSampler, r).rgb);
     float3 diffuse = albedo * irradiance;

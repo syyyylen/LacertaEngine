@@ -215,8 +215,8 @@ void WinDX11Shader::PreparePass(Renderer* renderer, Drawcall* dc)
                 if(metallicSrv != nullptr)
                 {
                     meshCb.HasMetallic = true;
-                    ctx->VSSetShaderResources(4, 1, &metallicSrv);
-                    ctx->PSSetShaderResources(4, 1, &metallicSrv);
+                    ctx->VSSetShaderResources(5, 1, &metallicSrv);
+                    ctx->PSSetShaderResources(5, 1, &metallicSrv);
                 }
             }
             else
