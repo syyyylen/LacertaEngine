@@ -122,10 +122,10 @@ void LacertaEditor::Start()
         L"Assets/Textures/PBR/worn-factory-siding_metallic.png");
     spawnLocation = Vector3(spawnLocation.X + 30.0f, spawnLocation.Y, spawnLocation.Z);
     AddPBRSphereToScene("SpherePBR3", spawnLocation,
-        L"Assets/Textures/PBR/Copper-scuffed_basecolor-boosted.png",
-        L"Assets/Textures/PBR/Copper-scuffed_normal.png",
-        L"Assets/Textures/PBR/Copper-scuffed_roughness.png",
-        L"Assets/Textures/PBR/Copper-scuffed_metallic.png");
+        L"Assets/Textures/PBR/gold-scuffed_basecolor-boosted.png",
+        L"Assets/Textures/PBR/gold-scuffed_normal.png",
+        L"Assets/Textures/PBR/gold-scuffed_roughness.png",
+        L"Assets/Textures/PBR/gold-scuffed_metallic.png");
     spawnLocation = Vector3(spawnLocation.X + 30.0f, spawnLocation.Y, spawnLocation.Z);
     AddPBRSphereToScene("SpherePBR4", spawnLocation,
         L"Assets/Textures/PBR/black-leather_albedo.png",

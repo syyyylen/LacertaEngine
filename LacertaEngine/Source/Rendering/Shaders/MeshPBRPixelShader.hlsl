@@ -55,10 +55,11 @@ float3 FresnelSchlickRoughness(float cosTheta, float3 F0, float r)   // cosTheta
     return F0 + (max(float3(1.0f - r, 1.0f - r, 1.0f - r), F0) - F0) * pow(1.0 - cosTheta, 5.0f);
 }
 
-float3 PBR(float3 F0, float3 N, float3 V, float3 L, float3 H, float3 radiance, float3 albedo, float roughness)
+float3 PBR(float3 F0, float3 N, float3 V, float3 L, float3 H, float3 radiance, float3 albedo, float roughness, float metallic)
 {
     float3 Ks = FresnelShlick(F0, V, H);
     float3 Kd = float3(1.0f, 1.0f, 1.0f) - Ks;
+    Kd *= 1.0 - metallic;
     
     float3 lambert = albedo / PI;
     
@@ -105,13 +106,13 @@ float4 main(VertexOutput input) : SV_Target
     // return float4(f, f, f, 1.0);
 
     // Fresnel reflectance at normal incidence (for metals use albedo color).
-    float3 F0 = lerp(Fdielectric, albedo, metallic);
+    float3 F0 = lerp(Fdielectric, albedo.xyz, metallic);
     
     float3 v = normalize(CameraPosition - input.positionWS);
     float3 dirl = DirectionalLightDirection * -1.0f;
     
     // Directional light 
-    float3 finalLight = PBR(F0, normal, v, dirl, normalize(dirl + v), directionalColor.xyz, albedo, roughness);
+    float3 finalLight = PBR(F0, normal, v, dirl, normalize(dirl + v), directionalColor.xyz, albedo, roughness, metallic);
 
     for(int i = 0; i < MAX_LIGHTS; i++)
     {
@@ -126,19 +127,20 @@ float4 main(VertexOutput input) : SV_Target
         float attenuation = DoAttenuation(light, distance);
         float3 radiance = light.Color * attenuation;
 
-        finalLight += PBR(F0, normal, v, lnorm, normalize(lnorm + v), radiance, albedo, roughness);
+        finalLight += PBR(F0, normal, v, lnorm, normalize(lnorm + v), radiance, albedo, roughness, metallic);
     }
 
     float3 Ks = FresnelSchlickRoughness(max(dot(normal, v), 0.0f), F0,  roughness);
     float3 Kd = 1.0f - Ks;
-    // Kd *= 1.0 - metallic;
+    Kd *= 1.0 - metallic;
     float3 r = reflect(-v, normal);
     float3 irradiance = float3(IrradianceMap.Sample(TextureSampler, r).rgb);
     float3 diffuse = albedo * irradiance;
 
-    // TODO Specular IBL with pre filtered enviro map
+    // TODO Specular IBL with pre filtered enviro map + brdf LUT
+    float3 specular = Ks * irradiance;
 
-    float3 ambiantLight = (Kd * diffuse) * 1.0f; // TODO replace 1 by ao
+    float3 ambiantLight = (Kd * diffuse + specular) * 1.0f; // TODO replace 1 by ao
 
     finalLight += ambiantLight * GlobalAmbient;
 
