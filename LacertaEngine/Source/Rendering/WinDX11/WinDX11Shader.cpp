@@ -6,7 +6,6 @@
 #include <d3dcompiler.h>
 #include "../GraphicsEngine.h"
 #include "../Material.h"
-#include "../../RessourcesManager/Texture/SkyBoxTexture.h"
 
 namespace LacertaEngine
 {
@@ -130,7 +129,7 @@ void WinDX11Shader::PreparePass(Renderer* renderer, Drawcall* dc)
             meshCb.HasAlbedo = false;
             meshCb.HasNormalMap = false;
 
-            const auto skyboxTex = dc->GetMaterial()->GetSkyBoxTex();
+            const auto skyboxTex = dc->GetMaterial()->GetTexture(0);
             if(skyboxTex != nullptr)
             {
                 const auto baseColorSrv = static_cast<ID3D11ShaderResourceView*>(skyboxTex->m_resourceView);
@@ -142,7 +141,7 @@ void WinDX11Shader::PreparePass(Renderer* renderer, Drawcall* dc)
                 }
             }
 
-            const auto irradianceTex = dc->GetMaterial()->GetIrradianceTexture();
+            const auto irradianceTex = dc->GetMaterial()->GetTexture(1);
             if(irradianceTex != nullptr)
             {
                 const auto irrSrv = static_cast<ID3D11ShaderResourceView*>(irradianceTex->m_resourceView);
