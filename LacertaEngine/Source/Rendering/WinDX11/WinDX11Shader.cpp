@@ -6,7 +6,6 @@
 #include <d3dcompiler.h>
 #include "../GraphicsEngine.h"
 #include "../Material.h"
-#include "../../RessourcesManager/Texture/SkyBoxTexture.h"
 
 namespace LacertaEngine
 {
@@ -130,7 +129,7 @@ void WinDX11Shader::PreparePass(Renderer* renderer, Drawcall* dc)
             meshCb.HasAlbedo = false;
             meshCb.HasNormalMap = false;
 
-            const auto skyboxTex = dc->GetMaterial()->GetSkyBoxTex();
+            const auto skyboxTex = dc->GetMaterial()->GetTexture(0);
             if(skyboxTex != nullptr)
             {
                 const auto baseColorSrv = static_cast<ID3D11ShaderResourceView*>(skyboxTex->m_resourceView);
@@ -142,7 +141,7 @@ void WinDX11Shader::PreparePass(Renderer* renderer, Drawcall* dc)
                 }
             }
 
-            const auto irradianceTex = dc->GetMaterial()->GetIrradianceTexture();
+            const auto irradianceTex = dc->GetMaterial()->GetTexture(1);
             if(irradianceTex != nullptr)
             {
                 const auto irrSrv = static_cast<ID3D11ShaderResourceView*>(irradianceTex->m_resourceView);
@@ -222,6 +221,22 @@ void WinDX11Shader::PreparePass(Renderer* renderer, Drawcall* dc)
             else
             {
                 meshCb.HasMetallic = false;
+            }
+
+            const auto ao = dc->GetMaterial()->GetTexture(4);
+            if(ao != nullptr)
+            {
+                const auto aoSrv = static_cast<ID3D11ShaderResourceView*>(ao->m_resourceView);
+                if(aoSrv != nullptr)
+                {
+                    meshCb.HasAmbiant = true;
+                    ctx->VSSetShaderResources(6, 1, &aoSrv);
+                    ctx->PSSetShaderResources(6, 1, &aoSrv);
+                }
+            }
+            else
+            {
+                meshCb.HasAmbiant = false;
             }
 
             GraphicsEngine::Get()->SetRasterizerState(false);

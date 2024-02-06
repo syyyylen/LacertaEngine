@@ -61,12 +61,12 @@ void LacertaEditor::Start()
     auto& skyboxTf = m_skyBoxGo->GetComponent<TransformComponent>();
     skyboxTf.SetScale(Vector3(1000.0f, 1000.0f, 1000.0f));
     auto& skyBoxMeshComp = m_skyBoxGo->GetComponent<MeshComponent>();
-    SkyBoxTexture* skyBoxTex = ResourceManager::Get()->CreateResource<SkyBoxTexture>(L"Assets/Textures/skybox1.dds");
-    SkyBoxTexture* irradianceTex = ResourceManager::Get()->CreateResource<SkyBoxTexture>(L"Assets/Textures/skybox1IR.dds");
-    skyBoxMeshComp.GetMaterial()->SetSkyBoxTexture(skyBoxTex);
+    Texture* skyBoxTex = ResourceManager::Get()->CreateResource<Texture>(L"Assets/Textures/skybox1.dds");
+    Texture* irradianceTex = ResourceManager::Get()->CreateResource<Texture>(L"Assets/Textures/skybox1IR.dds");
+    skyBoxMeshComp.GetMaterial()->SetTexture(0, skyBoxTex);
+    skyBoxMeshComp.GetMaterial()->SetTexture(1, irradianceTex);
     skyBoxMeshComp.GetMaterial()->SetShader("SkyboxShader");
     skyBoxMeshComp.GetMaterial()->SetIsSkyBox(true);
-    skyBoxMeshComp.GetMaterial()->SetIrradianceTexture(irradianceTex);
 
     // TODO compute irradiance texture instead of use pre computed dds file
 
@@ -79,9 +79,11 @@ void LacertaEditor::Start()
     sphereTfComp.SetScale(Vector3(2.0f, 2.0f, 2.0f));
     Texture* tex = ResourceManager::Get()->CreateResource<Texture>(L"Assets/Textures/gregcolor.png");
     Texture* normalMap = ResourceManager::Get()->CreateResource<Texture>(L"Assets/Textures/gregnormal.png");
+    Texture* roughnessMap = ResourceManager::Get()->CreateResource<Texture>(L"Assets/Textures/gregroughness.png");
     MeshComponent& meshComp = sphereGo.GetComponent<MeshComponent>();
     meshComp.GetMaterial()->SetTexture(0, tex);
     meshComp.GetMaterial()->SetTexture(1, normalMap);
+    meshComp.GetMaterial()->SetTexture(2, roughnessMap);
     
     spawnLocation = Vector3(spawnLocation.X + 25.0f, spawnLocation.Y, spawnLocation.Z);
     
@@ -113,31 +115,36 @@ void LacertaEditor::Start()
         L"Assets/Textures/PBR/limestone5_albedo.png",
         L"Assets/Textures/PBR/limestone5_Normal-ogl.png",
         L"Assets/Textures/PBR/limestone5_Roughness.png",
-        L"Assets/Textures/PBR/limestone5_Metallic.png");
+        L"Assets/Textures/PBR/limestone5_Metallic.png",
+        L"Assets/Textures/PBR/limestone5_ao.png");
     spawnLocation = Vector3(spawnLocation.X + 30.0f, spawnLocation.Y, spawnLocation.Z);
     AddPBRSphereToScene("SpherePBR2", spawnLocation,
         L"Assets/Textures/PBR/worn-factory-siding_albedo.png",
         L"Assets/Textures/PBR/worn-factory-siding_normal-ogl.png",
         L"Assets/Textures/PBR/worn-factory-siding_roughness.png",
-        L"Assets/Textures/PBR/worn-factory-siding_metallic.png");
+        L"Assets/Textures/PBR/worn-factory-siding_metallic.png",
+        L"Assets/Textures/PBR/worn-factory-siding_ao.png");
     spawnLocation = Vector3(spawnLocation.X + 30.0f, spawnLocation.Y, spawnLocation.Z);
     AddPBRSphereToScene("SpherePBR3", spawnLocation,
-        L"Assets/Textures/PBR/Copper-scuffed_basecolor-boosted.png",
-        L"Assets/Textures/PBR/Copper-scuffed_normal.png",
-        L"Assets/Textures/PBR/Copper-scuffed_roughness.png",
-        L"Assets/Textures/PBR/Copper-scuffed_metallic.png");
+        L"Assets/Textures/PBR/gold-scuffed_basecolor-boosted.png",
+        L"Assets/Textures/PBR/gold-scuffed_normal.png",
+        L"Assets/Textures/PBR/gold-scuffed_roughness.png",
+        L"Assets/Textures/PBR/gold-scuffed_metallic.png",
+        nullptr);
     spawnLocation = Vector3(spawnLocation.X + 30.0f, spawnLocation.Y, spawnLocation.Z);
     AddPBRSphereToScene("SpherePBR4", spawnLocation,
         L"Assets/Textures/PBR/black-leather_albedo.png",
         L"Assets/Textures/PBR/black-leather_normal-ogl.png",
         L"Assets/Textures/PBR/black-leather_roughness.png",
-        L"Assets/Textures/PBR/black-leather_metallic.png");
+        L"Assets/Textures/PBR/black-leather_metallic.png",
+         L"Assets/Textures/PBR/black-leather_ao.png");
     spawnLocation = Vector3(spawnLocation.X + 30.0f, spawnLocation.Y, spawnLocation.Z);
     AddPBRSphereToScene("SpherePBR4", spawnLocation,
         L"Assets/Textures/PBR/worn-shiny-metal-albedo.png",
         L"Assets/Textures/PBR/worn-shiny-metal-Normal-ogl.png",
         L"Assets/Textures/PBR/worn-shiny-metal-Roughness.png",
-        L"Assets/Textures/PBR/worn-shiny-metal-Metallic.png");
+        L"Assets/Textures/PBR/worn-shiny-metal-Metallic.png",
+         L"Assets/Textures/PBR/worn-shiny-metal-ao.png");
     
     GameObject& groundGo = AddMeshToScene("Ground", L"Assets/Meshes/cube.obj", Vector3(35.0f, -16.0f, 9.0f));
     TransformComponent& groundGoTf = groundGo.GetComponent<TransformComponent>();
@@ -396,7 +403,13 @@ GameObject& LacertaEditor::AddPointLightToScene(Vector3 position, Vector4 color)
     return *go;
 }
 
-GameObject& LacertaEditor::AddPBRSphereToScene(std::string name, Vector3 position, const wchar_t* albedo, const wchar_t* normal, const wchar_t* roughness, const wchar_t* metallic)
+GameObject& LacertaEditor::AddPBRSphereToScene(std::string name,
+    Vector3 position,
+    const wchar_t* albedo,
+    const wchar_t* normal,
+    const wchar_t* roughness,
+    const wchar_t* metallic,
+    const wchar_t* ao)
 {
     GameObject& sphere = AddMeshToScene(name, L"Assets/Meshes/sphere_hq.obj", position);
     
@@ -411,6 +424,11 @@ GameObject& LacertaEditor::AddPBRSphereToScene(std::string name, Vector3 positio
     sphereMesh.GetMaterial()->SetTexture(1, norm);
     sphereMesh.GetMaterial()->SetTexture(2, rough);
     sphereMesh.GetMaterial()->SetTexture(3, met);
+    if(ao != nullptr)
+    {
+        auto amb = ResourceManager::Get()->CreateResource<Texture>(ao);
+        sphereMesh.GetMaterial()->SetTexture(4, amb);
+    }
 
     return sphere;
 }

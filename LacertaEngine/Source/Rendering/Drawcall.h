@@ -89,6 +89,7 @@ struct MeshConstantBuffer
     int HasRoughness;
     int HasMetallic;
     // 16 bytes
+    int HasAmbiant;
 };
 
 struct VertexDataScreen
