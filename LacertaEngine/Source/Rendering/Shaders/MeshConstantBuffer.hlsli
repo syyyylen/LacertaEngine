@@ -5,6 +5,7 @@ TextureCube IrradianceMap: register(t3);
 Texture2D RoughnessMap: register(t4);
 Texture2D MetallicMap: register(t5);
 Texture2D AmbiantOcclusionMap: register(t6);
+Texture2D BRDFLut: register(t7);
 
 sampler TextureSampler: register(s0);
 

@@ -152,6 +152,17 @@ void WinDX11Shader::PreparePass(Renderer* renderer, Drawcall* dc)
                 }
             }
 
+            const auto BRDFLut = dc->GetMaterial()->GetTexture(2);
+            if(BRDFLut != nullptr)
+            {
+                const auto BRDFsrv = static_cast<ID3D11ShaderResourceView*>(BRDFLut->m_resourceView);
+                if(BRDFsrv != nullptr)
+                {
+                    ctx->VSSetShaderResources(7, 1, &BRDFsrv);
+                    ctx->PSSetShaderResources(7, 1, &BRDFsrv);
+                }
+            }
+
             GraphicsEngine::Get()->SetRasterizerState(true);
         }
         else
