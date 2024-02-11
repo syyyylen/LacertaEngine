@@ -90,9 +90,9 @@ float4 main(VertexOutput input) : SV_Target
 
     normal = normalize(normal);
 
-    float4 albedo = DefaultColor;
+    float3 albedo = DefaultColor.rgb;
     if(HasAlbedo)
-        albedo = BaseColor.Sample(TextureSampler, uv);
+        albedo = BaseColor.Sample(TextureSampler, uv).rgb;
 
     float roughness = MatLightProperties.Roughness;
     if(HasRoughness)
@@ -107,7 +107,7 @@ float4 main(VertexOutput input) : SV_Target
         ao = AmbiantOcclusionMap.Sample(TextureSampler, uv);
 
     // Fresnel reflectance at normal incidence (for metals use albedo color).
-    float3 F0 = lerp(Fdielectric, albedo.xyz, metallic);
+    float3 F0 = lerp(Fdielectric, albedo, metallic);
     
     float3 v = normalize(CameraPosition - input.positionWS);
     float3 dirl = DirectionalLightDirection * -1.0f;
@@ -132,16 +132,19 @@ float4 main(VertexOutput input) : SV_Target
     }
 
     float3 Ks = FresnelSchlickRoughness(max(dot(normal, v), 0.0f), F0,  roughness);
+    
     float3 Kd = 1.0f - Ks;
     Kd *= 1.0 - metallic;
     float3 r = reflect(-v, normal);
     float3 irradiance = float3(IrradianceMap.Sample(TextureSampler, r).rgb);
     float3 diffuse = albedo * irradiance;
 
-    // TODO Specular IBL with pre filtered enviro map + brdf LUT
-    float3 specular = Ks * irradiance;
+    float3 enviro = float4(SkyBox.Sample(TextureSampler, r));
+    float3 env = lerp(enviro, irradiance, roughness);
+    // float2 envBRDF = BRDFLut.Sample(TextureSampler, float2(max(dot(normal, v), 0.0), roughness)).rg;
+    float3 specular = env * (Ks /* * envBRDF.x + envBRDF.y */);
 
-    float3 ambiantLight = (Kd * diffuse + specular) * ao; // TODO replace 1 by ao
+    float3 ambiantLight = (Kd * diffuse + specular) * ao;
 
     finalLight += ambiantLight * GlobalAmbient;
 

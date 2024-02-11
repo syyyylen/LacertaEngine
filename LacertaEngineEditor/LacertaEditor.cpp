@@ -63,8 +63,10 @@ void LacertaEditor::Start()
     auto& skyBoxMeshComp = m_skyBoxGo->GetComponent<MeshComponent>();
     Texture* skyBoxTex = ResourceManager::Get()->CreateResource<Texture>(L"Assets/Textures/skybox1.dds");
     Texture* irradianceTex = ResourceManager::Get()->CreateResource<Texture>(L"Assets/Textures/skybox1IR.dds");
+    Texture* BRDFLut = ResourceManager::Get()->CreateResource<Texture>(L"Assets/Textures/ibl_brdf_lut.png");
     skyBoxMeshComp.GetMaterial()->SetTexture(0, skyBoxTex);
     skyBoxMeshComp.GetMaterial()->SetTexture(1, irradianceTex);
+    skyBoxMeshComp.GetMaterial()->SetTexture(2, BRDFLut);
     skyBoxMeshComp.GetMaterial()->SetShader("SkyboxShader");
     skyBoxMeshComp.GetMaterial()->SetIsSkyBox(true);
 
