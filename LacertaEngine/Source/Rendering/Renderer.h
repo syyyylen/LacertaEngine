@@ -1,17 +1,18 @@
 ﻿#pragma once
 #include <map>
 
+#include "GraphicsResource.h"
 #include "../Core.h"
 #include "../Maths/Maths.h"
 
 namespace LacertaEngine
 {
-    
 class Drawcall;
 struct DrawcallData;
 class RenderTarget;
 class Shader;
 class Mesh;
+class Texture;
 struct VertexMesh;
 struct ShapeData;
 
@@ -33,9 +34,12 @@ public:
     virtual void AddDrawcall(DrawcallData* dcData) = 0;
     virtual void ClearDrawcalls();
     virtual void CreateBuffers(ShapeData& shapeData, std::vector<VertexMesh> vertices, std::vector<unsigned int> indices) = 0;
+    
+    virtual Mesh* CreateMesh(const wchar_t* filePath) = 0;
+    virtual Texture* CreateTexture(const wchar_t* filePath) = 0;
 
     virtual int* GetDriver() = 0;
-    
+
     RenderTarget* GetRenderTarget(int index);
 
     bool HasShader(std::string shaderName) { return m_shaders.find(shaderName) != m_shaders.end(); }
@@ -45,6 +49,6 @@ protected:
     std::vector<RenderTarget*> m_renderTargets;
     std::list<Drawcall*> m_drawcalls;
     std::map<std::string, Shader*> m_shaders;
+    std::list<GraphicsResource*> m_graphicsResources;
 };
-
 }

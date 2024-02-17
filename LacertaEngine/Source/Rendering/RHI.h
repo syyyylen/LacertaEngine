@@ -1,27 +1,29 @@
 ﻿#pragma once
 
+#include "GraphicsResource.h"
 #include "Renderer.h"
+#include "Texture.h"
 #include "../Core.h"
+#include "../Logger/Logger.h"
 
 namespace LacertaEngine
 {
 
 struct VertexMesh;
-class Mesh;
     
 enum RendererType
 {
     RENDERER_WIN_DX11
 };
 
-class LACERTAENGINE_API GraphicsEngine
+class LACERTAENGINE_API RHI
 {
 private:
-    GraphicsEngine();
-    ~GraphicsEngine();
+    RHI();
+    ~RHI();
 
 public:
-    static GraphicsEngine* Get();
+    static RHI* Get();
     static void Create();
     static void Shutdown();
 
@@ -40,12 +42,17 @@ public:
 
     Renderer* GetRenderer() { return m_renderer; }
     RendererType GetRendererType() { return m_rendererType; }
-    
+
+    std::list<GraphicsResource*> GetGraphicsResources;
+
+    Mesh* CreateMesh(const wchar_t* filePath);
+    Texture* CreateTexture(const wchar_t* filePath);
+
 private:
     RendererType m_rendererType;
     Renderer* m_renderer;
 
-    static GraphicsEngine* s_graphicsEngine;
+    static RHI* s_graphicsEngine;
 };
     
 }

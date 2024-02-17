@@ -11,7 +11,7 @@ public:
     {
     }
 
-    ~InputListener()
+    virtual ~InputListener()
     {
     }
 

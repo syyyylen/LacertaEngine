@@ -4,7 +4,7 @@
 #include "WinDX11Renderer.h"
 #include "../../Logger/Logger.h"
 #include <d3dcompiler.h>
-#include "../GraphicsEngine.h"
+#include "../RHI.h"
 #include "../Material.h"
 
 namespace LacertaEngine
@@ -132,7 +132,7 @@ void WinDX11Shader::PreparePass(Renderer* renderer, Drawcall* dc)
             const auto skyboxTex = dc->GetMaterial()->GetTexture(0);
             if(skyboxTex != nullptr)
             {
-                const auto baseColorSrv = static_cast<ID3D11ShaderResourceView*>(skyboxTex->m_resourceView);
+                const auto baseColorSrv = static_cast<ID3D11ShaderResourceView*>(skyboxTex->GetResourceView());
                 if(baseColorSrv != nullptr)
                 {
                     meshCb.HasAlbedo = true;
@@ -144,7 +144,7 @@ void WinDX11Shader::PreparePass(Renderer* renderer, Drawcall* dc)
             const auto irradianceTex = dc->GetMaterial()->GetTexture(1);
             if(irradianceTex != nullptr)
             {
-                const auto irrSrv = static_cast<ID3D11ShaderResourceView*>(irradianceTex->m_resourceView);
+                const auto irrSrv = static_cast<ID3D11ShaderResourceView*>(irradianceTex->GetResourceView());
                 if(irrSrv != nullptr)
                 {
                     ctx->VSSetShaderResources(3, 1, &irrSrv);
@@ -155,7 +155,7 @@ void WinDX11Shader::PreparePass(Renderer* renderer, Drawcall* dc)
             const auto BRDFLut = dc->GetMaterial()->GetTexture(2);
             if(BRDFLut != nullptr)
             {
-                const auto BRDFsrv = static_cast<ID3D11ShaderResourceView*>(BRDFLut->m_resourceView);
+                const auto BRDFsrv = static_cast<ID3D11ShaderResourceView*>(BRDFLut->GetResourceView());
                 if(BRDFsrv != nullptr)
                 {
                     ctx->VSSetShaderResources(7, 1, &BRDFsrv);
@@ -163,7 +163,7 @@ void WinDX11Shader::PreparePass(Renderer* renderer, Drawcall* dc)
                 }
             }
 
-            GraphicsEngine::Get()->SetRasterizerState(true);
+            RHI::Get()->SetRasterizerState(true);
         }
         else
         {
@@ -173,7 +173,7 @@ void WinDX11Shader::PreparePass(Renderer* renderer, Drawcall* dc)
             const auto baseColor = dc->GetMaterial()->GetTexture(0);
             if(baseColor != nullptr)
             {
-                const auto baseColorSrv = static_cast<ID3D11ShaderResourceView*>(baseColor->m_resourceView);
+                const auto baseColorSrv = static_cast<ID3D11ShaderResourceView*>(baseColor->GetResourceView());
                 if(baseColorSrv != nullptr)
                 {
                     meshCb.HasAlbedo = true;
@@ -189,7 +189,7 @@ void WinDX11Shader::PreparePass(Renderer* renderer, Drawcall* dc)
             const auto normalMap = dc->GetMaterial()->GetTexture(1);
             if(normalMap != nullptr)
             {
-                const auto normalMapSrv = static_cast<ID3D11ShaderResourceView*>(normalMap->m_resourceView);
+                const auto normalMapSrv = static_cast<ID3D11ShaderResourceView*>(normalMap->GetResourceView());
                 if(normalMapSrv != nullptr)
                 {
                     meshCb.HasNormalMap = true;
@@ -205,7 +205,7 @@ void WinDX11Shader::PreparePass(Renderer* renderer, Drawcall* dc)
             const auto roughness = dc->GetMaterial()->GetTexture(2);
             if(roughness != nullptr)
             {
-                const auto roughnessSrv = static_cast<ID3D11ShaderResourceView*>(roughness->m_resourceView);
+                const auto roughnessSrv = static_cast<ID3D11ShaderResourceView*>(roughness->GetResourceView());
                 if(roughnessSrv != nullptr)
                 {
                     meshCb.HasRoughness = true;
@@ -221,7 +221,7 @@ void WinDX11Shader::PreparePass(Renderer* renderer, Drawcall* dc)
             const auto metallic = dc->GetMaterial()->GetTexture(3);
             if(metallic != nullptr)
             {
-                const auto metallicSrv = static_cast<ID3D11ShaderResourceView*>(metallic->m_resourceView);
+                const auto metallicSrv = static_cast<ID3D11ShaderResourceView*>(metallic->GetResourceView());
                 if(metallicSrv != nullptr)
                 {
                     meshCb.HasMetallic = true;
@@ -237,7 +237,7 @@ void WinDX11Shader::PreparePass(Renderer* renderer, Drawcall* dc)
             const auto ao = dc->GetMaterial()->GetTexture(4);
             if(ao != nullptr)
             {
-                const auto aoSrv = static_cast<ID3D11ShaderResourceView*>(ao->m_resourceView);
+                const auto aoSrv = static_cast<ID3D11ShaderResourceView*>(ao->GetResourceView());
                 if(aoSrv != nullptr)
                 {
                     meshCb.HasAmbiant = true;
@@ -250,10 +250,10 @@ void WinDX11Shader::PreparePass(Renderer* renderer, Drawcall* dc)
                 meshCb.HasAmbiant = false;
             }
 
-            GraphicsEngine::Get()->SetRasterizerState(false);
+            RHI::Get()->SetRasterizerState(false);
         }
             
-        GraphicsEngine::Get()->UpdateMeshConstants(&meshCb);
+        RHI::Get()->UpdateMeshConstants(&meshCb);
         ctx->IASetIndexBuffer((ID3D11Buffer*)dc->GetIBO(), DXGI_FORMAT_R32_UINT, 0);
     }
     

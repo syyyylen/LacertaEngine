@@ -116,8 +116,6 @@ public:
 
     virtual void Setup(Renderer* renderer, DrawcallData* dcData) = 0;
     virtual void Pass(Renderer* renderer) = 0;
-    virtual void CreateVBO(Renderer* renderer, void* data, unsigned long size) = 0;
-    virtual void CreateIBO(Renderer* renderer, void* data, unsigned long size) = 0;
 
     virtual void* GetVBO() = 0;
     virtual void* GetIBO() = 0;
