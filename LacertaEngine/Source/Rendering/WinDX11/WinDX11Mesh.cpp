@@ -16,6 +16,11 @@ WinDX11Mesh::WinDX11Mesh()
 
 WinDX11Mesh::~WinDX11Mesh()
 {
+    for(auto shape : m_shapesData)
+    {
+        shape.Vbo->Release();
+        shape.Ibo->Release();
+    }
 }
 
 void WinDX11Mesh::CreateResource(const wchar_t* filePath, Renderer* renderer)

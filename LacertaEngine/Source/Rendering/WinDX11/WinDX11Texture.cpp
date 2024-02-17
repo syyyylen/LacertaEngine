@@ -13,6 +13,8 @@ WinDX11Texture::WinDX11Texture()
 
 WinDX11Texture::~WinDX11Texture()
 {
+    m_resource->Release();
+    m_resourceView->Release();
 }
 
 void WinDX11Texture::CreateResource(const wchar_t* filePath, Renderer* renderer)

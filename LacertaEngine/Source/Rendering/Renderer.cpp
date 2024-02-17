@@ -13,6 +13,9 @@ Renderer::~Renderer()
 {
     for(auto shader : m_shaders)
         delete shader.second;
+
+    for(auto res : m_graphicsResources)
+        delete res;
 }
 
 void Renderer::ClearDrawcalls()
