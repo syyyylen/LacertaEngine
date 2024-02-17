@@ -18,6 +18,7 @@ public:
     void LoadShaders() override;
     
     void RenderFrame(Vector2 ViewportSize) override;
+    void EndRenderFrame() override;
     void PresentSwapChain() override;
     void OnResizeWindow(unsigned width, unsigned height) override;
     void UpdateConstantBuffer(void* buffer) override;

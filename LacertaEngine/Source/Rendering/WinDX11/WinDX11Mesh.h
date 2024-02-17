@@ -10,7 +10,7 @@ class LACERTAENGINE_API WinDX11Shape : public Shape
 {
 public:
     WinDX11Shape(ID3D11Buffer* vbo, unsigned long verticesSize, ID3D11Buffer* ibo, unsigned long indexesSize);
-    ~WinDX11Shape();
+    ~WinDX11Shape() override;
 
     void BindBuffers(Renderer* renderer) override;
     unsigned long GetVerticesSize() override { return m_verticesSize; }
@@ -27,7 +27,7 @@ class LACERTAENGINE_API WinDX11Mesh : public Mesh
 {
 public:
     WinDX11Mesh();
-    ~WinDX11Mesh();
+    ~WinDX11Mesh() override;
 
     void CreateResource(const wchar_t* filePath, Renderer* renderer) override;
 

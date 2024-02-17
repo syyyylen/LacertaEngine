@@ -71,6 +71,12 @@ void RHI::RenderScene(Vector2 ViewportSize)
         m_renderer->RenderFrame(ViewportSize);
 }
 
+void RHI::EndRenderScene()
+{
+    if(m_renderer)
+        m_renderer->EndRenderFrame();
+}
+
 void RHI::Resize(unsigned width, unsigned height)
 {
     if(m_renderer)

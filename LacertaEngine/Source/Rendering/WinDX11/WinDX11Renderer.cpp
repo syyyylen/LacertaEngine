@@ -259,6 +259,8 @@ void WinDX11Renderer::LoadShaders()
 
     m_shaders.emplace("MeshPBRShader", MeshPbrShader);
 
+    return;
+
     ID3DBlob* skyboxVertexErrorBlob = nullptr;
     ID3DBlob* skyboxVertexBlob;
 
@@ -373,7 +375,7 @@ Mesh* WinDX11Renderer::CreateMesh(const wchar_t* filePath)
     Mesh* mesh = new WinDX11Mesh();
     mesh->CreateResource(filePath, this);
     m_graphicsResources.push_back(mesh);
-
+    
     return mesh;
 }
 
@@ -405,10 +407,10 @@ void WinDX11Renderer::RenderFrame(Vector2 ViewportSize)
 
     m_renderTargets[1]->SetActive(this);
     m_renderTargets[1]->Clear(this, Vector4(0.0f, 0.0f, 0.0f, 0.0f));
+}
 
-    for(auto dc : m_drawcalls)
-        dc->Pass(this);
-
+void WinDX11Renderer::EndRenderFrame()
+{
     // setting back the backbuffer render target
     m_renderTargets[0]->SetActive(this); 
 }

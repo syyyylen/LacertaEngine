@@ -14,7 +14,6 @@ class Shader;
 class Mesh;
 class Texture;
 struct VertexMesh;
-struct ShapeData;
 class Drawable;
 class Bindable;
 
@@ -28,6 +27,7 @@ public:
     virtual void CreateRenderTarget(int width, int height) = 0;
     virtual void LoadShaders() = 0;
     virtual void RenderFrame(Vector2 ViewportSize) = 0;
+    virtual void EndRenderFrame() = 0;
     virtual void OnResizeWindow(unsigned width, unsigned height) = 0;
     virtual void PresentSwapChain() = 0;
     virtual void UpdateConstantBuffer(void* buffer) = 0;

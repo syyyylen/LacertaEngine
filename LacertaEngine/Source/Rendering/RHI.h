@@ -31,6 +31,7 @@ public:
     void AddDrawcall(std::string shaderName, Drawable* drawable, std::list<Bindable*> bindables);
     void ClearDrawcalls();
     void RenderScene(Vector2 ViewportSize);
+    void EndRenderScene();
     void Resize(unsigned width, unsigned height);
     void SetBackbufferViewportSize(int width, int height);
     void SetRasterizerState(bool cullFront);

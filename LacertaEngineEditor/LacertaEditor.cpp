@@ -53,18 +53,18 @@ void LacertaEditor::Start()
     // TODO this needs to be created first bc we want it to be rendered first. Isn't it stupid ? (rhetorical question, it is.)
     // -------------------------- Skybox Sphere Creation -----------------------
 
-    m_skyBoxGo = &AddMeshToScene("Skybox", L"Assets/Meshes/sphere_hq.obj", Vector3(0.0f, 0.0f, 0.0f));
-    auto& skyboxTf = m_skyBoxGo->GetComponent<TransformComponent>();
-    skyboxTf.SetScale(Vector3(1000.0f, 1000.0f, 1000.0f));
-    auto& skyBoxMeshComp = m_skyBoxGo->GetComponent<MeshComponent>();
-    Texture* skyBoxTex = RHI::Get()->CreateTexture(L"Assets/Textures/skybox1.dds", 0);
-    Texture* irradianceTex = RHI::Get()->CreateTexture(L"Assets/Textures/skybox1IR.dds", 1);
-    Texture* BRDFLut = RHI::Get()->CreateTexture(L"Assets/Textures/ibl_brdf_lut.png", 2);
-    skyBoxMeshComp.GetMaterial()->SetTexture(0, skyBoxTex);
-    skyBoxMeshComp.GetMaterial()->SetTexture(1, irradianceTex);
-    skyBoxMeshComp.GetMaterial()->SetTexture(2, BRDFLut);
-    skyBoxMeshComp.GetMaterial()->SetShader("SkyboxShader");
-    skyBoxMeshComp.GetMaterial()->SetIsSkyBox(true);
+    // m_skyBoxGo = &AddMeshToScene("Skybox", L"Assets/Meshes/sphere_hq.obj", Vector3(0.0f, 0.0f, 0.0f));
+    // auto& skyboxTf = m_skyBoxGo->GetComponent<TransformComponent>();
+    // skyboxTf.SetScale(Vector3(1000.0f, 1000.0f, 1000.0f));
+    // auto& skyBoxMeshComp = m_skyBoxGo->GetComponent<MeshComponent>();
+    // Texture* skyBoxTex = RHI::Get()->CreateTexture(L"Assets/Textures/skybox1.dds", 0);
+    // Texture* irradianceTex = RHI::Get()->CreateTexture(L"Assets/Textures/skybox1IR.dds", 1);
+    // Texture* BRDFLut = RHI::Get()->CreateTexture(L"Assets/Textures/ibl_brdf_lut.png", 2);
+    // skyBoxMeshComp.GetMaterial()->SetTexture(0, skyBoxTex);
+    // skyBoxMeshComp.GetMaterial()->SetTexture(1, irradianceTex);
+    // skyBoxMeshComp.GetMaterial()->SetTexture(2, BRDFLut);
+    // skyBoxMeshComp.GetMaterial()->SetShader("SkyboxShader");
+    // skyBoxMeshComp.GetMaterial()->SetIsSkyBox(true);
 
     // TODO compute irradiance texture instead of use pre computed dds file
 
@@ -234,8 +234,8 @@ void LacertaEditor::Update()
     
     // TODO remove this, render the skybox mesh with a different approach 
     // We move the sphere skybox at camera pos
-    auto& skyboxTf = m_skyBoxGo->GetComponent<TransformComponent>();
-    skyboxTf.SetPosition(m_sceneCamera.GetTranslation());
+    // auto& skyboxTf = m_skyBoxGo->GetComponent<TransformComponent>();
+    // skyboxTf.SetPosition(m_sceneCamera.GetTranslation());
 
     // Let's add the point lights to the Constant Buffer
     const auto pointLightsView = m_activeScene->m_registry.group<PointLightComponent>(entt::get<TransformComponent>);
@@ -265,6 +265,7 @@ void LacertaEditor::Update()
     // ----------------------------- Scene Draw Objects -----------------------
 
     RHI::Get()->ClearDrawcalls();
+    RHI::Get()->RenderScene(m_viewportCachedSize); // TODO remove me and replace with render passes
 
     auto tfMeshesGroup = m_activeScene->m_registry.group<TransformComponent>(entt::get<MeshComponent>);
     for(auto go : tfMeshesGroup)
@@ -281,9 +282,13 @@ void LacertaEditor::Update()
             auto mat = meshComponent.GetMaterial();
 
             MeshConstantBuffer meshCb;
+            meshCb.HasAlbedo = true;
+            meshCb.HasNormalMap = true;
+            meshCb.HasRoughness = true;
+            meshCb.HasMetallic = true;
             meshCb.LightProperties = mat->GetMatLightProperties();
             meshCb.LocalMatrix = transform.GetTransformMatrix();
-            RHI::Get()->UpdateMeshConstants(&meshCb);
+            RHI::Get()->UpdateMeshConstants(&meshCb); // TODO fix all this
             
             auto texs = mat->GetTextures();
             std::list<Bindable*> DcBindables;
@@ -294,7 +299,7 @@ void LacertaEditor::Update()
         }
     }
 
-    RHI::Get()->RenderScene(m_viewportCachedSize);
+    RHI::Get()->EndRenderScene();
 
     RECT windowRect = m_editorWindow->GetClientWindowRect();
     int width = windowRect.right - windowRect.left;
