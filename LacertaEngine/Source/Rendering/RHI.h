@@ -27,8 +27,8 @@ public:
     static void Create();
     static void Shutdown();
 
-    void InitializeRenderer(int* context, RendererType type, int width, int height, int depth, int targetRefreshRate);
-    void AddDrawcall(DrawcallData* dcData);
+    void InitializeRenderer(int* context, RendererType type, int width, int height, int targetRefreshRate);
+    void AddDrawcall(std::string shaderName, Drawable* drawable, std::list<Bindable*> bindables);
     void ClearDrawcalls();
     void RenderScene(Vector2 ViewportSize);
     void Resize(unsigned width, unsigned height);
@@ -38,15 +38,11 @@ public:
     void UpdateShaderConstants(void* buffer);
     void UpdateMeshConstants(void* buffer);
 
-    void CreateBuffers(ShapeData& mesh, std::vector<VertexMesh> vertices, std::vector<unsigned int> indices);
-
     Renderer* GetRenderer() { return m_renderer; }
     RendererType GetRendererType() { return m_rendererType; }
-
-    std::list<GraphicsResource*> GetGraphicsResources;
-
+    
     Mesh* CreateMesh(const wchar_t* filePath);
-    Texture* CreateTexture(const wchar_t* filePath);
+    Texture* CreateTexture(const wchar_t* filePath, int idx);
 
 private:
     RendererType m_rendererType;

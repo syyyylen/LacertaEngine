@@ -117,14 +117,13 @@ void WinDX11Texture::CreateResource(const wchar_t* filePath, Renderer* renderer)
     m_resourceView = Srv;
 }
 
-void* WinDX11Texture::GetResource()
+void WinDX11Texture::Bind(Renderer* renderer)
 {
-    return m_resource;
-}
+    WinDX11Renderer* driver = (WinDX11Renderer*)renderer;
+    auto ctx = driver->GetImmediateContext();
 
-void* WinDX11Texture::GetResourceView()
-{
-    return m_resourceView;
+    ctx->VSSetShaderResources(m_idx, 1, &m_resourceView);
+    ctx->PSSetShaderResources(m_idx, 1, &m_resourceView);
 }
 
 }

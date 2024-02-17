@@ -33,6 +33,8 @@ public:
         else
             return nullptr;
     }
+
+    const std::vector<Texture*>& GetTextures() { return m_textures; } 
     
 private:
     MatLightProperties m_lightProperties;

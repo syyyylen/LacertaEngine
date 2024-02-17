@@ -1,11 +1,8 @@
 ﻿#pragma once
 #include "../Renderer.h"
 #include "../../Core.h"
-#include "../RenderTarget.h"
-
 #include <d3d11.h>
 #include <dxgi1_3.h>
-#include <map>
 
 namespace LacertaEngine
 {
@@ -17,7 +14,7 @@ public:
     ~WinDX11Renderer();
 
     void Initialize(int* context, int width, int height, int targetRefreshRate) override;
-    void CreateRenderTarget(int width, int height, int depth) override;
+    void CreateRenderTarget(int width, int height) override;
     void LoadShaders() override;
     
     void RenderFrame(Vector2 ViewportSize) override;
@@ -26,14 +23,13 @@ public:
     void UpdateConstantBuffer(void* buffer) override;
     void UpdateMeshConstantBuffer(void* buffer) override;
     void SetRasterizerCullState(bool cullFront) override;
-    void AddDrawcall(DrawcallData* dcData) override;
-    void CreateBuffers(ShapeData& shapeData, std::vector<VertexMesh> vertices, std::vector<unsigned> indices) override;
+    void AddDrawcall(std::string shaderName, Drawable* drawable, std::list<Bindable*> bindables) override;
 
     ID3D11Buffer* CreateVBO(std::vector<VertexMesh> vertices);
     ID3D11Buffer* CreateIBO(std::vector<unsigned> indices);
     
     Mesh* CreateMesh(const wchar_t* filePath) override;
-    Texture* CreateTexture(const wchar_t* filePath) override;
+    Texture* CreateTexture(const wchar_t* filePath, int idx) override;
     
     int* GetDriver() override { return (int*)m_device; }
 

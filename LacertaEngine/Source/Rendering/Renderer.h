@@ -15,6 +15,8 @@ class Mesh;
 class Texture;
 struct VertexMesh;
 struct ShapeData;
+class Drawable;
+class Bindable;
 
 class LACERTAENGINE_API Renderer
 {
@@ -23,7 +25,7 @@ public:
     virtual ~Renderer();
 
     virtual void Initialize(int* context, int width, int height, int targetRefreshRate) = 0;
-    virtual void CreateRenderTarget(int width, int height, int depth) = 0;
+    virtual void CreateRenderTarget(int width, int height) = 0;
     virtual void LoadShaders() = 0;
     virtual void RenderFrame(Vector2 ViewportSize) = 0;
     virtual void OnResizeWindow(unsigned width, unsigned height) = 0;
@@ -31,12 +33,11 @@ public:
     virtual void UpdateConstantBuffer(void* buffer) = 0;
     virtual void UpdateMeshConstantBuffer(void* buffer) = 0;
     virtual void SetRasterizerCullState(bool cullFront) = 0;
-    virtual void AddDrawcall(DrawcallData* dcData) = 0;
+    virtual void AddDrawcall(std::string shaderName, Drawable* drawable, std::list<Bindable*> bindables) = 0;
     virtual void ClearDrawcalls();
-    virtual void CreateBuffers(ShapeData& shapeData, std::vector<VertexMesh> vertices, std::vector<unsigned int> indices) = 0;
     
     virtual Mesh* CreateMesh(const wchar_t* filePath) = 0;
-    virtual Texture* CreateTexture(const wchar_t* filePath) = 0;
+    virtual Texture* CreateTexture(const wchar_t* filePath, int idx) = 0;
 
     virtual int* GetDriver() = 0;
 

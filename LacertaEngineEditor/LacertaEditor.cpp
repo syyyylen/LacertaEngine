@@ -44,7 +44,7 @@ void LacertaEditor::Start()
     
     RHI::Create();
     HWND hwnd = m_editorWindow->GetHWND();
-    RHI::Get()->InitializeRenderer((int*)hwnd, RendererType::RENDERER_WIN_DX11, width, height, 24, 60);
+    RHI::Get()->InitializeRenderer((int*)hwnd, RendererType::RENDERER_WIN_DX11, width, height, 60);
 
     // ---------------------------- Debug Scene Creation --------------------
 
@@ -57,9 +57,9 @@ void LacertaEditor::Start()
     auto& skyboxTf = m_skyBoxGo->GetComponent<TransformComponent>();
     skyboxTf.SetScale(Vector3(1000.0f, 1000.0f, 1000.0f));
     auto& skyBoxMeshComp = m_skyBoxGo->GetComponent<MeshComponent>();
-    Texture* skyBoxTex = RHI::Get()->CreateTexture(L"Assets/Textures/skybox1.dds");
-    Texture* irradianceTex = RHI::Get()->CreateTexture(L"Assets/Textures/skybox1IR.dds");
-    Texture* BRDFLut = RHI::Get()->CreateTexture(L"Assets/Textures/ibl_brdf_lut.png");
+    Texture* skyBoxTex = RHI::Get()->CreateTexture(L"Assets/Textures/skybox1.dds", 0);
+    Texture* irradianceTex = RHI::Get()->CreateTexture(L"Assets/Textures/skybox1IR.dds", 1);
+    Texture* BRDFLut = RHI::Get()->CreateTexture(L"Assets/Textures/ibl_brdf_lut.png", 2);
     skyBoxMeshComp.GetMaterial()->SetTexture(0, skyBoxTex);
     skyBoxMeshComp.GetMaterial()->SetTexture(1, irradianceTex);
     skyBoxMeshComp.GetMaterial()->SetTexture(2, BRDFLut);
@@ -75,9 +75,9 @@ void LacertaEditor::Start()
     GameObject& sphereGo = AddMeshToScene("GregSphere", L"Assets/Meshes/spheregreg.obj", spawnLocation, "MeshPBRShader");
     TransformComponent& sphereTfComp = sphereGo.GetComponent<TransformComponent>();
     sphereTfComp.SetScale(Vector3(2.0f, 2.0f, 2.0f));
-    Texture* tex = RHI::Get()->CreateTexture(L"Assets/Textures/gregcolor.png");
-    Texture* normalMap = RHI::Get()->CreateTexture(L"Assets/Textures/gregnormal.png");
-    Texture* roughnessMap = RHI::Get()->CreateTexture(L"Assets/Textures/gregroughness.png");
+    Texture* tex = RHI::Get()->CreateTexture(L"Assets/Textures/gregcolor.png", 0);
+    Texture* normalMap = RHI::Get()->CreateTexture(L"Assets/Textures/gregnormal.png", 1);
+    Texture* roughnessMap = RHI::Get()->CreateTexture(L"Assets/Textures/gregroughness.png", 2);
     MeshComponent& meshComp = sphereGo.GetComponent<MeshComponent>();
     meshComp.GetMaterial()->SetTexture(0, tex);
     meshComp.GetMaterial()->SetTexture(1, normalMap);
@@ -278,17 +278,19 @@ void LacertaEditor::Update()
         auto shapes = mesh->GetShapesData();
         for(const auto shape : shapes)
         {
-            // Adding DC
-            DrawcallData dcData = {};
-            dcData.VBO = shape.Vbo;
-            dcData.VerticesCount = shape.VerticesSize;
-            dcData.IBO = shape.Ibo;
-            dcData.IndicesCount = shape.IndexesSize;
-            dcData.Type = DrawcallType::dcMesh;
-            dcData.LocalMatrix = transform.GetTransformMatrix();
-            dcData.Material = meshComponent.GetMaterial();
+            auto mat = meshComponent.GetMaterial();
 
-            RHI::Get()->AddDrawcall(&dcData);
+            MeshConstantBuffer meshCb;
+            meshCb.LightProperties = mat->GetMatLightProperties();
+            meshCb.LocalMatrix = transform.GetTransformMatrix();
+            RHI::Get()->UpdateMeshConstants(&meshCb);
+            
+            auto texs = mat->GetTextures();
+            std::list<Bindable*> DcBindables;
+            for(auto tex : texs)
+                DcBindables.emplace_back(tex);
+
+            RHI::Get()->AddDrawcall(mat->GetShader(), shape, DcBindables);
         }
     }
 
@@ -411,10 +413,10 @@ GameObject& LacertaEditor::AddPBRSphereToScene(std::string name,
     
     auto& sphereTf = sphere.GetComponent<TransformComponent>();
     sphereTf.SetScale(Vector3(12.0f, 12.0f, 12.0f));
-    auto tex = RHI::Get()->CreateTexture(albedo);
-    auto norm = RHI::Get()->CreateTexture(normal);
-    auto rough = RHI::Get()->CreateTexture(roughness);
-    auto met = RHI::Get()->CreateTexture(metallic);
+    auto tex = RHI::Get()->CreateTexture(albedo, 0);
+    auto norm = RHI::Get()->CreateTexture(normal, 1);
+    auto rough = RHI::Get()->CreateTexture(roughness, 2);
+    auto met = RHI::Get()->CreateTexture(metallic, 3);
     auto& sphereMesh = sphere.GetComponent<MeshComponent>();
     sphereMesh.GetMaterial()->SetTexture(0, tex);
     sphereMesh.GetMaterial()->SetTexture(1, norm);
@@ -422,7 +424,7 @@ GameObject& LacertaEditor::AddPBRSphereToScene(std::string name,
     sphereMesh.GetMaterial()->SetTexture(3, met);
     if(ao != nullptr)
     {
-        auto amb = RHI::Get()->CreateTexture(ao);
+        auto amb = RHI::Get()->CreateTexture(ao, 4);
         sphereMesh.GetMaterial()->SetTexture(4, amb);
     }
 

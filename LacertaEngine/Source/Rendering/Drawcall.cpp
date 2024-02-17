@@ -1,9 +1,33 @@
 ﻿#include "Drawcall.h"
+#include "Shader.h"
 
-LacertaEngine::Drawcall::Drawcall()
+namespace LacertaEngine
+{
+    
+Drawcall::Drawcall(std::string shaderName, Drawable* drawable, std::list<Bindable*> bindables)
+    : m_shaderName(shaderName), m_shader(nullptr), m_drawable(drawable), m_bindables(bindables)
 {
 }
 
-LacertaEngine::Drawcall::~Drawcall()
+Drawcall::~Drawcall()
 {
+}
+
+void Drawcall::PreparePass(Renderer* renderer)
+{
+    m_shader = renderer->GetShader(m_shaderName);
+    m_shader->Load(renderer, DrawcallType::dcMesh);
+    
+    for(auto bindable : m_bindables)
+        bindable->Bind(renderer);
+
+    m_drawable->BindBuffers(renderer);
+}
+
+void Drawcall::Pass(Renderer* renderer)
+{
+    m_shader->PreparePass(renderer);
+    m_shader->Pass(renderer, this);
+}
+
 }

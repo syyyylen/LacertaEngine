@@ -13,10 +13,7 @@ public:
     ~WinDX11Texture();
 
     void CreateResource(const wchar_t* filePath, Renderer* renderer) override;
-
-    // TODO remove
-    void* GetResource() override;
-    void* GetResourceView() override;
+    void Bind(Renderer* renderer) override;
 
 private:
     ID3D11Resource* m_resource;

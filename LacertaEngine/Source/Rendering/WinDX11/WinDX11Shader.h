@@ -14,7 +14,7 @@ public:
     ~WinDX11Shader();
 
     void Load(Renderer* renderer, DrawcallType Type) override;
-    void PreparePass(Renderer* renderer, Drawcall* dc) override;
+    void PreparePass(Renderer* renderer) override;
     void Pass(Renderer* renderer, Drawcall* dc) override;
 
     unsigned int GetVerticesStride() { return m_vertexLayoutStride; }

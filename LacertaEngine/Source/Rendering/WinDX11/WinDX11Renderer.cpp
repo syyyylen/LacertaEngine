@@ -2,7 +2,6 @@
 
 #include <d3dcompiler.h>
 
-#include "WinDX11Drawcall.h"
 #include "WinDX11Mesh.h"
 #include "WinDX11Texture.h"
 #include "WinDX11RenderTarget.h"
@@ -169,17 +168,17 @@ void WinDX11Renderer::Initialize(int* context, int width, int height, int target
     }
 }
 
-void WinDX11Renderer::CreateRenderTarget(int width, int height, int depth)
+void WinDX11Renderer::CreateRenderTarget(int width, int height)
 {
     LOG(Debug, "WinDX11Renderer : Create Render Target");
 
     WinDX11RenderTarget* newRendTarg = new WinDX11RenderTarget();
-    newRendTarg->Initialize(this, width, height, depth);
+    newRendTarg->Initialize(this, width, height);
     m_renderTargets.emplace_back(newRendTarg);
 
     WinDX11RenderTarget* textureRendTarg = new WinDX11RenderTarget();
     textureRendTarg->SetRenderToTexture(true);
-    textureRendTarg->Initialize(this, width, height, depth);
+    textureRendTarg->Initialize(this, width, height);
     m_renderTargets.emplace_back(textureRendTarg);
 }
 
@@ -303,58 +302,13 @@ void WinDX11Renderer::LoadShaders()
     m_shaders.emplace("SkyboxShader", SkyboxShader);
 }
 
-void WinDX11Renderer::AddDrawcall(DrawcallData* dcData)
+void WinDX11Renderer::AddDrawcall(std::string shaderName, Drawable* drawable, std::list<Bindable*> bindables)
 {
-    WinDX11Drawcall* dc = new WinDX11Drawcall();
-    dc->Setup(this, dcData);
+    Drawcall* dc = new Drawcall(shaderName, drawable, bindables);
+    dc->PreparePass(this);
+    dc->Pass(this);
     
-    m_drawcalls.push_back(dc);
-}
-
-void WinDX11Renderer::CreateBuffers(ShapeData& shapeData, std::vector<VertexMesh> vertices, std::vector<unsigned> indices)
-{
-    unsigned long dataLength = vertices.size() * (unsigned long)sizeof(VertexMesh);
-
-    D3D11_BUFFER_DESC vboDesc = {};
-    vboDesc.Usage = D3D11_USAGE_DEFAULT;
-    vboDesc.ByteWidth = dataLength;
-    vboDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-    vboDesc.CPUAccessFlags = 0;
-    vboDesc.MiscFlags = 0;
-
-    D3D11_SUBRESOURCE_DATA vboInitData;
-    vboInitData.pSysMem = &vertices[0];
-
-    ID3D11Buffer* vbo;
-    HRESULT hr = m_device->CreateBuffer(&vboDesc, &vboInitData, &vbo);
-
-    if (FAILED(hr))
-    {
-        LOG(Error, "WinDX11Drawcall : VBO object creation failed");
-        throw std::exception("VBO object creation failed");
-    }
-
-    D3D11_BUFFER_DESC iboDesc = {};
-    iboDesc.Usage = D3D11_USAGE_DEFAULT;
-    iboDesc.ByteWidth = 4 * indices.size();
-    iboDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
-    iboDesc.CPUAccessFlags = 0;
-    iboDesc.MiscFlags = 0;
-
-    D3D11_SUBRESOURCE_DATA iboInitData;
-    iboInitData.pSysMem = &indices[0];
-
-    ID3D11Buffer* ibo;
-    hr = m_device->CreateBuffer(&iboDesc, &iboInitData, &ibo);
-
-    if (FAILED(hr))
-    {
-        LOG(Error, "WinDX11Drawcall : IBO object creation failed");
-        throw std::exception("IBO object creation failed");
-    }
-
-    shapeData.Vbo = vbo;
-    shapeData.Ibo = ibo;
+    // m_drawcalls.push_back(dc); // TODO remove the pass above when proper buffer system
 }
 
 ID3D11Buffer* WinDX11Renderer::CreateVBO(std::vector<VertexMesh> vertices)
@@ -423,7 +377,7 @@ Mesh* WinDX11Renderer::CreateMesh(const wchar_t* filePath)
     return mesh;
 }
 
-Texture* WinDX11Renderer::CreateTexture(const wchar_t* filePath)
+Texture* WinDX11Renderer::CreateTexture(const wchar_t* filePath, int idx)
 {
     for(auto resource : m_graphicsResources)
     {
@@ -433,6 +387,7 @@ Texture* WinDX11Renderer::CreateTexture(const wchar_t* filePath)
     
     Texture* tex = new WinDX11Texture();
     tex->CreateResource(filePath, this);
+    tex->SetTextureIdx(idx);
     m_graphicsResources.push_back(tex);
 
     return tex;

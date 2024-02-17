@@ -12,7 +12,7 @@ public:
     RenderTarget();
     virtual ~RenderTarget();
 
-    virtual void Initialize(Renderer* renderer, int width, int height, int depth) = 0;
+    virtual void Initialize(Renderer* renderer, int width, int height) = 0;
     virtual void SetActive(Renderer* renderer) = 0;
     virtual void Clear(Renderer* renderer, Vector4 color) = 0;
     virtual void SetViewportSize(Renderer* renderer, UINT width, UINT height) = 0;

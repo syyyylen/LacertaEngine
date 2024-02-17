@@ -3,6 +3,7 @@
 #include "../Logger/Logger.h"
 #include "WinDX11/WinDX11Renderer.h"
 #include "Drawcall.h"
+#include "RenderTarget.h"
 
 namespace LacertaEngine
 {
@@ -31,7 +32,7 @@ void RHI::Create()
     s_graphicsEngine = new RHI();
 }
 
-void RHI::InitializeRenderer(int* context, RendererType type, int width, int height, int depth, int targetRefreshRate)
+void RHI::InitializeRenderer(int* context, RendererType type, int width, int height, int targetRefreshRate)
 {
     LOG(Debug, "GraphicsEngine : Initialize Renderer");
 
@@ -47,15 +48,15 @@ void RHI::InitializeRenderer(int* context, RendererType type, int width, int hei
     if(m_renderer)
     {
         m_renderer->Initialize(context, width, height, targetRefreshRate);
-        m_renderer->CreateRenderTarget(width, height, depth);
+        m_renderer->CreateRenderTarget(width, height);
         m_renderer->LoadShaders();
     }
 }
 
-void RHI::AddDrawcall(DrawcallData* dcData)
+void RHI::AddDrawcall(std::string shaderName, Drawable* drawable, std::list<Bindable*> bindables)
 {
     if(m_renderer)
-        m_renderer->AddDrawcall(dcData);
+        m_renderer->AddDrawcall(shaderName, drawable, bindables);
 }
 
 void RHI::ClearDrawcalls()
@@ -106,12 +107,6 @@ void RHI::UpdateMeshConstants(void* buffer)
         m_renderer->UpdateMeshConstantBuffer(buffer);
 }
 
-void RHI::CreateBuffers(ShapeData& shapeData, std::vector<VertexMesh> vertices, std::vector<unsigned> indices)
-{
-    if(m_renderer)
-        m_renderer->CreateBuffers(shapeData, vertices, indices);
-}
-
 Mesh* RHI::CreateMesh(const wchar_t* filePath)
 {
     if(m_renderer)
@@ -120,10 +115,10 @@ Mesh* RHI::CreateMesh(const wchar_t* filePath)
     return nullptr;
 }
 
-Texture* RHI::CreateTexture(const wchar_t* filePath)
+Texture* RHI::CreateTexture(const wchar_t* filePath, int idx)
 {
     if(m_renderer)
-        return m_renderer->CreateTexture(filePath);
+        return m_renderer->CreateTexture(filePath, idx);
 
     return nullptr;
 }
