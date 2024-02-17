@@ -46,7 +46,7 @@ void EditorWindow::OnResize()
     Window::OnResize();
 
     RECT windowRect = GetClientWindowRect();
-    GraphicsEngine::Get()->Resize(windowRect.right, windowRect.bottom);
+    RHI::Get()->Resize(windowRect.right, windowRect.bottom);
 }
 
 bool EditorWindow::OnWndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)

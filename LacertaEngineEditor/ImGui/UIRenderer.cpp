@@ -64,7 +64,7 @@ void UIRenderer::InitializeUI(HWND hwnd, LacertaEditor* editor)
     ImGui::StyleColorsDark();
 
     ImGui_ImplWin32_Init(hwnd);
-    WinDX11Renderer* Dx11Renderer = (WinDX11Renderer*)GraphicsEngine::Get()->GetRenderer(); // TODO switch on renderer type and choose the right implementation
+    WinDX11Renderer* Dx11Renderer = (WinDX11Renderer*)RHI::Get()->GetRenderer(); // TODO switch on renderer type and choose the right implementation
     ImGui_ImplDX11_Init((ID3D11Device*)Dx11Renderer->GetDriver(), Dx11Renderer->GetImmediateContext());
 
     m_editor = editor;
@@ -153,7 +153,7 @@ void UIRenderer::Update()
     //Viewport 
     
     // TODO get the infos more properly + DX11 agnostic 
-    WinDX11Renderer* Dx11Renderer = (WinDX11Renderer*)GraphicsEngine::Get()->GetRenderer(); 
+    WinDX11Renderer* Dx11Renderer = (WinDX11Renderer*)RHI::Get()->GetRenderer(); 
     WinDX11RenderTarget* SceneTextureRenderTarget = (WinDX11RenderTarget*)Dx11Renderer->GetRenderTarget(1);
     
     if(SceneTextureRenderTarget != nullptr)

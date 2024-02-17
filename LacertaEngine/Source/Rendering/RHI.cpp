@@ -1,4 +1,4 @@
-﻿#include "GraphicsEngine.h"
+﻿#include "RHI.h"
 
 #include "../Logger/Logger.h"
 #include "WinDX11/WinDX11Renderer.h"
@@ -7,31 +7,31 @@
 namespace LacertaEngine
 {
 
-GraphicsEngine* GraphicsEngine::s_graphicsEngine = nullptr;
+RHI* RHI::s_graphicsEngine = nullptr;
     
-GraphicsEngine::GraphicsEngine()
+RHI::RHI()
 {
 }
 
-GraphicsEngine::~GraphicsEngine()
+RHI::~RHI()
 {
     s_graphicsEngine = nullptr;
 }
 
-GraphicsEngine* GraphicsEngine::Get()
+RHI* RHI::Get()
 {
     return s_graphicsEngine;
 }
 
-void GraphicsEngine::Create()
+void RHI::Create()
 {
     if(s_graphicsEngine)
         throw std::exception("Graphics Engine already created");
 
-    s_graphicsEngine = new GraphicsEngine();
+    s_graphicsEngine = new RHI();
 }
 
-void GraphicsEngine::InitializeRenderer(int* context, RendererType type, int width, int height, int depth, int targetRefreshRate)
+void RHI::InitializeRenderer(int* context, RendererType type, int width, int height, int depth, int targetRefreshRate)
 {
     LOG(Debug, "GraphicsEngine : Initialize Renderer");
 
@@ -52,67 +52,83 @@ void GraphicsEngine::InitializeRenderer(int* context, RendererType type, int wid
     }
 }
 
-void GraphicsEngine::AddDrawcall(DrawcallData* dcData)
+void RHI::AddDrawcall(DrawcallData* dcData)
 {
     if(m_renderer)
         m_renderer->AddDrawcall(dcData);
 }
 
-void GraphicsEngine::ClearDrawcalls()
+void RHI::ClearDrawcalls()
 {
     if(m_renderer)
         m_renderer->ClearDrawcalls();
 }
 
-void GraphicsEngine::RenderScene(Vector2 ViewportSize)
+void RHI::RenderScene(Vector2 ViewportSize)
 {
     if(m_renderer)
         m_renderer->RenderFrame(ViewportSize);
 }
 
-void GraphicsEngine::Resize(unsigned width, unsigned height)
+void RHI::Resize(unsigned width, unsigned height)
 {
     if(m_renderer)
         m_renderer->OnResizeWindow(width, height);
 }
 
-void GraphicsEngine::SetBackbufferViewportSize(int width, int height)
+void RHI::SetBackbufferViewportSize(int width, int height)
 {
     if(m_renderer)
         m_renderer->GetRenderTarget(0)->SetViewportSize(m_renderer, width, height);
 }
 
-void GraphicsEngine::SetRasterizerState(bool cullFront)
+void RHI::SetRasterizerState(bool cullFront)
 {
     if(m_renderer)
         m_renderer->SetRasterizerCullState(cullFront);
 }
 
-void GraphicsEngine::PresentSwapChain()
+void RHI::PresentSwapChain()
 {
     if(m_renderer)
         m_renderer->PresentSwapChain();
 }
 
-void GraphicsEngine::UpdateShaderConstants(void* buffer)
+void RHI::UpdateShaderConstants(void* buffer)
 {
     if(m_renderer)
         m_renderer->UpdateConstantBuffer(buffer);
 }
 
-void GraphicsEngine::UpdateMeshConstants(void* buffer)
+void RHI::UpdateMeshConstants(void* buffer)
 {
     if(m_renderer)
         m_renderer->UpdateMeshConstantBuffer(buffer);
 }
 
-void GraphicsEngine::CreateBuffers(ShapeData& shapeData, std::vector<VertexMesh> vertices, std::vector<unsigned> indices)
+void RHI::CreateBuffers(ShapeData& shapeData, std::vector<VertexMesh> vertices, std::vector<unsigned> indices)
 {
     if(m_renderer)
         m_renderer->CreateBuffers(shapeData, vertices, indices);
 }
 
-void GraphicsEngine::Shutdown()
+Mesh* RHI::CreateMesh(const wchar_t* filePath)
+{
+    if(m_renderer)
+        return m_renderer->CreateMesh(filePath);
+
+    return nullptr;
+}
+
+Texture* RHI::CreateTexture(const wchar_t* filePath)
+{
+    if(m_renderer)
+        return m_renderer->CreateTexture(filePath);
+
+    return nullptr;
+}
+
+void RHI::Shutdown()
 {
     LOG(Debug, "GraphicsEngine : Shutdown");
 

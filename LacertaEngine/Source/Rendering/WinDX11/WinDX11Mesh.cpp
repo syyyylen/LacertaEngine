@@ -1,24 +1,24 @@
-﻿#include "Mesh.h"
+﻿#include "WinDX11Mesh.h"
+#include "../Drawcall.h"
 
 #define TINYOBJLOADER_IMPLEMENTATION
 #include "../../../Libs/TinyObjLoader/include/tiny_obj_loader.h"
 #include <locale>
 
-#include "../../Logger/Logger.h"
-#include "../../Rendering/GraphicsEngine.h"
+#include "WinDX11Renderer.h"
 
 namespace LacertaEngine
 {
     
-Mesh::Mesh()
+WinDX11Mesh::WinDX11Mesh()
 {
 }
 
-Mesh::~Mesh()
+WinDX11Mesh::~WinDX11Mesh()
 {
 }
 
-void Mesh::CreateResource(const wchar_t* filePath)
+void WinDX11Mesh::CreateResource(const wchar_t* filePath, Renderer* renderer)
 {
     SetFilePath(filePath);
 
@@ -124,15 +124,37 @@ void Mesh::CreateResource(const wchar_t* filePath)
             indexOffset += numFaceVerts;
         }
 
-        ShapeData data = {};
+        WinDX11Renderer* driver = (WinDX11Renderer*)renderer;
+
+        WinDX11ShapeData data = {};
         data.VerticesSize = verticesList.size();
         data.IndexesSize = indicesList.size();
-        GraphicsEngine::Get()->CreateBuffers(data, verticesList, indicesList);
+        data.Vbo = driver->CreateVBO(verticesList);
+        data.Ibo = driver->CreateIBO(indicesList);
+        
         m_shapesData.emplace_back(data);
     }
 }
 
-void Mesh::ComputeTangents(const Vector3& v0, const Vector3& v1, const Vector3& v2, const Vector2 t0, const Vector2 t1, const Vector2 t2, Vector3& tangent, Vector3& binormal)
+const std::vector<ShapeData> WinDX11Mesh::GetShapesData() const
+{
+    std::vector<ShapeData> ShapesDataTemp;
+
+    for(auto Shape : m_shapesData)
+    {
+        ShapeData S;
+        S.Vbo = Shape.Vbo;
+        S.Ibo = Shape.Ibo;
+        S.VerticesSize = Shape.VerticesSize;
+        S.IndexesSize = Shape.IndexesSize;
+
+        ShapesDataTemp.emplace_back(S);
+    }
+
+    return ShapesDataTemp;
+}
+
+void WinDX11Mesh::ComputeTangents(const Vector3& v0, const Vector3& v1, const Vector3& v2, const Vector2 t0, const Vector2 t1, const Vector2 t2, Vector3& tangent, Vector3& binormal)
 {
     Vector3 deltaPos1 = v1 - v0;
     Vector3 deltaPos2 = v2 - v0;
@@ -144,4 +166,6 @@ void Mesh::ComputeTangents(const Vector3& v0, const Vector3& v1, const Vector3& 
     tangent = Vector3::Normalize(deltaPos1 * deltaUV2.Y - deltaPos2 * deltaUV1.Y);
     binormal = Vector3::Normalize(deltaPos2 * deltaUV1.X - deltaPos1 * deltaUV2.X);
 }
+    
 }
+

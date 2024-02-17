@@ -3,19 +3,22 @@
 
 namespace LacertaEngine
 {
+
+class Renderer;
     
-class LACERTAENGINE_API Resource
+class LACERTAENGINE_API GraphicsResource
 {
 public:
-    Resource();
-    ~Resource();
+    GraphicsResource();
+    ~GraphicsResource();
 
-    virtual void CreateResource(const wchar_t* filePath) = 0;
+    virtual void CreateResource(const wchar_t* filePath, Renderer* renderer) = 0;
     void SetFilePath(const wchar_t* filePath);
     const wchar_t* GetFilePath() { return m_filePath; }
     
 private:
     const wchar_t* m_filePath;
 };
-    
+
 }
+

@@ -3,11 +3,12 @@
 #include <d3dcompiler.h>
 
 #include "WinDX11Drawcall.h"
+#include "WinDX11Mesh.h"
+#include "WinDX11Texture.h"
 #include "WinDX11RenderTarget.h"
 #include "WinDX11Shader.h"
 #include "../Drawcall.h"
 #include "../../Logger/Logger.h"
-#include "../../RessourcesManager/Mesh/Mesh.h"
 
 namespace LacertaEngine
 {
@@ -354,6 +355,87 @@ void WinDX11Renderer::CreateBuffers(ShapeData& shapeData, std::vector<VertexMesh
 
     shapeData.Vbo = vbo;
     shapeData.Ibo = ibo;
+}
+
+ID3D11Buffer* WinDX11Renderer::CreateVBO(std::vector<VertexMesh> vertices)
+{
+    unsigned long dataLength = vertices.size() * (unsigned long)sizeof(VertexMesh);
+
+    D3D11_BUFFER_DESC vboDesc = {};
+    vboDesc.Usage = D3D11_USAGE_DEFAULT;
+    vboDesc.ByteWidth = dataLength;
+    vboDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+    vboDesc.CPUAccessFlags = 0;
+    vboDesc.MiscFlags = 0;
+
+    D3D11_SUBRESOURCE_DATA vboInitData;
+    vboInitData.pSysMem = &vertices[0];
+
+    ID3D11Buffer* vbo;
+    HRESULT hr = m_device->CreateBuffer(&vboDesc, &vboInitData, &vbo);
+
+    if (FAILED(hr))
+    {
+        LOG(Error, "WinDX11Drawcall : VBO object creation failed");
+        throw std::exception("VBO object creation failed");
+    }
+
+    return vbo;
+}
+
+ID3D11Buffer* WinDX11Renderer::CreateIBO(std::vector<unsigned> indices)
+{
+    
+    D3D11_BUFFER_DESC iboDesc = {};
+    iboDesc.Usage = D3D11_USAGE_DEFAULT;
+    iboDesc.ByteWidth = 4 * indices.size();
+    iboDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
+    iboDesc.CPUAccessFlags = 0;
+    iboDesc.MiscFlags = 0;
+
+    D3D11_SUBRESOURCE_DATA iboInitData;
+    iboInitData.pSysMem = &indices[0];
+
+    ID3D11Buffer* ibo;
+    HRESULT hr = m_device->CreateBuffer(&iboDesc, &iboInitData, &ibo);
+
+    if (FAILED(hr))
+    {
+        LOG(Error, "WinDX11Drawcall : IBO object creation failed");
+        throw std::exception("IBO object creation failed");
+    }
+
+    return ibo;
+}
+
+Mesh* WinDX11Renderer::CreateMesh(const wchar_t* filePath)
+{
+    for(auto resource : m_graphicsResources)
+    {
+        if(filePath == resource->GetFilePath())
+            return dynamic_cast<Mesh*>(resource);
+    }
+    
+    Mesh* mesh = new WinDX11Mesh();
+    mesh->CreateResource(filePath, this);
+    m_graphicsResources.push_back(mesh);
+
+    return mesh;
+}
+
+Texture* WinDX11Renderer::CreateTexture(const wchar_t* filePath)
+{
+    for(auto resource : m_graphicsResources)
+    {
+        if(filePath == resource->GetFilePath())
+            return dynamic_cast<Texture*>(resource);
+    }
+    
+    Texture* tex = new WinDX11Texture();
+    tex->CreateResource(filePath, this);
+    m_graphicsResources.push_back(tex);
+
+    return tex;
 }
 
 void WinDX11Renderer::RenderFrame(Vector2 ViewportSize)

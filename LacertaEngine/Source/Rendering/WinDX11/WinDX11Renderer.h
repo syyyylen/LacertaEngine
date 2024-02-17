@@ -29,6 +29,12 @@ public:
     void AddDrawcall(DrawcallData* dcData) override;
     void CreateBuffers(ShapeData& shapeData, std::vector<VertexMesh> vertices, std::vector<unsigned> indices) override;
 
+    ID3D11Buffer* CreateVBO(std::vector<VertexMesh> vertices);
+    ID3D11Buffer* CreateIBO(std::vector<unsigned> indices);
+    
+    Mesh* CreateMesh(const wchar_t* filePath) override;
+    Texture* CreateTexture(const wchar_t* filePath) override;
+    
     int* GetDriver() override { return (int*)m_device; }
 
     IDXGISwapChain* GetDXGISwapChain() { return m_dxgiSwapChain; }
