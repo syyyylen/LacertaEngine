@@ -16,6 +16,7 @@ class Texture;
 struct VertexMesh;
 class Drawable;
 class Bindable;
+class RenderPass;
 enum ConstantBufferType;
 
 class LACERTAENGINE_API Renderer
@@ -27,15 +28,15 @@ public:
     virtual void Initialize(int* context, int width, int height, int targetRefreshRate) = 0;
     virtual void CreateRenderTarget(int width, int height) = 0;
     virtual void LoadShaders() = 0;
-    virtual void RenderFrame(Vector2 ViewportSize) = 0;
-    virtual void EndRenderFrame() = 0;
+    virtual void SetBackbufferRenderTargetActive() = 0;
     virtual void OnResizeWindow(unsigned width, unsigned height) = 0;
     virtual void PresentSwapChain() = 0;
-    virtual void UpdateConstantBuffer(void* buffer) = 0;
     virtual void UpdateConstantBuffer(void* buffer, ConstantBufferType cbufType) = 0;
     virtual void SetRasterizerCullState(bool cullFront) = 0;
-    virtual void AddDrawcall(std::string shaderName, Drawable* drawable, std::list<Bindable*> bindables) = 0;
-    virtual void ClearDrawcalls();
+    RenderPass* CreateRenderPass(std::string name);
+    RenderPass* GetRenderPass(std::string name);
+    void DeleteRenderPass(std::string name);
+    void ExecuteRenderPass(std::string name, Vector2 renderTargetSize);
     
     virtual Mesh* CreateMesh(const wchar_t* filePath) = 0;
     virtual Texture* CreateTexture(const wchar_t* filePath, int idx) = 0;
@@ -52,5 +53,6 @@ protected:
     std::list<Drawcall*> m_drawcalls;
     std::map<std::string, Shader*> m_shaders;
     std::list<GraphicsResource*> m_graphicsResources;
+    std::map<std::string, RenderPass*> m_renderPasses;
 };
 }

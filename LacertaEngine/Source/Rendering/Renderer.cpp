@@ -1,5 +1,6 @@
 ﻿#include "Renderer.h"
 #include "Drawcall.h"
+#include "RenderPass.h"
 #include "Shader.h"
 
 namespace LacertaEngine
@@ -18,14 +19,29 @@ Renderer::~Renderer()
         delete res;
 }
 
-void Renderer::ClearDrawcalls()
+RenderPass* Renderer::CreateRenderPass(std::string name)
 {
-    for(auto dc : m_drawcalls)
-    {
-        delete dc;
-    }
+    auto pass = new RenderPass();
+    m_renderPasses.emplace(name, pass);
+    return pass;
+}
 
-    m_drawcalls.clear();
+RenderPass* Renderer::GetRenderPass(std::string name)
+{
+    return m_renderPasses.find(name)->second;
+}
+
+void Renderer::DeleteRenderPass(std::string name)
+{
+    auto pass = m_renderPasses.find(name)->second;
+    m_renderPasses.erase(name);
+    delete pass;
+}
+
+void Renderer::ExecuteRenderPass(std::string name, Vector2 renderTargetSize)
+{
+    auto pass = m_renderPasses.find(name)->second;
+    pass->Pass(this, renderTargetSize);
 }
 
 RenderTarget* Renderer::GetRenderTarget(int index)

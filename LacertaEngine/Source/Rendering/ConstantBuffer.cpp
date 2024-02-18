@@ -20,7 +20,7 @@ ConstantBuffer::~ConstantBuffer()
         break;
 
     case ConstantBufferType::SceneCbuf:
-        delete static_cast<ConstantBuffer*>(m_data);
+        delete static_cast<SceneConstantBuffer*>(m_data);
         break;
     }
 }

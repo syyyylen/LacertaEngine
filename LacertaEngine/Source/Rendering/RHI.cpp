@@ -53,28 +53,10 @@ void RHI::InitializeRenderer(int* context, RendererType type, int width, int hei
     }
 }
 
-void RHI::AddDrawcall(std::string shaderName, Drawable* drawable, std::list<Bindable*> bindables)
+void RHI::SetBackbufferRenderTargetActive() // TODO fix all this
 {
     if(m_renderer)
-        m_renderer->AddDrawcall(shaderName, drawable, bindables);
-}
-
-void RHI::ClearDrawcalls()
-{
-    if(m_renderer)
-        m_renderer->ClearDrawcalls();
-}
-
-void RHI::RenderScene(Vector2 ViewportSize) // TODO fix all this
-{
-    if(m_renderer)
-        m_renderer->RenderFrame(ViewportSize);
-}
-
-void RHI::EndRenderScene() // TODO fix all this
-{
-    if(m_renderer)
-        m_renderer->EndRenderFrame();
+        m_renderer->SetBackbufferRenderTargetActive();
 }
 
 void RHI::Resize(unsigned width, unsigned height)
@@ -101,10 +83,24 @@ void RHI::PresentSwapChain()
         m_renderer->PresentSwapChain();
 }
 
-void RHI::UpdateShaderConstants(void* buffer)
+RenderPass* RHI::CreateRenderPass(std::string name)
 {
-    if(m_renderer)
-        m_renderer->UpdateConstantBuffer(buffer);
+    return m_renderer->CreateRenderPass(name);
+}
+
+RenderPass* RHI::GetRenderPass(std::string name)
+{
+    return m_renderer->GetRenderPass(name);
+}
+
+void RHI::DeleteRenderPass(std::string name)
+{
+    m_renderer->DeleteRenderPass(name);
+}
+
+void RHI::ExecuteRenderPass(std::string name, Vector2 renderTargetSize)
+{
+    m_renderer->ExecuteRenderPass(name, renderTargetSize);
 }
 
 Mesh* RHI::CreateMesh(const wchar_t* filePath)

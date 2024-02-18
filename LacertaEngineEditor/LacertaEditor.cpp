@@ -6,6 +6,7 @@
 #include "ImGui/UIRenderer.h"
 #include "Rendering/ConstantBuffer.h"
 #include "Rendering/Drawcall.h"
+#include "Rendering/RenderPass.h"
 
 namespace LacertaEngineEditor
 {
@@ -46,6 +47,8 @@ void LacertaEditor::Start()
     RHI::Create();
     HWND hwnd = m_editorWindow->GetHWND();
     RHI::Get()->InitializeRenderer((int*)hwnd, RendererType::RENDERER_WIN_DX11, width, height, 60);
+    auto scenePass = RHI::Get()->CreateRenderPass("scene");
+    scenePass->SetRenderTargetIdx(1);
 
     // ---------------------------- Debug Scene Creation --------------------
 
@@ -180,10 +183,10 @@ void LacertaEditor::Update()
     // TODO Camera pos & rot are updated here with some hard coded Matrix
     
     // Constant Buffer Update 
-    SceneConstantBuffer cc;
-    cc.Time = m_globalTimer->Elapsed(); 
+    SceneConstantBuffer* cc = new SceneConstantBuffer();
+    cc->Time = m_globalTimer->Elapsed(); 
     
-    cc.WorldMatrix.SetIdentity();
+    cc->WorldMatrix.SetIdentity();
     
     Matrix4x4 worldCam;
     Matrix4x4 temp;
@@ -200,17 +203,17 @@ void LacertaEditor::Update()
     Vector3 newCamPos = m_sceneCamera.GetTranslation() + worldCam.GetZDirection() * (m_cameraForward * (m_moveSpeed * m_inputDownScalar));
     newCamPos = newCamPos + worldCam.GetXDirection() * (m_cameraRight * (m_moveSpeed * m_inputDownScalar));
     worldCam.SetTranslation(newCamPos);
-    cc.CameraPosition = newCamPos;
+    cc->CameraPosition = newCamPos;
     m_sceneCamera = worldCam;
     worldCam.Inverse();
-    cc.ViewMatrix = worldCam;
+    cc->ViewMatrix = worldCam;
     
     // Update the perspective projection to the ImGui viewport size
-    cc.ProjectionMatrix.SetPerspectiveFovLH(1.57f, (m_viewportCachedSize.X / m_viewportCachedSize.Y), 0.1f, 5000.0f);
-    m_sceneCameraProjection = cc.ProjectionMatrix;
+    cc->ProjectionMatrix.SetPerspectiveFovLH(1.57f, (m_viewportCachedSize.X / m_viewportCachedSize.Y), 0.1f, 5000.0f);
+    m_sceneCameraProjection = cc->ProjectionMatrix;
 
     // Ambient lighting constant
-    cc.GlobalAmbient = m_ambient;
+    cc->GlobalAmbient = m_ambient;
 
     // Directional Light set up
     Matrix4x4 lightRotationMatrix;
@@ -225,12 +228,12 @@ void LacertaEditor::Update()
     temp.SetRotationX(m_lightRotationX);
     lightRotationMatrix *= temp;
     
-    cc.DirectionalLightDirection = lightRotationMatrix.GetZDirection();
-    cc.DirectionalIntensity = m_lightIntensity;
+    cc->DirectionalLightDirection = lightRotationMatrix.GetZDirection();
+    cc->DirectionalIntensity = m_lightIntensity;
 
     for(int i = 0; i < MAX_LIGHTS; i++)
     {
-        cc.PointLights[i].Enabled = false;
+        cc->PointLights[i].Enabled = false;
     }
     
     // TODO remove this, render the skybox mesh with a different approach 
@@ -256,17 +259,21 @@ void LacertaEditor::Update()
         pointLight.LinearAttenuation = pointLightComp.GetLinearAttenuation() * 0.01f;
         pointLight.QuadraticAttenuation = pointLightComp.GetQuadraticAttenuation() * 0.01f;
 
-        cc.PointLights[i] = pointLight;
+        cc->PointLights[i] = pointLight;
     }
     
-    cc.DefaultColor = m_defaultColor;
+    cc->DefaultColor = m_defaultColor;
+
+    auto scenePass = RHI::Get()->GetRenderPass("scene");
     
-    RHI::Get()->UpdateShaderConstants(&cc);
+    ConstantBuffer sceneCbuf = ConstantBuffer(cc, ConstantBufferType::SceneCbuf);
+    scenePass->AddGlobalBindable(&sceneCbuf);
 
     // ----------------------------- Scene Draw Objects -----------------------
 
-    RHI::Get()->ClearDrawcalls();
-    RHI::Get()->RenderScene(m_viewportCachedSize); // TODO remove me and replace with render passes
+    scenePass->ClearDrawcalls();
+
+    std::list<ConstantBuffer*> removeMe; // TODO remove me
 
     auto tfMeshesGroup = m_activeScene->m_registry.group<TransformComponent>(entt::get<MeshComponent>);
     for(auto go : tfMeshesGroup)
@@ -298,17 +305,19 @@ void LacertaEditor::Update()
             meshCb->LightProperties = mat->GetMatLightProperties();
             meshCb->LocalMatrix = transform.GetTransformMatrix();
 
-            auto meshCBuf = new ConstantBuffer(meshCb, ConstantBufferType::MeshCbuf); // I don't like this heap allocation at ALL
-            
+            ConstantBuffer* meshCBuf = new ConstantBuffer(meshCb, ConstantBufferType::MeshCbuf); // I don't like this heap allocation at ALL
             DcBindables.emplace_back(meshCBuf);
-            
-            RHI::Get()->AddDrawcall(mat->GetShader(), shape, DcBindables);
-
-            delete meshCBuf;
+            removeMe.emplace_back(meshCBuf); // TODO remove me
+            scenePass->AddDrawcall(mat->GetShader(), shape, DcBindables);
         }
     }
 
-    RHI::Get()->EndRenderScene(); // TODO remove me and replace with render passes
+    RHI::Get()->ExecuteRenderPass("scene", m_viewportCachedSize);
+
+    for(auto rmv : removeMe)
+        delete rmv;
+
+    RHI::Get()->SetBackbufferRenderTargetActive();
 
     RECT windowRect = m_editorWindow->GetClientWindowRect();
     int width = windowRect.right - windowRect.left;

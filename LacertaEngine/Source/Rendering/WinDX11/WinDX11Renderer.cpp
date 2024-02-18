@@ -77,8 +77,9 @@ void WinDX11Renderer::Initialize(int* context, int width, int height, int target
         throw std::exception("Failed SwapChain creation");
     }
 
+    ID3D11Buffer* b0;
     SceneConstantBuffer cb;
-
+    
     D3D11_BUFFER_DESC bufferDesc = {};
     bufferDesc.Usage = D3D11_USAGE_DEFAULT;
     bufferDesc.ByteWidth = sizeof(SceneConstantBuffer);
@@ -89,16 +90,22 @@ void WinDX11Renderer::Initialize(int* context, int width, int height, int target
     D3D11_SUBRESOURCE_DATA initData = {};
     initData.pSysMem = &cb;
 
-    if(FAILED(m_device->CreateBuffer(&bufferDesc, &initData, &m_constantBuffer)))
+    if(FAILED(m_device->CreateBuffer(&bufferDesc, &initData, &b0)))
     {
         std::string errorMsg = std::system_category().message(hr);
         LOG(Error, errorMsg);
         LOG(Error, "Create Constant Buffer failed");
         throw std::exception("Create Constant Buffer failed");
     }
+    
+    WinDX11Cbuf sceneCbuf;
+    sceneCbuf.Buffer = b0;
+    sceneCbuf.Slot = 0;
+    m_constantBuffers.emplace(ConstantBufferType::SceneCbuf, sceneCbuf);
 
-    ID3D11Buffer* b;
+    ID3D11Buffer* b1;
     MeshConstantBuffer meshCb;
+    
     D3D11_BUFFER_DESC meshBufferDesc = {};
     meshBufferDesc.Usage = D3D11_USAGE_DEFAULT;
     meshBufferDesc.ByteWidth = sizeof(MeshConstantBuffer);
@@ -109,7 +116,7 @@ void WinDX11Renderer::Initialize(int* context, int width, int height, int target
     D3D11_SUBRESOURCE_DATA meshInitData = {};
     meshInitData.pSysMem = &meshCb;
 
-    if(FAILED(m_device->CreateBuffer(&meshBufferDesc, &meshInitData, &b)))
+    if(FAILED(m_device->CreateBuffer(&meshBufferDesc, &meshInitData, &b1)))
     {
         std::string errorMsg = std::system_category().message(hr);
         LOG(Error, errorMsg);
@@ -118,7 +125,7 @@ void WinDX11Renderer::Initialize(int* context, int width, int height, int target
     }
     
     WinDX11Cbuf meshCbuf;
-    meshCbuf.Buffer = b;
+    meshCbuf.Buffer = b1;
     meshCbuf.Slot = 1;
     m_constantBuffers.emplace(ConstantBufferType::MeshCbuf, meshCbuf);
 
@@ -311,15 +318,6 @@ void WinDX11Renderer::LoadShaders()
     m_shaders.emplace("SkyboxShader", SkyboxShader);
 }
 
-void WinDX11Renderer::AddDrawcall(std::string shaderName, Drawable* drawable, std::list<Bindable*> bindables)
-{
-    Drawcall* dc = new Drawcall(shaderName, drawable, bindables);
-    dc->PreparePass(this);
-    dc->Pass(this); // TODO fix all this
-    
-    // m_drawcalls.push_back(dc); // TODO remove the pass above when proper buffer system
-}
-
 ID3D11Buffer* WinDX11Renderer::CreateVBO(std::vector<VertexMesh> vertices)
 {
     unsigned long dataLength = vertices.size() * (unsigned long)sizeof(VertexMesh);
@@ -348,7 +346,6 @@ ID3D11Buffer* WinDX11Renderer::CreateVBO(std::vector<VertexMesh> vertices)
 
 ID3D11Buffer* WinDX11Renderer::CreateIBO(std::vector<unsigned> indices)
 {
-    
     D3D11_BUFFER_DESC iboDesc = {};
     iboDesc.Usage = D3D11_USAGE_DEFAULT;
     iboDesc.ByteWidth = 4 * indices.size();
@@ -402,21 +399,7 @@ Texture* WinDX11Renderer::CreateTexture(const wchar_t* filePath, int idx)
     return tex;
 }
 
-void WinDX11Renderer::RenderFrame(Vector2 ViewportSize) // TODO fix all this
-{
-    // We scale the scene render target accordingly to the editor viewport size
-    m_renderTargets[1]->SetViewportSize(this, (UINT)ViewportSize.X, (UINT)ViewportSize.Y);
-    if(m_previousViewportSize.X != ViewportSize.X || m_previousViewportSize.Y != m_previousViewportSize.Y)
-    {
-        m_renderTargets[1]->Resize(this, ViewportSize.X, ViewportSize.Y);
-        m_previousViewportSize = ViewportSize;
-    }
-
-    m_renderTargets[1]->SetActive(this);
-    m_renderTargets[1]->Clear(this, Vector4(0.0f, 0.0f, 0.0f, 0.0f));
-}
-
-void WinDX11Renderer::EndRenderFrame() // TODO fix all this
+void WinDX11Renderer::SetBackbufferRenderTargetActive()
 {
     // setting back the backbuffer render target
     m_renderTargets[0]->SetActive(this); 
@@ -434,13 +417,6 @@ void WinDX11Renderer::OnResizeWindow(unsigned width, unsigned height)
         return;
     
     rendTarg->Resize(this, width, height);
-}
-
-void WinDX11Renderer::UpdateConstantBuffer(void* buffer)
-{
-    m_deviceContext->UpdateSubresource(m_constantBuffer, NULL, NULL, buffer, NULL, NULL);
-    m_deviceContext->VSSetConstantBuffers(0, 1, &m_constantBuffer);
-    m_deviceContext->PSSetConstantBuffers(0, 1, &m_constantBuffer);
 }
 
 void WinDX11Renderer::UpdateConstantBuffer(void* buffer, ConstantBufferType cbufType)

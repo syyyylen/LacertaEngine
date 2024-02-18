@@ -199,6 +199,7 @@
     <ClCompile Include="Source\Rendering\Drawable.cpp" />
     <ClCompile Include="Source\Rendering\Drawcall.cpp" />
     <ClCompile Include="Source\Rendering\Mesh.cpp" />
+    <ClCompile Include="Source\Rendering\RenderPass.cpp" />
     <ClCompile Include="Source\Rendering\RHI.cpp" />
     <ClCompile Include="Source\Rendering\GraphicsResource.cpp" />
     <ClCompile Include="Source\Rendering\Material.cpp" />
@@ -246,6 +247,7 @@
     <ClInclude Include="Source\Rendering\Drawable.h" />
     <ClInclude Include="Source\Rendering\Drawcall.h" />
     <ClInclude Include="Source\Rendering\Mesh.h" />
+    <ClInclude Include="Source\Rendering\RenderPass.h" />
     <ClInclude Include="Source\Rendering\RHI.h" />
     <ClInclude Include="Source\Rendering\GraphicsResource.h" />
     <ClInclude Include="Source\Rendering\Material.h" />

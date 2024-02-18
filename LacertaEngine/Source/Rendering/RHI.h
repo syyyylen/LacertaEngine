@@ -28,15 +28,15 @@ public:
     static void Shutdown();
 
     void InitializeRenderer(int* context, RendererType type, int width, int height, int targetRefreshRate);
-    void AddDrawcall(std::string shaderName, Drawable* drawable, std::list<Bindable*> bindables);
-    void ClearDrawcalls();
-    void RenderScene(Vector2 ViewportSize);
-    void EndRenderScene();
+    void SetBackbufferRenderTargetActive();
     void Resize(unsigned width, unsigned height);
     void SetBackbufferViewportSize(int width, int height);
     void SetRasterizerState(bool cullFront);
     void PresentSwapChain();
-    void UpdateShaderConstants(void* buffer);
+    RenderPass* CreateRenderPass(std::string name);
+    RenderPass* GetRenderPass(std::string name);
+    void DeleteRenderPass(std::string name);
+    void ExecuteRenderPass(std::string name, Vector2 renderTargetSize);
 
     Renderer* GetRenderer() { return m_renderer; }
     RendererType GetRendererType() { return m_rendererType; }

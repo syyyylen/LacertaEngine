@@ -23,14 +23,11 @@ public:
     void CreateRenderTarget(int width, int height) override;
     void LoadShaders() override;
     
-    void RenderFrame(Vector2 ViewportSize) override;
-    void EndRenderFrame() override;
+    void SetBackbufferRenderTargetActive() override;
     void PresentSwapChain() override;
     void OnResizeWindow(unsigned width, unsigned height) override;
-    void UpdateConstantBuffer(void* buffer) override;
     void UpdateConstantBuffer(void* buffer, ConstantBufferType cbufType) override;
     void SetRasterizerCullState(bool cullFront) override;
-    void AddDrawcall(std::string shaderName, Drawable* drawable, std::list<Bindable*> bindables) override;
 
     ID3D11Buffer* CreateVBO(std::vector<VertexMesh> vertices);
     ID3D11Buffer* CreateIBO(std::vector<unsigned> indices);
