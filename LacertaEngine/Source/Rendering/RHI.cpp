@@ -3,6 +3,7 @@
 #include "../Logger/Logger.h"
 #include "WinDX11/WinDX11Renderer.h"
 #include "Drawcall.h"
+#include "RenderTarget.h"
 
 namespace LacertaEngine
 {
@@ -31,7 +32,7 @@ void RHI::Create()
     s_graphicsEngine = new RHI();
 }
 
-void RHI::InitializeRenderer(int* context, RendererType type, int width, int height, int depth, int targetRefreshRate)
+void RHI::InitializeRenderer(int* context, RendererType type, int width, int height, int targetRefreshRate)
 {
     LOG(Debug, "GraphicsEngine : Initialize Renderer");
 
@@ -47,27 +48,15 @@ void RHI::InitializeRenderer(int* context, RendererType type, int width, int hei
     if(m_renderer)
     {
         m_renderer->Initialize(context, width, height, targetRefreshRate);
-        m_renderer->CreateRenderTarget(width, height, depth);
+        m_renderer->CreateRenderTarget(width, height);
         m_renderer->LoadShaders();
     }
 }
 
-void RHI::AddDrawcall(DrawcallData* dcData)
+void RHI::SetBackbufferRenderTargetActive() // TODO fix all this
 {
     if(m_renderer)
-        m_renderer->AddDrawcall(dcData);
-}
-
-void RHI::ClearDrawcalls()
-{
-    if(m_renderer)
-        m_renderer->ClearDrawcalls();
-}
-
-void RHI::RenderScene(Vector2 ViewportSize)
-{
-    if(m_renderer)
-        m_renderer->RenderFrame(ViewportSize);
+        m_renderer->SetBackbufferRenderTargetActive();
 }
 
 void RHI::Resize(unsigned width, unsigned height)
@@ -94,22 +83,24 @@ void RHI::PresentSwapChain()
         m_renderer->PresentSwapChain();
 }
 
-void RHI::UpdateShaderConstants(void* buffer)
+RenderPass* RHI::CreateRenderPass(std::string name)
 {
-    if(m_renderer)
-        m_renderer->UpdateConstantBuffer(buffer);
+    return m_renderer->CreateRenderPass(name);
 }
 
-void RHI::UpdateMeshConstants(void* buffer)
+RenderPass* RHI::GetRenderPass(std::string name)
 {
-    if(m_renderer)
-        m_renderer->UpdateMeshConstantBuffer(buffer);
+    return m_renderer->GetRenderPass(name);
 }
 
-void RHI::CreateBuffers(ShapeData& shapeData, std::vector<VertexMesh> vertices, std::vector<unsigned> indices)
+void RHI::DeleteRenderPass(std::string name)
 {
-    if(m_renderer)
-        m_renderer->CreateBuffers(shapeData, vertices, indices);
+    m_renderer->DeleteRenderPass(name);
+}
+
+void RHI::ExecuteRenderPass(std::string name, Vector2 renderTargetSize)
+{
+    m_renderer->ExecuteRenderPass(name, renderTargetSize);
 }
 
 Mesh* RHI::CreateMesh(const wchar_t* filePath)
@@ -120,10 +111,10 @@ Mesh* RHI::CreateMesh(const wchar_t* filePath)
     return nullptr;
 }
 
-Texture* RHI::CreateTexture(const wchar_t* filePath)
+Texture* RHI::CreateTexture(const wchar_t* filePath, int idx)
 {
     if(m_renderer)
-        return m_renderer->CreateTexture(filePath);
+        return m_renderer->CreateTexture(filePath, idx);
 
     return nullptr;
 }

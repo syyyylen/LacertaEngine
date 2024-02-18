@@ -12,7 +12,7 @@ public:
     WinDX11RenderTarget();
     virtual ~WinDX11RenderTarget();
 
-    void Initialize(Renderer* renderer, int width, int height, int depth) override;
+    void Initialize(Renderer* renderer, int width, int height) override;
     void SetActive(Renderer* renderer) override;
     void ReloadBuffers(Renderer* renderer, unsigned width, unsigned height);
     void Resize(Renderer* renderer, unsigned width, unsigned height) override;

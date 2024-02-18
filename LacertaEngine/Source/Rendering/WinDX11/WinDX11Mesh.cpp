@@ -10,6 +10,29 @@
 namespace LacertaEngine
 {
     
+WinDX11Shape::WinDX11Shape(ID3D11Buffer* vbo, unsigned long verticesSize, ID3D11Buffer* ibo, unsigned long indexesSize)
+    : m_vbo(vbo), m_verticesSize(verticesSize), m_ibo(ibo), m_indexesSize(indexesSize)
+{
+}
+
+WinDX11Shape::~WinDX11Shape()
+{
+    m_vbo->Release();
+    m_ibo->Release();
+}
+
+void WinDX11Shape::BindBuffers(Renderer* renderer)
+{
+    WinDX11Renderer* driver = (WinDX11Renderer*)renderer;
+    auto ctx = driver->GetImmediateContext();
+
+    unsigned vertexLayoutStride = sizeof(VertexMesh); // TODO why is it here ? 
+    unsigned int offsets = 0;
+    
+    ctx->IASetVertexBuffers(0, 1, &m_vbo, &vertexLayoutStride, &offsets);
+    ctx->IASetIndexBuffer(m_ibo, DXGI_FORMAT_R32_UINT, 0);
+}
+
 WinDX11Mesh::WinDX11Mesh()
 {
 }
@@ -17,10 +40,7 @@ WinDX11Mesh::WinDX11Mesh()
 WinDX11Mesh::~WinDX11Mesh()
 {
     for(auto shape : m_shapesData)
-    {
-        shape.Vbo->Release();
-        shape.Ibo->Release();
-    }
+        delete shape;
 }
 
 void WinDX11Mesh::CreateResource(const wchar_t* filePath, Renderer* renderer)
@@ -130,33 +150,10 @@ void WinDX11Mesh::CreateResource(const wchar_t* filePath, Renderer* renderer)
         }
 
         WinDX11Renderer* driver = (WinDX11Renderer*)renderer;
-
-        WinDX11ShapeData data = {};
-        data.VerticesSize = verticesList.size();
-        data.IndexesSize = indicesList.size();
-        data.Vbo = driver->CreateVBO(verticesList);
-        data.Ibo = driver->CreateIBO(indicesList);
+        WinDX11Shape* Shape = new WinDX11Shape(driver->CreateVBO(verticesList), verticesList.size(), driver->CreateIBO(indicesList), indicesList.size());
         
-        m_shapesData.emplace_back(data);
+        m_shapesData.emplace_back(Shape);
     }
-}
-
-const std::vector<ShapeData> WinDX11Mesh::GetShapesData() const
-{
-    std::vector<ShapeData> ShapesDataTemp;
-
-    for(auto Shape : m_shapesData)
-    {
-        ShapeData S;
-        S.Vbo = Shape.Vbo;
-        S.Ibo = Shape.Ibo;
-        S.VerticesSize = Shape.VerticesSize;
-        S.IndexesSize = Shape.IndexesSize;
-
-        ShapesDataTemp.emplace_back(S);
-    }
-
-    return ShapesDataTemp;
 }
 
 void WinDX11Mesh::ComputeTangents(const Vector3& v0, const Vector3& v1, const Vector3& v2, const Vector2 t0, const Vector2 t1, const Vector2 t2, Vector3& tangent, Vector3& binormal)

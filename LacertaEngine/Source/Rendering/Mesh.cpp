@@ -1,9 +1,22 @@
 ﻿#include "Mesh.h"
 
-LacertaEngine::Mesh::Mesh()
+namespace LacertaEngine
+{
+    
+Shape::Shape()
 {
 }
 
-LacertaEngine::Mesh::~Mesh()
+Shape::~Shape()
 {
+}
+
+Mesh::Mesh()
+{
+}
+
+Mesh::~Mesh()
+{
+}
+
 }

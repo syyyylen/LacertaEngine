@@ -194,8 +194,12 @@
     <ClCompile Include="Source\Logger\Logger.cpp" />
     <ClCompile Include="Source\Maths\MathUtilities.cpp" />
     <ClCompile Include="Source\Maths\Random.cpp" />
+    <ClCompile Include="Source\Rendering\Bindable.cpp" />
+    <ClCompile Include="Source\Rendering\ConstantBuffer.cpp" />
+    <ClCompile Include="Source\Rendering\Drawable.cpp" />
     <ClCompile Include="Source\Rendering\Drawcall.cpp" />
     <ClCompile Include="Source\Rendering\Mesh.cpp" />
+    <ClCompile Include="Source\Rendering\RenderPass.cpp" />
     <ClCompile Include="Source\Rendering\RHI.cpp" />
     <ClCompile Include="Source\Rendering\GraphicsResource.cpp" />
     <ClCompile Include="Source\Rendering\Material.cpp" />
@@ -207,7 +211,6 @@
     <AdditionalFiles Include="Source\Rendering\Shaders\MeshPBRPixelShader.hlsl" />
     <Content Include="Source\Rendering\Shaders\SkyBoxVertexShader.hlsl" />
     <ClCompile Include="Source\Rendering\Texture.cpp" />
-    <ClCompile Include="Source\Rendering\WinDX11\WinDX11Drawcall.cpp" />
     <ClCompile Include="Source\Rendering\WinDX11\WinDX11Mesh.cpp" />
     <ClCompile Include="Source\Rendering\WinDX11\WinDX11Renderer.cpp" />
     <ClCompile Include="Source\Rendering\WinDX11\WinDX11RenderTarget.cpp" />
@@ -239,8 +242,12 @@
     <ClInclude Include="Source\Maths\Vector4.h" />
     <ClInclude Include="Source\Maths\Vector2.h" />
     <ClInclude Include="Source\Maths\Vector3.h" />
+    <ClInclude Include="Source\Rendering\Bindable.h" />
+    <ClInclude Include="Source\Rendering\ConstantBuffer.h" />
+    <ClInclude Include="Source\Rendering\Drawable.h" />
     <ClInclude Include="Source\Rendering\Drawcall.h" />
     <ClInclude Include="Source\Rendering\Mesh.h" />
+    <ClInclude Include="Source\Rendering\RenderPass.h" />
     <ClInclude Include="Source\Rendering\RHI.h" />
     <ClInclude Include="Source\Rendering\GraphicsResource.h" />
     <ClInclude Include="Source\Rendering\Material.h" />
@@ -252,7 +259,6 @@
     <AdditionalFiles Include="Source\Rendering\Shaders\MeshShadersLayouts.hlsli" />
     <Content Include="Source\Rendering\Shaders\SkyBoxPixelShader.hlsl" />
     <ClInclude Include="Source\Rendering\Texture.h" />
-    <ClInclude Include="Source\Rendering\WinDX11\WinDX11Drawcall.h" />
     <ClInclude Include="Source\Rendering\WinDX11\WinDX11Mesh.h" />
     <ClInclude Include="Source\Rendering\WinDX11\WinDX11Renderer.h" />
     <ClInclude Include="Source\Rendering\WinDX11\WinDX11RenderTarget.h" />

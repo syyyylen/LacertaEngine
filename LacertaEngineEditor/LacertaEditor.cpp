@@ -4,7 +4,9 @@
 
 #include "ECS/Components/PointLightComponent.h"
 #include "ImGui/UIRenderer.h"
+#include "Rendering/ConstantBuffer.h"
 #include "Rendering/Drawcall.h"
+#include "Rendering/RenderPass.h"
 
 namespace LacertaEngineEditor
 {
@@ -44,7 +46,9 @@ void LacertaEditor::Start()
     
     RHI::Create();
     HWND hwnd = m_editorWindow->GetHWND();
-    RHI::Get()->InitializeRenderer((int*)hwnd, RendererType::RENDERER_WIN_DX11, width, height, 24, 60);
+    RHI::Get()->InitializeRenderer((int*)hwnd, RendererType::RENDERER_WIN_DX11, width, height, 60);
+    auto scenePass = RHI::Get()->CreateRenderPass("scene");
+    scenePass->SetRenderTargetIdx(1);
 
     // ---------------------------- Debug Scene Creation --------------------
 
@@ -57,14 +61,13 @@ void LacertaEditor::Start()
     auto& skyboxTf = m_skyBoxGo->GetComponent<TransformComponent>();
     skyboxTf.SetScale(Vector3(1000.0f, 1000.0f, 1000.0f));
     auto& skyBoxMeshComp = m_skyBoxGo->GetComponent<MeshComponent>();
-    Texture* skyBoxTex = RHI::Get()->CreateTexture(L"Assets/Textures/skybox1.dds");
-    Texture* irradianceTex = RHI::Get()->CreateTexture(L"Assets/Textures/skybox1IR.dds");
-    Texture* BRDFLut = RHI::Get()->CreateTexture(L"Assets/Textures/ibl_brdf_lut.png");
+    Texture* skyBoxTex = RHI::Get()->CreateTexture(L"Assets/Textures/skybox1.dds", 5);
+    Texture* irradianceTex = RHI::Get()->CreateTexture(L"Assets/Textures/skybox1IR.dds", 6);
+    Texture* BRDFLut = RHI::Get()->CreateTexture(L"Assets/Textures/ibl_brdf_lut.png", 7);
     skyBoxMeshComp.GetMaterial()->SetTexture(0, skyBoxTex);
     skyBoxMeshComp.GetMaterial()->SetTexture(1, irradianceTex);
     skyBoxMeshComp.GetMaterial()->SetTexture(2, BRDFLut);
     skyBoxMeshComp.GetMaterial()->SetShader("SkyboxShader");
-    skyBoxMeshComp.GetMaterial()->SetIsSkyBox(true);
 
     // TODO compute irradiance texture instead of use pre computed dds file
 
@@ -75,9 +78,9 @@ void LacertaEditor::Start()
     GameObject& sphereGo = AddMeshToScene("GregSphere", L"Assets/Meshes/spheregreg.obj", spawnLocation, "MeshPBRShader");
     TransformComponent& sphereTfComp = sphereGo.GetComponent<TransformComponent>();
     sphereTfComp.SetScale(Vector3(2.0f, 2.0f, 2.0f));
-    Texture* tex = RHI::Get()->CreateTexture(L"Assets/Textures/gregcolor.png");
-    Texture* normalMap = RHI::Get()->CreateTexture(L"Assets/Textures/gregnormal.png");
-    Texture* roughnessMap = RHI::Get()->CreateTexture(L"Assets/Textures/gregroughness.png");
+    Texture* tex = RHI::Get()->CreateTexture(L"Assets/Textures/gregcolor.png", 0);
+    Texture* normalMap = RHI::Get()->CreateTexture(L"Assets/Textures/gregnormal.png", 1);
+    Texture* roughnessMap = RHI::Get()->CreateTexture(L"Assets/Textures/gregroughness.png", 2);
     MeshComponent& meshComp = sphereGo.GetComponent<MeshComponent>();
     meshComp.GetMaterial()->SetTexture(0, tex);
     meshComp.GetMaterial()->SetTexture(1, normalMap);
@@ -91,9 +94,9 @@ void LacertaEditor::Start()
 
     spawnLocation = Vector3(spawnLocation.X + 25.0f, spawnLocation.Y, spawnLocation.Z);
 
-    GameObject& teapotGo = AddMeshToScene("Teapot", L"Assets/Meshes/teapot.obj", spawnLocation);
-    TransformComponent& teapotTfComp = teapotGo.GetComponent<TransformComponent>();
-    teapotTfComp.SetScale(Vector3(10.0f, 10.0f, 10.0f));
+    GameObject& helmetGo = AddMeshToScene("DamagedHelmet", L"Assets/DamagedHelmet/DamagedHelmet.obj", spawnLocation);
+    TransformComponent& helmetTfComp = helmetGo.GetComponent<TransformComponent>();
+    helmetTfComp.SetScale(Vector3(8.0f, 8.0f, 8.0f));
 
     spawnLocation = Vector3(spawnLocation.X + 25.0f, spawnLocation.Y, spawnLocation.Z);
 
@@ -179,10 +182,10 @@ void LacertaEditor::Update()
     // TODO Camera pos & rot are updated here with some hard coded Matrix
     
     // Constant Buffer Update 
-    ConstantBuffer cc;
-    cc.Time = m_globalTimer->Elapsed(); 
+    SceneConstantBuffer* cc = new SceneConstantBuffer();
+    cc->Time = m_globalTimer->Elapsed(); 
     
-    cc.WorldMatrix.SetIdentity();
+    cc->WorldMatrix.SetIdentity();
     
     Matrix4x4 worldCam;
     Matrix4x4 temp;
@@ -199,17 +202,17 @@ void LacertaEditor::Update()
     Vector3 newCamPos = m_sceneCamera.GetTranslation() + worldCam.GetZDirection() * (m_cameraForward * (m_moveSpeed * m_inputDownScalar));
     newCamPos = newCamPos + worldCam.GetXDirection() * (m_cameraRight * (m_moveSpeed * m_inputDownScalar));
     worldCam.SetTranslation(newCamPos);
-    cc.CameraPosition = newCamPos;
+    cc->CameraPosition = newCamPos;
     m_sceneCamera = worldCam;
     worldCam.Inverse();
-    cc.ViewMatrix = worldCam;
+    cc->ViewMatrix = worldCam;
     
     // Update the perspective projection to the ImGui viewport size
-    cc.ProjectionMatrix.SetPerspectiveFovLH(1.57f, (m_viewportCachedSize.X / m_viewportCachedSize.Y), 0.1f, 5000.0f);
-    m_sceneCameraProjection = cc.ProjectionMatrix;
+    cc->ProjectionMatrix.SetPerspectiveFovLH(1.57f, (m_viewportCachedSize.X / m_viewportCachedSize.Y), 0.1f, 5000.0f);
+    m_sceneCameraProjection = cc->ProjectionMatrix;
 
     // Ambient lighting constant
-    cc.GlobalAmbient = m_ambient;
+    cc->GlobalAmbient = m_ambient;
 
     // Directional Light set up
     Matrix4x4 lightRotationMatrix;
@@ -224,18 +227,18 @@ void LacertaEditor::Update()
     temp.SetRotationX(m_lightRotationX);
     lightRotationMatrix *= temp;
     
-    cc.DirectionalLightDirection = lightRotationMatrix.GetZDirection();
-    cc.DirectionalIntensity = m_lightIntensity;
+    cc->DirectionalLightDirection = lightRotationMatrix.GetZDirection();
+    cc->DirectionalIntensity = m_lightIntensity;
 
     for(int i = 0; i < MAX_LIGHTS; i++)
     {
-        cc.PointLights[i].Enabled = false;
+        cc->PointLights[i].Enabled = false;
     }
     
     // TODO remove this, render the skybox mesh with a different approach 
     // We move the sphere skybox at camera pos
-    auto& skyboxTf = m_skyBoxGo->GetComponent<TransformComponent>();
-    skyboxTf.SetPosition(m_sceneCamera.GetTranslation());
+    // auto& skyboxTf = m_skyBoxGo->GetComponent<TransformComponent>();
+    // skyboxTf.SetPosition(m_sceneCamera.GetTranslation());
 
     // Let's add the point lights to the Constant Buffer
     const auto pointLightsView = m_activeScene->m_registry.group<PointLightComponent>(entt::get<TransformComponent>);
@@ -255,16 +258,21 @@ void LacertaEditor::Update()
         pointLight.LinearAttenuation = pointLightComp.GetLinearAttenuation() * 0.01f;
         pointLight.QuadraticAttenuation = pointLightComp.GetQuadraticAttenuation() * 0.01f;
 
-        cc.PointLights[i] = pointLight;
+        cc->PointLights[i] = pointLight;
     }
     
-    cc.DefaultColor = m_defaultColor;
+    cc->DefaultColor = m_defaultColor;
+
+    auto scenePass = RHI::Get()->GetRenderPass("scene");
     
-    RHI::Get()->UpdateShaderConstants(&cc);
+    ConstantBuffer sceneCbuf = ConstantBuffer(cc, ConstantBufferType::SceneCbuf);
+    scenePass->AddGlobalBindable(&sceneCbuf);
 
     // ----------------------------- Scene Draw Objects -----------------------
 
-    RHI::Get()->ClearDrawcalls();
+    scenePass->ClearDrawcalls();
+
+    std::list<ConstantBuffer*> removeMe; // TODO remove me
 
     auto tfMeshesGroup = m_activeScene->m_registry.group<TransformComponent>(entt::get<MeshComponent>);
     for(auto go : tfMeshesGroup)
@@ -278,21 +286,38 @@ void LacertaEditor::Update()
         auto shapes = mesh->GetShapesData();
         for(const auto shape : shapes)
         {
-            // Adding DC
-            DrawcallData dcData = {};
-            dcData.VBO = shape.Vbo;
-            dcData.VerticesCount = shape.VerticesSize;
-            dcData.IBO = shape.Ibo;
-            dcData.IndicesCount = shape.IndexesSize;
-            dcData.Type = DrawcallType::dcMesh;
-            dcData.LocalMatrix = transform.GetTransformMatrix();
-            dcData.Material = meshComponent.GetMaterial();
+            auto mat = meshComponent.GetMaterial();
 
-            RHI::Get()->AddDrawcall(&dcData);
+            auto texs = mat->GetTextures();
+            std::list<Bindable*> DcBindables;
+            for(auto tex : texs)
+                DcBindables.emplace_back(tex);
+
+            MeshConstantBuffer* meshCb = new MeshConstantBuffer(); // this is deleted by CBuf
+
+            int texLength = (int)texs.size(); // TODO fix all this
+            meshCb->HasAlbedo = texLength > 0;
+            meshCb->HasNormalMap = texLength > 1;
+            meshCb->HasRoughness = texLength > 2;
+            meshCb->HasMetallic = texLength > 3;
+            
+            meshCb->LightProperties = mat->GetMatLightProperties();
+            meshCb->LocalMatrix = transform.GetTransformMatrix();
+
+            ConstantBuffer* meshCBuf = new ConstantBuffer(meshCb, ConstantBufferType::MeshCbuf); // I don't like this heap allocation at ALL
+            DcBindables.emplace_back(meshCBuf);
+            scenePass->AddDrawcall(mat->GetShader(), shape, DcBindables);
+
+            removeMe.emplace_back(meshCBuf); // TODO remove me
         }
     }
 
-    RHI::Get()->RenderScene(m_viewportCachedSize);
+    RHI::Get()->ExecuteRenderPass("scene", m_viewportCachedSize);
+
+    for(auto rmv : removeMe) // TODO remove me
+        delete rmv;
+
+    RHI::Get()->SetBackbufferRenderTargetActive();
 
     RECT windowRect = m_editorWindow->GetClientWindowRect();
     int width = windowRect.right - windowRect.left;
@@ -411,10 +436,10 @@ GameObject& LacertaEditor::AddPBRSphereToScene(std::string name,
     
     auto& sphereTf = sphere.GetComponent<TransformComponent>();
     sphereTf.SetScale(Vector3(12.0f, 12.0f, 12.0f));
-    auto tex = RHI::Get()->CreateTexture(albedo);
-    auto norm = RHI::Get()->CreateTexture(normal);
-    auto rough = RHI::Get()->CreateTexture(roughness);
-    auto met = RHI::Get()->CreateTexture(metallic);
+    auto tex = RHI::Get()->CreateTexture(albedo, 0);
+    auto norm = RHI::Get()->CreateTexture(normal, 1);
+    auto rough = RHI::Get()->CreateTexture(roughness, 2);
+    auto met = RHI::Get()->CreateTexture(metallic, 3);
     auto& sphereMesh = sphere.GetComponent<MeshComponent>();
     sphereMesh.GetMaterial()->SetTexture(0, tex);
     sphereMesh.GetMaterial()->SetTexture(1, norm);
@@ -422,7 +447,7 @@ GameObject& LacertaEditor::AddPBRSphereToScene(std::string name,
     sphereMesh.GetMaterial()->SetTexture(3, met);
     if(ao != nullptr)
     {
-        auto amb = RHI::Get()->CreateTexture(ao);
+        auto amb = RHI::Get()->CreateTexture(ao, 4);
         sphereMesh.GetMaterial()->SetTexture(4, amb);
     }
 

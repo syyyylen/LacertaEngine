@@ -23,9 +23,6 @@ public:
 
     void SetTexture(size_t index, Texture* texture);
 
-    void SetIsSkyBox(bool skyBox) { m_isSkyBox = skyBox; }
-    bool IsSkyBox() const { return m_isSkyBox; }
-
     Texture* GetTexture(size_t index)
     {
         if (index < m_textures.size())
@@ -33,6 +30,8 @@ public:
         else
             return nullptr;
     }
+
+    const std::vector<Texture*>& GetTextures() { return m_textures; } 
     
 private:
     MatLightProperties m_lightProperties;

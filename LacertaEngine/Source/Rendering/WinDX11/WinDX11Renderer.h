@@ -1,14 +1,17 @@
 ﻿#pragma once
 #include "../Renderer.h"
 #include "../../Core.h"
-#include "../RenderTarget.h"
-
 #include <d3d11.h>
 #include <dxgi1_3.h>
-#include <map>
 
 namespace LacertaEngine
 {
+
+struct WinDX11Cbuf
+{
+    ID3D11Buffer* Buffer;
+    UINT Slot;
+};
 
 class LACERTAENGINE_API WinDX11Renderer : public Renderer
 {
@@ -17,23 +20,20 @@ public:
     ~WinDX11Renderer();
 
     void Initialize(int* context, int width, int height, int targetRefreshRate) override;
-    void CreateRenderTarget(int width, int height, int depth) override;
+    void CreateRenderTarget(int width, int height) override;
     void LoadShaders() override;
     
-    void RenderFrame(Vector2 ViewportSize) override;
+    void SetBackbufferRenderTargetActive() override;
     void PresentSwapChain() override;
     void OnResizeWindow(unsigned width, unsigned height) override;
-    void UpdateConstantBuffer(void* buffer) override;
-    void UpdateMeshConstantBuffer(void* buffer) override;
+    void UpdateConstantBuffer(void* buffer, ConstantBufferType cbufType) override;
     void SetRasterizerCullState(bool cullFront) override;
-    void AddDrawcall(DrawcallData* dcData) override;
-    void CreateBuffers(ShapeData& shapeData, std::vector<VertexMesh> vertices, std::vector<unsigned> indices) override;
 
     ID3D11Buffer* CreateVBO(std::vector<VertexMesh> vertices);
     ID3D11Buffer* CreateIBO(std::vector<unsigned> indices);
     
     Mesh* CreateMesh(const wchar_t* filePath) override;
-    Texture* CreateTexture(const wchar_t* filePath) override;
+    Texture* CreateTexture(const wchar_t* filePath, int idx) override;
     
     int* GetDriver() override { return (int*)m_device; }
 
@@ -50,9 +50,10 @@ private:
     ID3D11SamplerState* m_samplerState;
     D3D_FEATURE_LEVEL m_featureLevel;
     ID3D11Buffer* m_constantBuffer; 
-    ID3D11Buffer* m_meshConstantBuffer;
 
     Vector2 m_previousViewportSize;
+
+    std::map<ConstantBufferType, WinDX11Cbuf> m_constantBuffers;
 };
 
 }

@@ -15,7 +15,7 @@ WinDX11RenderTarget::~WinDX11RenderTarget()
     delete m_renderTarget;
 }
 
-void WinDX11RenderTarget::Initialize(Renderer* renderer, int width, int height, int depth)
+void WinDX11RenderTarget::Initialize(Renderer* renderer, int width, int height)
 {
     LOG(Debug, "WinDX11RenderTarget : Initialize");
     

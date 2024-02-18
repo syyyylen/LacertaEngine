@@ -1,5 +1,7 @@
 ﻿#pragma once
 
+#include "Bindable.h"
+#include "Drawable.h"
 #include "../Core.h"
 #include "Renderer.h"
 #include "../Maths/Maths.h"
@@ -17,6 +19,12 @@ enum DrawcallType
     dcMesh
 };
 
+enum ConstantBufferType
+{
+    SceneCbuf,
+    MeshCbuf
+};
+
 struct MatLightProperties
 {
     float DiffuseIntensity = 1.0f;
@@ -28,7 +36,7 @@ struct MatLightProperties
     float Padding1[3];
     // 16 bytes
 }; // 32 bytes
-
+ 
 struct DrawcallData
 {
     void* VBO;
@@ -57,7 +65,7 @@ struct PointLight
 };
 
 // __declspec(align(16))
-struct ConstantBuffer
+struct SceneConstantBuffer
 {
     Matrix4x4 WorldMatrix;
     Matrix4x4 ViewMatrix;
@@ -111,27 +119,19 @@ class Shader;
 class LACERTAENGINE_API Drawcall
 {
 public:
-    Drawcall();
+    Drawcall(std::string shaderName, Drawable* drawable, std::list<Bindable*> bindables);
     virtual ~Drawcall();
 
-    virtual void Setup(Renderer* renderer, DrawcallData* dcData) = 0;
-    virtual void Pass(Renderer* renderer) = 0;
+    void PreparePass(Renderer* renderer);
+    void Pass(Renderer* renderer);
+    Drawable* GetDrawable() { return m_drawable; }
+    std::string GetShaderName() { return m_shaderName; }
 
-    virtual void* GetVBO() = 0;
-    virtual void* GetIBO() = 0;
-    unsigned long GetVerticesCount() { return m_verticesCount; }
-    unsigned long GetIndexListSize() { return m_indexCount; }
-    DrawcallType GetType() { return m_type; }
-    Matrix4x4 LocalMatrix() { return m_localMatrix; } // TODO relocate this
-    Material* GetMaterial() { return m_material; }
-
-protected:
+private:
+    std::string m_shaderName;
     Shader* m_shader;
-    unsigned long m_verticesCount;
-    unsigned long m_indexCount;
-    DrawcallType m_type;
-    Matrix4x4 m_localMatrix;
-    Material* m_material;
+    Drawable* m_drawable;
+    std::list<Bindable*> m_bindables;
 };
 
 }

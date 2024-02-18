@@ -27,26 +27,22 @@ public:
     static void Create();
     static void Shutdown();
 
-    void InitializeRenderer(int* context, RendererType type, int width, int height, int depth, int targetRefreshRate);
-    void AddDrawcall(DrawcallData* dcData);
-    void ClearDrawcalls();
-    void RenderScene(Vector2 ViewportSize);
+    void InitializeRenderer(int* context, RendererType type, int width, int height, int targetRefreshRate);
+    void SetBackbufferRenderTargetActive();
     void Resize(unsigned width, unsigned height);
     void SetBackbufferViewportSize(int width, int height);
     void SetRasterizerState(bool cullFront);
     void PresentSwapChain();
-    void UpdateShaderConstants(void* buffer);
-    void UpdateMeshConstants(void* buffer);
-
-    void CreateBuffers(ShapeData& mesh, std::vector<VertexMesh> vertices, std::vector<unsigned int> indices);
+    RenderPass* CreateRenderPass(std::string name);
+    RenderPass* GetRenderPass(std::string name);
+    void DeleteRenderPass(std::string name);
+    void ExecuteRenderPass(std::string name, Vector2 renderTargetSize);
 
     Renderer* GetRenderer() { return m_renderer; }
     RendererType GetRendererType() { return m_rendererType; }
-
-    std::list<GraphicsResource*> GetGraphicsResources;
-
+    
     Mesh* CreateMesh(const wchar_t* filePath);
-    Texture* CreateTexture(const wchar_t* filePath);
+    Texture* CreateTexture(const wchar_t* filePath, int idx);
 
 private:
     RendererType m_rendererType;

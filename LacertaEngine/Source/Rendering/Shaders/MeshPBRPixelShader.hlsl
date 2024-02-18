@@ -138,15 +138,15 @@ float4 main(VertexOutput input) : SV_Target
     float3 r = reflect(-v, normal);
     float3 irradiance = float3(IrradianceMap.Sample(TextureSampler, r).rgb);
     float3 diffuse = albedo * irradiance;
-
+    
     float3 enviro = float4(SkyBox.Sample(TextureSampler, r));
     float3 env = lerp(enviro, irradiance, roughness);
     // float2 envBRDF = BRDFLut.Sample(TextureSampler, float2(max(dot(normal, v), 0.0), roughness)).rg;
     float3 specular = env * (Ks /* * envBRDF.x + envBRDF.y */);
-
+    
     float3 ambiantLight = (Kd * diffuse + specular) * ao;
 
     finalLight += ambiantLight * GlobalAmbient;
-
+    
     return float4(finalLight, 1.0);
 }
