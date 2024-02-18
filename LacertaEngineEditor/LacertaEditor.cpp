@@ -57,18 +57,17 @@ void LacertaEditor::Start()
     // TODO this needs to be created first bc we want it to be rendered first. Isn't it stupid ? (rhetorical question, it is.)
     // -------------------------- Skybox Sphere Creation -----------------------
 
-    // m_skyBoxGo = &AddMeshToScene("Skybox", L"Assets/Meshes/sphere_hq.obj", Vector3(0.0f, 0.0f, 0.0f));
-    // auto& skyboxTf = m_skyBoxGo->GetComponent<TransformComponent>();
-    // skyboxTf.SetScale(Vector3(1000.0f, 1000.0f, 1000.0f));
-    // auto& skyBoxMeshComp = m_skyBoxGo->GetComponent<MeshComponent>();
-    // Texture* skyBoxTex = RHI::Get()->CreateTexture(L"Assets/Textures/skybox1.dds", 0);
-    // Texture* irradianceTex = RHI::Get()->CreateTexture(L"Assets/Textures/skybox1IR.dds", 1);
-    // Texture* BRDFLut = RHI::Get()->CreateTexture(L"Assets/Textures/ibl_brdf_lut.png", 2);
-    // skyBoxMeshComp.GetMaterial()->SetTexture(0, skyBoxTex);
-    // skyBoxMeshComp.GetMaterial()->SetTexture(1, irradianceTex);
-    // skyBoxMeshComp.GetMaterial()->SetTexture(2, BRDFLut);
-    // skyBoxMeshComp.GetMaterial()->SetShader("SkyboxShader");
-    // skyBoxMeshComp.GetMaterial()->SetIsSkyBox(true);
+    m_skyBoxGo = &AddMeshToScene("Skybox", L"Assets/Meshes/sphere_hq.obj", Vector3(0.0f, 0.0f, 0.0f));
+    auto& skyboxTf = m_skyBoxGo->GetComponent<TransformComponent>();
+    skyboxTf.SetScale(Vector3(1000.0f, 1000.0f, 1000.0f));
+    auto& skyBoxMeshComp = m_skyBoxGo->GetComponent<MeshComponent>();
+    Texture* skyBoxTex = RHI::Get()->CreateTexture(L"Assets/Textures/skybox1.dds", 5);
+    Texture* irradianceTex = RHI::Get()->CreateTexture(L"Assets/Textures/skybox1IR.dds", 6);
+    Texture* BRDFLut = RHI::Get()->CreateTexture(L"Assets/Textures/ibl_brdf_lut.png", 7);
+    skyBoxMeshComp.GetMaterial()->SetTexture(0, skyBoxTex);
+    skyBoxMeshComp.GetMaterial()->SetTexture(1, irradianceTex);
+    skyBoxMeshComp.GetMaterial()->SetTexture(2, BRDFLut);
+    skyBoxMeshComp.GetMaterial()->SetShader("SkyboxShader");
 
     // TODO compute irradiance texture instead of use pre computed dds file
 
@@ -293,7 +292,7 @@ void LacertaEditor::Update()
             std::list<Bindable*> DcBindables;
             for(auto tex : texs)
                 DcBindables.emplace_back(tex);
-            
+
             MeshConstantBuffer* meshCb = new MeshConstantBuffer(); // this is deleted by CBuf
 
             int texLength = (int)texs.size(); // TODO fix all this
@@ -307,14 +306,15 @@ void LacertaEditor::Update()
 
             ConstantBuffer* meshCBuf = new ConstantBuffer(meshCb, ConstantBufferType::MeshCbuf); // I don't like this heap allocation at ALL
             DcBindables.emplace_back(meshCBuf);
-            removeMe.emplace_back(meshCBuf); // TODO remove me
             scenePass->AddDrawcall(mat->GetShader(), shape, DcBindables);
+
+            removeMe.emplace_back(meshCBuf); // TODO remove me
         }
     }
 
     RHI::Get()->ExecuteRenderPass("scene", m_viewportCachedSize);
 
-    for(auto rmv : removeMe)
+    for(auto rmv : removeMe) // TODO remove me
         delete rmv;
 
     RHI::Get()->SetBackbufferRenderTargetActive();

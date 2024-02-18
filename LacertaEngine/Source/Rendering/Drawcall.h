@@ -125,6 +125,7 @@ public:
     void PreparePass(Renderer* renderer);
     void Pass(Renderer* renderer);
     Drawable* GetDrawable() { return m_drawable; }
+    std::string GetShaderName() { return m_shaderName; }
 
 private:
     std::string m_shaderName;

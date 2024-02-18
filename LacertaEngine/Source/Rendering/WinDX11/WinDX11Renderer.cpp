@@ -273,8 +273,6 @@ void WinDX11Renderer::LoadShaders()
 
     m_shaders.emplace("MeshPBRShader", MeshPbrShader);
 
-    return; // TODO fix all this
-
     ID3DBlob* skyboxVertexErrorBlob = nullptr;
     ID3DBlob* skyboxVertexBlob;
 

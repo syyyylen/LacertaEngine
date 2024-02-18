@@ -131,22 +131,22 @@ float4 main(VertexOutput input) : SV_Target
         finalLight += PBR(F0, normal, v, lnorm, normalize(lnorm + v), radiance, albedo, roughness, metallic);
     }
 
-    // float3 Ks = FresnelSchlickRoughness(max(dot(normal, v), 0.0f), F0,  roughness);
-    //
-    // float3 Kd = 1.0f - Ks;
-    // Kd *= 1.0 - metallic;
-    // float3 r = reflect(-v, normal);
-    // float3 irradiance = float3(IrradianceMap.Sample(TextureSampler, r).rgb);
-    // float3 diffuse = albedo * irradiance;
-    //
-    // float3 enviro = float4(SkyBox.Sample(TextureSampler, r));
-    // float3 env = lerp(enviro, irradiance, roughness);
-    // // float2 envBRDF = BRDFLut.Sample(TextureSampler, float2(max(dot(normal, v), 0.0), roughness)).rg;
-    // float3 specular = env * (Ks /* * envBRDF.x + envBRDF.y */);
-    //
-    // float3 ambiantLight = (Kd * diffuse + specular) * ao;
+    float3 Ks = FresnelSchlickRoughness(max(dot(normal, v), 0.0f), F0,  roughness);
+    
+    float3 Kd = 1.0f - Ks;
+    Kd *= 1.0 - metallic;
+    float3 r = reflect(-v, normal);
+    float3 irradiance = float3(IrradianceMap.Sample(TextureSampler, r).rgb);
+    float3 diffuse = albedo * irradiance;
+    
+    float3 enviro = float4(SkyBox.Sample(TextureSampler, r));
+    float3 env = lerp(enviro, irradiance, roughness);
+    // float2 envBRDF = BRDFLut.Sample(TextureSampler, float2(max(dot(normal, v), 0.0), roughness)).rg;
+    float3 specular = env * (Ks /* * envBRDF.x + envBRDF.y */);
+    
+    float3 ambiantLight = (Kd * diffuse + specular) * ao;
 
-    // finalLight += ambiantLight * GlobalAmbient;
+    finalLight += ambiantLight * GlobalAmbient;
     
     return float4(finalLight, 1.0);
 }

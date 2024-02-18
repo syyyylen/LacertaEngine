@@ -1,17 +1,11 @@
-// Texture2D BaseColor: register(t0);
-// Texture2D NormalMap: register(t1);
-// TextureCube SkyBox: register(t2);
-// TextureCube IrradianceMap: register(t3);
-// Texture2D RoughnessMap: register(t4);
-// Texture2D MetallicMap: register(t5);
-// Texture2D AmbiantOcclusionMap: register(t6);
-// Texture2D BRDFLut: register(t7);
-
 Texture2D BaseColor: register(t0);
 Texture2D NormalMap: register(t1);
 Texture2D RoughnessMap: register(t2);
 Texture2D MetallicMap: register(t3);
 Texture2D AmbiantOcclusionMap: register(t4);
+TextureCube SkyBox: register(t5);
+TextureCube IrradianceMap: register(t6);
+Texture2D BRDFLut: register(t7);
 
 sampler TextureSampler: register(s0);
 
