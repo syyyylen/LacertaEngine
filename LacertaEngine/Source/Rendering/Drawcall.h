@@ -19,6 +19,12 @@ enum DrawcallType
     dcMesh
 };
 
+enum ConstantBufferType
+{
+    SceneCbuf,
+    MeshCbuf
+};
+
 struct MatLightProperties
 {
     float DiffuseIntensity = 1.0f;
@@ -30,7 +36,7 @@ struct MatLightProperties
     float Padding1[3];
     // 16 bytes
 }; // 32 bytes
-
+ 
 struct DrawcallData
 {
     void* VBO;
@@ -59,7 +65,7 @@ struct PointLight
 };
 
 // __declspec(align(16))
-struct ConstantBuffer
+struct SceneConstantBuffer
 {
     Matrix4x4 WorldMatrix;
     Matrix4x4 ViewMatrix;

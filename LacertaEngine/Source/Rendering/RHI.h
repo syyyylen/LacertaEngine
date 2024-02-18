@@ -37,7 +37,6 @@ public:
     void SetRasterizerState(bool cullFront);
     void PresentSwapChain();
     void UpdateShaderConstants(void* buffer);
-    void UpdateMeshConstants(void* buffer);
 
     Renderer* GetRenderer() { return m_renderer; }
     RendererType GetRendererType() { return m_rendererType; }

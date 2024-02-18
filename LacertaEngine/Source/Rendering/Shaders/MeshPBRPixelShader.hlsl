@@ -148,7 +148,5 @@ float4 main(VertexOutput input) : SV_Target
 
     // finalLight += ambiantLight * GlobalAmbient;
     
-    finalLight += GlobalAmbient;
-
     return float4(finalLight, 1.0);
 }

@@ -65,13 +65,13 @@ void RHI::ClearDrawcalls()
         m_renderer->ClearDrawcalls();
 }
 
-void RHI::RenderScene(Vector2 ViewportSize)
+void RHI::RenderScene(Vector2 ViewportSize) // TODO fix all this
 {
     if(m_renderer)
         m_renderer->RenderFrame(ViewportSize);
 }
 
-void RHI::EndRenderScene()
+void RHI::EndRenderScene() // TODO fix all this
 {
     if(m_renderer)
         m_renderer->EndRenderFrame();
@@ -105,12 +105,6 @@ void RHI::UpdateShaderConstants(void* buffer)
 {
     if(m_renderer)
         m_renderer->UpdateConstantBuffer(buffer);
-}
-
-void RHI::UpdateMeshConstants(void* buffer)
-{
-    if(m_renderer)
-        m_renderer->UpdateMeshConstantBuffer(buffer);
 }
 
 Mesh* RHI::CreateMesh(const wchar_t* filePath)

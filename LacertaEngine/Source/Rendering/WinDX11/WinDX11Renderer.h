@@ -7,6 +7,12 @@
 namespace LacertaEngine
 {
 
+struct WinDX11Cbuf
+{
+    ID3D11Buffer* Buffer;
+    UINT Slot;
+};
+
 class LACERTAENGINE_API WinDX11Renderer : public Renderer
 {
 public:
@@ -22,7 +28,7 @@ public:
     void PresentSwapChain() override;
     void OnResizeWindow(unsigned width, unsigned height) override;
     void UpdateConstantBuffer(void* buffer) override;
-    void UpdateMeshConstantBuffer(void* buffer) override;
+    void UpdateConstantBuffer(void* buffer, ConstantBufferType cbufType) override;
     void SetRasterizerCullState(bool cullFront) override;
     void AddDrawcall(std::string shaderName, Drawable* drawable, std::list<Bindable*> bindables) override;
 
@@ -47,9 +53,10 @@ private:
     ID3D11SamplerState* m_samplerState;
     D3D_FEATURE_LEVEL m_featureLevel;
     ID3D11Buffer* m_constantBuffer; 
-    ID3D11Buffer* m_meshConstantBuffer;
 
     Vector2 m_previousViewportSize;
+
+    std::map<ConstantBufferType, WinDX11Cbuf> m_constantBuffers;
 };
 
 }

@@ -20,9 +20,11 @@ WinDX11Renderer::~WinDX11Renderer()
 {
     if(m_constantBuffer)
         m_constantBuffer->Release();
+    
+    for(auto cb : m_constantBuffers)
+        cb.second.Buffer->Release();
 
-    if(m_meshConstantBuffer)
-        m_meshConstantBuffer->Release();
+    m_constantBuffers.clear();
 }
 
 void WinDX11Renderer::Initialize(int* context, int width, int height, int targetRefreshRate)
@@ -75,11 +77,11 @@ void WinDX11Renderer::Initialize(int* context, int width, int height, int target
         throw std::exception("Failed SwapChain creation");
     }
 
-    ConstantBuffer cb;
+    SceneConstantBuffer cb;
 
     D3D11_BUFFER_DESC bufferDesc = {};
     bufferDesc.Usage = D3D11_USAGE_DEFAULT;
-    bufferDesc.ByteWidth = sizeof(ConstantBuffer);
+    bufferDesc.ByteWidth = sizeof(SceneConstantBuffer);
     bufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
     bufferDesc.CPUAccessFlags = 0;
     bufferDesc.MiscFlags = 0;
@@ -95,8 +97,8 @@ void WinDX11Renderer::Initialize(int* context, int width, int height, int target
         throw std::exception("Create Constant Buffer failed");
     }
 
+    ID3D11Buffer* b;
     MeshConstantBuffer meshCb;
-
     D3D11_BUFFER_DESC meshBufferDesc = {};
     meshBufferDesc.Usage = D3D11_USAGE_DEFAULT;
     meshBufferDesc.ByteWidth = sizeof(MeshConstantBuffer);
@@ -107,13 +109,18 @@ void WinDX11Renderer::Initialize(int* context, int width, int height, int target
     D3D11_SUBRESOURCE_DATA meshInitData = {};
     meshInitData.pSysMem = &meshCb;
 
-    if(FAILED(m_device->CreateBuffer(&meshBufferDesc, &meshInitData, &m_meshConstantBuffer)))
+    if(FAILED(m_device->CreateBuffer(&meshBufferDesc, &meshInitData, &b)))
     {
         std::string errorMsg = std::system_category().message(hr);
         LOG(Error, errorMsg);
         LOG(Error, "Create Mesh Constant Buffer failed");
         throw std::exception("Create Mesh Constant Buffer failed");
     }
+    
+    WinDX11Cbuf meshCbuf;
+    meshCbuf.Buffer = b;
+    meshCbuf.Slot = 1;
+    m_constantBuffers.emplace(ConstantBufferType::MeshCbuf, meshCbuf);
 
     // Changing rasterizer properties & state 
     D3D11_RASTERIZER_DESC rasterizerDesc;
@@ -259,7 +266,7 @@ void WinDX11Renderer::LoadShaders()
 
     m_shaders.emplace("MeshPBRShader", MeshPbrShader);
 
-    return;
+    return; // TODO fix all this
 
     ID3DBlob* skyboxVertexErrorBlob = nullptr;
     ID3DBlob* skyboxVertexBlob;
@@ -308,7 +315,7 @@ void WinDX11Renderer::AddDrawcall(std::string shaderName, Drawable* drawable, st
 {
     Drawcall* dc = new Drawcall(shaderName, drawable, bindables);
     dc->PreparePass(this);
-    dc->Pass(this);
+    dc->Pass(this); // TODO fix all this
     
     // m_drawcalls.push_back(dc); // TODO remove the pass above when proper buffer system
 }
@@ -395,7 +402,7 @@ Texture* WinDX11Renderer::CreateTexture(const wchar_t* filePath, int idx)
     return tex;
 }
 
-void WinDX11Renderer::RenderFrame(Vector2 ViewportSize)
+void WinDX11Renderer::RenderFrame(Vector2 ViewportSize) // TODO fix all this
 {
     // We scale the scene render target accordingly to the editor viewport size
     m_renderTargets[1]->SetViewportSize(this, (UINT)ViewportSize.X, (UINT)ViewportSize.Y);
@@ -409,7 +416,7 @@ void WinDX11Renderer::RenderFrame(Vector2 ViewportSize)
     m_renderTargets[1]->Clear(this, Vector4(0.0f, 0.0f, 0.0f, 0.0f));
 }
 
-void WinDX11Renderer::EndRenderFrame()
+void WinDX11Renderer::EndRenderFrame() // TODO fix all this
 {
     // setting back the backbuffer render target
     m_renderTargets[0]->SetActive(this); 
@@ -436,11 +443,12 @@ void WinDX11Renderer::UpdateConstantBuffer(void* buffer)
     m_deviceContext->PSSetConstantBuffers(0, 1, &m_constantBuffer);
 }
 
-void WinDX11Renderer::UpdateMeshConstantBuffer(void* buffer)
+void WinDX11Renderer::UpdateConstantBuffer(void* buffer, ConstantBufferType cbufType)
 {
-    m_deviceContext->UpdateSubresource(m_meshConstantBuffer, NULL, NULL, buffer, NULL, NULL);
-    m_deviceContext->VSSetConstantBuffers(1, 1, &m_meshConstantBuffer);
-    m_deviceContext->PSSetConstantBuffers(1, 1, &m_meshConstantBuffer);
+    auto winDX11cbuf = m_constantBuffers.find(cbufType)->second;
+    m_deviceContext->UpdateSubresource(winDX11cbuf.Buffer, NULL, NULL, buffer, NULL, NULL);
+    m_deviceContext->VSSetConstantBuffers(winDX11cbuf.Slot, 1, &winDX11cbuf.Buffer);
+    m_deviceContext->PSSetConstantBuffers(winDX11cbuf.Slot, 1, &winDX11cbuf.Buffer);
 }
 
 void WinDX11Renderer::SetRasterizerCullState(bool cullFront)

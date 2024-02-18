@@ -16,6 +16,7 @@ class Texture;
 struct VertexMesh;
 class Drawable;
 class Bindable;
+enum ConstantBufferType;
 
 class LACERTAENGINE_API Renderer
 {
@@ -31,7 +32,7 @@ public:
     virtual void OnResizeWindow(unsigned width, unsigned height) = 0;
     virtual void PresentSwapChain() = 0;
     virtual void UpdateConstantBuffer(void* buffer) = 0;
-    virtual void UpdateMeshConstantBuffer(void* buffer) = 0;
+    virtual void UpdateConstantBuffer(void* buffer, ConstantBufferType cbufType) = 0;
     virtual void SetRasterizerCullState(bool cullFront) = 0;
     virtual void AddDrawcall(std::string shaderName, Drawable* drawable, std::list<Bindable*> bindables) = 0;
     virtual void ClearDrawcalls();

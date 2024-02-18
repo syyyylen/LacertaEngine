@@ -4,6 +4,7 @@
 
 #include "ECS/Components/PointLightComponent.h"
 #include "ImGui/UIRenderer.h"
+#include "Rendering/ConstantBuffer.h"
 #include "Rendering/Drawcall.h"
 
 namespace LacertaEngineEditor
@@ -91,9 +92,9 @@ void LacertaEditor::Start()
 
     spawnLocation = Vector3(spawnLocation.X + 25.0f, spawnLocation.Y, spawnLocation.Z);
 
-    GameObject& teapotGo = AddMeshToScene("Teapot", L"Assets/Meshes/teapot.obj", spawnLocation);
-    TransformComponent& teapotTfComp = teapotGo.GetComponent<TransformComponent>();
-    teapotTfComp.SetScale(Vector3(10.0f, 10.0f, 10.0f));
+    GameObject& helmetGo = AddMeshToScene("DamagedHelmet", L"Assets/DamagedHelmet/DamagedHelmet.obj", spawnLocation);
+    TransformComponent& helmetTfComp = helmetGo.GetComponent<TransformComponent>();
+    helmetTfComp.SetScale(Vector3(8.0f, 8.0f, 8.0f));
 
     spawnLocation = Vector3(spawnLocation.X + 25.0f, spawnLocation.Y, spawnLocation.Z);
 
@@ -179,7 +180,7 @@ void LacertaEditor::Update()
     // TODO Camera pos & rot are updated here with some hard coded Matrix
     
     // Constant Buffer Update 
-    ConstantBuffer cc;
+    SceneConstantBuffer cc;
     cc.Time = m_globalTimer->Elapsed(); 
     
     cc.WorldMatrix.SetIdentity();
@@ -281,25 +282,33 @@ void LacertaEditor::Update()
         {
             auto mat = meshComponent.GetMaterial();
 
-            MeshConstantBuffer meshCb;
-            meshCb.HasAlbedo = true;
-            meshCb.HasNormalMap = true;
-            meshCb.HasRoughness = true;
-            meshCb.HasMetallic = true;
-            meshCb.LightProperties = mat->GetMatLightProperties();
-            meshCb.LocalMatrix = transform.GetTransformMatrix();
-            RHI::Get()->UpdateMeshConstants(&meshCb); // TODO fix all this
-            
             auto texs = mat->GetTextures();
             std::list<Bindable*> DcBindables;
             for(auto tex : texs)
                 DcBindables.emplace_back(tex);
+            
+            MeshConstantBuffer* meshCb = new MeshConstantBuffer(); // this is deleted by CBuf
 
+            int texLength = (int)texs.size(); // TODO fix all this
+            meshCb->HasAlbedo = texLength > 0;
+            meshCb->HasNormalMap = texLength > 1;
+            meshCb->HasRoughness = texLength > 2;
+            meshCb->HasMetallic = texLength > 3;
+            
+            meshCb->LightProperties = mat->GetMatLightProperties();
+            meshCb->LocalMatrix = transform.GetTransformMatrix();
+
+            auto meshCBuf = new ConstantBuffer(meshCb, ConstantBufferType::MeshCbuf); // I don't like this heap allocation at ALL
+            
+            DcBindables.emplace_back(meshCBuf);
+            
             RHI::Get()->AddDrawcall(mat->GetShader(), shape, DcBindables);
+
+            delete meshCBuf;
         }
     }
 
-    RHI::Get()->EndRenderScene();
+    RHI::Get()->EndRenderScene(); // TODO remove me and replace with render passes
 
     RECT windowRect = m_editorWindow->GetClientWindowRect();
     int width = windowRect.right - windowRect.left;

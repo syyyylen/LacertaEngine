@@ -195,6 +195,7 @@
     <ClCompile Include="Source\Maths\MathUtilities.cpp" />
     <ClCompile Include="Source\Maths\Random.cpp" />
     <ClCompile Include="Source\Rendering\Bindable.cpp" />
+    <ClCompile Include="Source\Rendering\ConstantBuffer.cpp" />
     <ClCompile Include="Source\Rendering\Drawable.cpp" />
     <ClCompile Include="Source\Rendering\Drawcall.cpp" />
     <ClCompile Include="Source\Rendering\Mesh.cpp" />
@@ -241,6 +242,7 @@
     <ClInclude Include="Source\Maths\Vector2.h" />
     <ClInclude Include="Source\Maths\Vector3.h" />
     <ClInclude Include="Source\Rendering\Bindable.h" />
+    <ClInclude Include="Source\Rendering\ConstantBuffer.h" />
     <ClInclude Include="Source\Rendering\Drawable.h" />
     <ClInclude Include="Source\Rendering\Drawcall.h" />
     <ClInclude Include="Source\Rendering\Mesh.h" />
