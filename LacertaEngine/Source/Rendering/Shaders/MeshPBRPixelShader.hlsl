@@ -1,6 +1,4 @@
-#include "MeshShadersLayouts.hlsli"
-#include "ConstantBuffer.hlsli"
-#include "MeshConstantBuffer.hlsli"
+#include "SceneMeshShaderLayouts.hlsli"
 
 static const float PI = 3.1415926;
 static const float Epsilon = 0.00001;

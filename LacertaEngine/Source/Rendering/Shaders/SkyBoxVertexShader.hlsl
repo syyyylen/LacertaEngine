@@ -1,6 +1,4 @@
-#include "MeshShadersLayouts.hlsli"
-#include "ConstantBuffer.hlsli"
-#include "MeshConstantBuffer.hlsli"
+#include "SceneMeshShaderLayouts.hlsli"
 
 struct SkyboxVertexOutput
 {
