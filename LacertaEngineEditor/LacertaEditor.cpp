@@ -237,8 +237,8 @@ void LacertaEditor::Update()
     
     // TODO remove this, render the skybox mesh with a different approach 
     // We move the sphere skybox at camera pos
-    // auto& skyboxTf = m_skyBoxGo->GetComponent<TransformComponent>();
-    // skyboxTf.SetPosition(m_sceneCamera.GetTranslation());
+    auto& skyboxTf = m_skyBoxGo->GetComponent<TransformComponent>();
+    skyboxTf.SetPosition(m_sceneCamera.GetTranslation());
 
     // Let's add the point lights to the Constant Buffer
     const auto pointLightsView = m_activeScene->m_registry.group<PointLightComponent>(entt::get<TransformComponent>);
@@ -293,7 +293,7 @@ void LacertaEditor::Update()
             for(auto tex : texs)
                 DcBindables.emplace_back(tex);
 
-            MeshConstantBuffer* meshCb = new MeshConstantBuffer(); // this is deleted by CBuf
+            SceneMeshConstantBuffer* meshCb = new SceneMeshConstantBuffer(); // this is deleted by CBuf
 
             int texLength = (int)texs.size(); // TODO fix all this
             meshCb->HasAlbedo = texLength > 0;

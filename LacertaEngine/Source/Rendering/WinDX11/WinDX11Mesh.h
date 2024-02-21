@@ -1,5 +1,7 @@
 ﻿#pragma once
 #include <d3d11.h>
+
+#include "../Drawcall.h"
 #include "../../Maths/Maths.h"
 #include "../Mesh.h"
 
@@ -13,6 +15,7 @@ public:
     ~WinDX11Shape() override;
 
     void BindBuffers(Renderer* renderer) override;
+    DrawableLayout GetLayout() override { return DrawableLayout::SceneMesh; }
     unsigned long GetVerticesSize() override { return m_verticesSize; }
     unsigned long GetIndicesSize() override { return m_indexesSize; }
 

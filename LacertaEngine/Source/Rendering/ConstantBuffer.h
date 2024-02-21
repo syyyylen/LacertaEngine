@@ -5,7 +5,12 @@
 namespace LacertaEngine
 {
 
-enum ConstantBufferType;
+enum ConstantBufferType
+{
+    SceneCbuf,
+    MeshCbuf
+};
+
     
 class LACERTAENGINE_API ConstantBuffer : public Bindable
 {

@@ -26,7 +26,7 @@ void WinDX11Shape::BindBuffers(Renderer* renderer)
     WinDX11Renderer* driver = (WinDX11Renderer*)renderer;
     auto ctx = driver->GetImmediateContext();
 
-    unsigned vertexLayoutStride = sizeof(VertexMesh); // TODO why is it here ? 
+    unsigned vertexLayoutStride = sizeof(SceneVertexMesh); // TODO why is it here ? 
     unsigned int offsets = 0;
     
     ctx->IASetVertexBuffers(0, 1, &m_vbo, &vertexLayoutStride, &offsets);
@@ -72,7 +72,7 @@ void WinDX11Mesh::CreateResource(const wchar_t* filePath, Renderer* renderer)
 
     for(size_t s = 0; s < shapes.size(); s++)
     {
-        std::vector<VertexMesh> verticesList;
+        std::vector<SceneVertexMesh> verticesList;
         std::vector<unsigned int> indicesList;
         
         size_t indexOffset = 0;
@@ -135,7 +135,7 @@ void WinDX11Mesh::CreateResource(const wchar_t* filePath, Renderer* renderer)
                 v_binormal = Vector3::Cross(Vector3(nx, ny, nz), tangent);
                 v_tangent = Vector3::Cross(v_binormal, Vector3(nx, ny, nz));
 
-                VertexMesh vertex;
+                SceneVertexMesh vertex;
                 vertex.Position = Vector3(vx, vy, vz);
                 vertex.Texcoord = Vector2(tx, ty);
                 vertex.Normal = Vector3(nx, ny, nz);

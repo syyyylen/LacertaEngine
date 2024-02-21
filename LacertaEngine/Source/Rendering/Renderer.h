@@ -13,7 +13,7 @@ class RenderTarget;
 class Shader;
 class Mesh;
 class Texture;
-struct VertexMesh;
+struct SceneVertexMesh;
 class Drawable;
 class Bindable;
 class RenderPass;

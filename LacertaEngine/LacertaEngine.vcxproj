@@ -253,6 +253,7 @@
     <ClInclude Include="Source\Rendering\Material.h" />
     <ClInclude Include="Source\Rendering\Renderer.h" />
     <ClInclude Include="Source\Rendering\RenderTarget.h" />
+    <ClInclude Include="Source\Rendering\ScenePassLayouts.h" />
     <ClInclude Include="Source\Rendering\Shader.h" />
     <ClInclude Include="Source\Rendering\Shaders\ConstantBuffer.hlsli" />
     <AdditionalFiles Include="Source\Rendering\Shaders\MeshConstantBuffer.hlsli" />

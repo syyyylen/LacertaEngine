@@ -17,7 +17,7 @@ Drawcall::~Drawcall()
 void Drawcall::PreparePass(Renderer* renderer)
 {
     m_shader = renderer->GetShader(m_shaderName);
-    m_shader->Load(renderer, DrawcallType::dcMesh);
+    m_shader->Load(renderer, m_drawable->GetLayout());
     
     for(auto bindable : m_bindables)
         bindable->Bind(renderer);
