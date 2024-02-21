@@ -7,6 +7,8 @@
 namespace LacertaEngine
 {
 
+class WinDX11Shader;
+
 struct WinDX11Cbuf
 {
     ID3D11Buffer* Buffer;
@@ -42,6 +44,8 @@ public:
     ID3D11SamplerState* GetSamplerState() const { return m_samplerState; }
 
 private:
+    WinDX11Shader* CompileShader(LPCWSTR VSFilePath,  LPCWSTR PSFilePath);
+    
     ID3D11Device* m_device;
     ID3D11DeviceContext* m_deviceContext;
     ID3D11RasterizerState* m_rasterizerCullBackState;
