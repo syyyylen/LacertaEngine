@@ -9,13 +9,8 @@
 
 namespace LacertaEngine
 {
-
-D3D11_INPUT_ELEMENT_DESC screenLayout[]=
-{
-    {"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
-};
-
-D3D11_INPUT_ELEMENT_DESC meshLayout[]=
+    
+D3D11_INPUT_ELEMENT_DESC sceneMeshLayout[]=
 {
     {"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
     { "TEXCOORD", 0,  DXGI_FORMAT_R32G32_FLOAT, 0, 12,D3D11_INPUT_PER_VERTEX_DATA ,0 },
@@ -43,7 +38,7 @@ WinDX11Shader::~WinDX11Shader()
     }
 }
 
-void WinDX11Shader::Load(Renderer* renderer, DrawcallType Type)
+void WinDX11Shader::Load(Renderer* renderer, DrawableLayout layout)
 {
     if(m_loaded)
         return;
@@ -61,40 +56,21 @@ void WinDX11Shader::Load(Renderer* renderer, DrawcallType Type)
         LOG(Error, "WinDX11Shader : Failed pixel shader creation !");
     }
 
-    switch (Type)
+    switch (layout)
     {
-        case dcScreen:
-        {
-            UINT layoutSize = ARRAYSIZE(screenLayout);
+    case DrawableLayout::SceneMesh:
+        UINT layoutSize = ARRAYSIZE(sceneMeshLayout);
 
-            WinDX11Renderer* localDriver = (WinDX11Renderer*)renderer;
-            hr = ((ID3D11Device*)(localDriver->GetDriver()))->CreateInputLayout(
-                screenLayout,
-                layoutSize,
-                m_vertexShaderByteCode,
-                m_vertexByteCodeSize,
-                &m_vertexLayout);
+        WinDX11Renderer* localDriver = (WinDX11Renderer*)renderer;
+        hr = ((ID3D11Device*)(localDriver->GetDriver()))->CreateInputLayout(
+            sceneMeshLayout,
+            layoutSize,
+            m_vertexShaderByteCode,
+            m_vertexByteCodeSize,
+            &m_vertexLayout);
 
-            m_vertexLayoutStride  = sizeof(VertexDataScreen);
-
-            break;
-        }
-        case dcMesh:
-        {
-            UINT layoutSize = ARRAYSIZE(meshLayout);
-
-            WinDX11Renderer* localDriver = (WinDX11Renderer*)renderer;
-            hr = ((ID3D11Device*)(localDriver->GetDriver()))->CreateInputLayout(
-                meshLayout,
-                layoutSize,
-                m_vertexShaderByteCode,
-                m_vertexByteCodeSize,
-                &m_vertexLayout);
-
-            m_vertexLayoutStride  = sizeof(VertexMesh);
-
-            break;
-        }
+        m_vertexLayoutStride  = sizeof(SceneVertexMesh);
+        break;
     }
 
     if(FAILED(hr))

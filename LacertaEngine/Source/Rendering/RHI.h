@@ -9,7 +9,7 @@
 namespace LacertaEngine
 {
 
-struct VertexMesh;
+struct SceneVertexMesh;
     
 enum RendererType
 {

@@ -13,7 +13,7 @@ public:
     WinDX11Shader();
     ~WinDX11Shader();
 
-    void Load(Renderer* renderer, DrawcallType Type) override;
+    void Load(Renderer* renderer, DrawableLayout layout) override;
     void PreparePass(Renderer* renderer) override;
     void Pass(Renderer* renderer, Drawcall* dc) override;
 

@@ -104,11 +104,11 @@ void WinDX11Renderer::Initialize(int* context, int width, int height, int target
     m_constantBuffers.emplace(ConstantBufferType::SceneCbuf, sceneCbuf);
 
     ID3D11Buffer* b1;
-    MeshConstantBuffer meshCb;
+    SceneMeshConstantBuffer meshCb;
     
     D3D11_BUFFER_DESC meshBufferDesc = {};
     meshBufferDesc.Usage = D3D11_USAGE_DEFAULT;
-    meshBufferDesc.ByteWidth = sizeof(MeshConstantBuffer);
+    meshBufferDesc.ByteWidth = sizeof(SceneMeshConstantBuffer);
     meshBufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
     meshBufferDesc.CPUAccessFlags = 0;
     meshBufferDesc.MiscFlags = 0;
@@ -316,9 +316,9 @@ void WinDX11Renderer::LoadShaders()
     m_shaders.emplace("SkyboxShader", SkyboxShader);
 }
 
-ID3D11Buffer* WinDX11Renderer::CreateVBO(std::vector<VertexMesh> vertices)
+ID3D11Buffer* WinDX11Renderer::CreateVBO(std::vector<SceneVertexMesh> vertices)
 {
-    unsigned long dataLength = vertices.size() * (unsigned long)sizeof(VertexMesh);
+    unsigned long dataLength = vertices.size() * (unsigned long)sizeof(SceneVertexMesh);
 
     D3D11_BUFFER_DESC vboDesc = {};
     vboDesc.Usage = D3D11_USAGE_DEFAULT;

@@ -12,7 +12,7 @@ public:
     Shader();
     virtual ~Shader();
 
-    virtual void Load(Renderer* renderer, DrawcallType Type) = 0;
+    virtual void Load(Renderer* renderer, DrawableLayout layout) = 0;
     virtual void PreparePass(Renderer* renderer) = 0;
     virtual void Pass(Renderer* renderer, Drawcall* dc) = 0;
 
