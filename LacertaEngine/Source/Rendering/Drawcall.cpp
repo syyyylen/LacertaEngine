@@ -5,7 +5,7 @@
 namespace LacertaEngine
 {
     
-Drawcall::Drawcall(std::string shaderName, Drawable* drawable, std::list<Bindable*> bindables)
+Drawcall::Drawcall(std::string shaderName, Drawable* drawable, std::vector<Bindable*> bindables)
     : m_shaderName(shaderName), m_shader(nullptr), m_drawable(drawable), m_bindables(bindables)
 {
 }

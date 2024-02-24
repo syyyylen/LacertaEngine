@@ -20,7 +20,7 @@ class Shader;
 class LACERTAENGINE_API Drawcall
 {
 public:
-    Drawcall(std::string shaderName, Drawable* drawable, std::list<Bindable*> bindables);
+    Drawcall(std::string shaderName, Drawable* drawable, std::vector<Bindable*> bindables);
     virtual ~Drawcall();
 
     void PreparePass(Renderer* renderer);
@@ -32,7 +32,7 @@ private:
     std::string m_shaderName;
     Shader* m_shader;
     Drawable* m_drawable;
-    std::list<Bindable*> m_bindables;
+    std::vector<Bindable*> m_bindables;
 };
 
 }

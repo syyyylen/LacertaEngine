@@ -18,16 +18,18 @@ public:
 
     void SetRenderTargetIdx(int idx) { m_renderTargetIdx = idx; }
     void AddGlobalBindable(Bindable* bindable);
-    void AddDrawcall(std::string shaderName, Drawable* drawable, std::list<Bindable*> bindables);
+    void AddDrawcall(std::string shaderName, Drawable* drawable, std::vector<Bindable*> bindables);
     void Pass(Renderer* renderer, Vector2 renderTargetSize, bool clear);
+    void SetCullfront(bool state);
     void ClearDrawcalls();
     void ClearGlobalBindables();
 
 private:
-    std::list<Bindable*> m_globalBindables;
-    std::list<Drawcall*> m_drawcalls;
+    std::vector<Bindable*> m_globalBindables;
+    std::vector<Drawcall*> m_drawcalls;
     int m_renderTargetIdx;
     Vector2 m_cachedRenderTargetSize;
+    bool m_cullfront = false;
 };
 
 }

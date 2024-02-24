@@ -9,6 +9,8 @@
 #include "Rendering/RenderPass.h"
 #include "Rendering/SkyBoxPassLayouts.h"
 
+#define MAX_MESHES 50
+
 namespace LacertaEngineEditor
 {
 
@@ -52,6 +54,7 @@ void LacertaEditor::Start()
     auto skyboxPass = RHI::Get()->CreateRenderPass("skybox");
     scenePass->SetRenderTargetIdx(1);
     skyboxPass->SetRenderTargetIdx(1);
+    skyboxPass->SetCullfront(true);
 
     // ---------------------------- Debug Scene Creation --------------------
 
@@ -284,8 +287,10 @@ void LacertaEditor::Update()
     scenePass->ClearDrawcalls();
     skyboxPass->ClearDrawcalls();
 
-    std::list<ConstantBuffer*> removeMe; // TODO remove me
+    // We stack allocate an array of cbufs for each meshes in the scene
+    ConstantBuffer MeshesBuffers[MAX_MESHES];
 
+    int i = 0;
     auto tfMeshesGroup = m_activeScene->m_registry.group<TransformComponent>(entt::get<MeshComponent>);
     for(auto go : tfMeshesGroup)
     {
@@ -301,7 +306,7 @@ void LacertaEditor::Update()
             auto mat = meshComponent.GetMaterial();
 
             auto texs = mat->GetTextures();
-            std::list<Bindable*> DcBindables;
+            std::vector<Bindable*> DcBindables;
             for(auto tex : texs)
                 DcBindables.emplace_back(tex);
 
@@ -316,11 +321,10 @@ void LacertaEditor::Update()
             meshCb->LightProperties = mat->GetMatLightProperties();
             meshCb->LocalMatrix = transform.GetTransformMatrix();
 
-            ConstantBuffer* meshCBuf = new ConstantBuffer(meshCb, ConstantBufferType::MeshCbuf); // I don't like this heap allocation at ALL
-            DcBindables.emplace_back(meshCBuf);
+            MeshesBuffers[i].SetData(meshCb, ConstantBufferType::MeshCbuf);
+            DcBindables.emplace_back(&MeshesBuffers[i]);
+            i++;
             scenePass->AddDrawcall(mat->GetShader(), shape, DcBindables);
-
-            removeMe.emplace_back(meshCBuf); // TODO remove me
         }
     }
 
@@ -332,7 +336,7 @@ void LacertaEditor::Update()
         auto mat = skyboxMeshComp.GetMaterial();
         auto texs = mat->GetTextures();
         
-        std::list<Bindable*> Bindables;
+        std::vector<Bindable*> Bindables;
         for(auto tex : texs)
             Bindables.emplace_back(tex);
     
@@ -342,9 +346,7 @@ void LacertaEditor::Update()
     RHI::Get()->ExecuteRenderPass("scene", m_viewportCachedSize, true);
     RHI::Get()->ExecuteRenderPass("skybox", m_viewportCachedSize, false);
 
-    for(auto rmv : removeMe) // TODO remove me
-        delete rmv;
-
+    // We get the backbuffer back to render UI in it
     RHI::Get()->SetBackbufferRenderTargetActive();
 
     RECT windowRect = m_editorWindow->GetClientWindowRect();
