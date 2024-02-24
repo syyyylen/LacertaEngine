@@ -143,7 +143,7 @@ float4 main(VertexOutput input) : SV_Target
     float3 specular = env * (Ks /* * envBRDF.x + envBRDF.y */);
     
     float3 ambiantLight = (Kd * diffuse + specular) * ao;
-
+    
     finalLight += ambiantLight * GlobalAmbient;
     
     return float4(finalLight, 1.0);

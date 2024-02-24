@@ -1,10 +1,4 @@
-#include "SceneMeshShaderLayouts.hlsli"
-
-struct SkyboxVertexOutput
-{
-    float4 position : SV_POSITION;
-    float3 texcoord : TEXCOORD0;
-};
+#include "SkyBoxShaderLayouts.hlsli"
 
 float4 main(SkyboxVertexOutput input) : SV_Target
 {

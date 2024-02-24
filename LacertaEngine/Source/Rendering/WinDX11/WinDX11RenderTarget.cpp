@@ -119,6 +119,25 @@ void WinDX11RenderTarget::ReloadBuffers(Renderer* renderer, unsigned width, unsi
     tex_desc.MiscFlags = 0;
     tex_desc.ArraySize = 1;
     tex_desc.CPUAccessFlags = 0;
+
+    D3D11_DEPTH_STENCIL_DESC desc = {};
+    desc.DepthEnable = true;
+    desc.DepthFunc = D3D11_COMPARISON_LESS_EQUAL;
+    desc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
+
+    desc.StencilEnable = true;
+    desc.StencilReadMask = 0xFF;
+    desc.StencilWriteMask = 0xFF;
+
+    desc.FrontFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
+    desc.FrontFace.StencilDepthFailOp = D3D11_STENCIL_OP_INCR;
+    desc.FrontFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
+    desc.FrontFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
+
+    desc.BackFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
+    desc.BackFace.StencilDepthFailOp = D3D11_STENCIL_OP_DECR;
+    desc.BackFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
+    desc.BackFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
     
     hr = device->CreateTexture2D(&tex_desc, nullptr, &buffer);
     if(FAILED(hr))
@@ -133,6 +152,14 @@ void WinDX11RenderTarget::ReloadBuffers(Renderer* renderer, unsigned width, unsi
         LOG(Error, "Failed depth buffer creation");
         throw std::exception("Failed depth buffer creation");
     }
+
+    hr = device->CreateDepthStencilState(&desc, &m_depthStencilState);
+    if(FAILED(hr))
+    {
+        LOG(Error, "Failed depth state buffer creation");
+        throw std::exception("Failed depth state buffer creation");
+    }
+    localRenderer->GetImmediateContext()->OMSetDepthStencilState(m_depthStencilState, 1);
     
     buffer->Release();
 }

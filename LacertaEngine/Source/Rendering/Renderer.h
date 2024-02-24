@@ -36,7 +36,7 @@ public:
     RenderPass* CreateRenderPass(std::string name);
     RenderPass* GetRenderPass(std::string name);
     void DeleteRenderPass(std::string name);
-    void ExecuteRenderPass(std::string name, Vector2 renderTargetSize);
+    void ExecuteRenderPass(std::string name, Vector2 renderTargetSize, bool clear);
     
     virtual Mesh* CreateMesh(const wchar_t* filePath) = 0;
     virtual Texture* CreateTexture(const wchar_t* filePath, int idx) = 0;

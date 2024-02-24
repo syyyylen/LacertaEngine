@@ -36,7 +36,7 @@ public:
     RenderPass* CreateRenderPass(std::string name);
     RenderPass* GetRenderPass(std::string name);
     void DeleteRenderPass(std::string name);
-    void ExecuteRenderPass(std::string name, Vector2 renderTargetSize);
+    void ExecuteRenderPass(std::string name, Vector2 renderTargetSize, bool clear);
 
     Renderer* GetRenderer() { return m_renderer; }
     RendererType GetRendererType() { return m_rendererType; }

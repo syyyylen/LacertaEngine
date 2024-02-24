@@ -30,6 +30,7 @@ private:
     ID3D11ShaderResourceView* m_targetTextureShaderResView;
     ID3D11RenderTargetView* m_renderTarget;
     ID3D11DepthStencilView* m_depthStencil;
+    ID3D11DepthStencilState* m_depthStencilState;
 };
 
 }

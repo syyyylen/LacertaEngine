@@ -8,7 +8,8 @@ namespace LacertaEngine
 enum ConstantBufferType
 {
     SceneCbuf,
-    MeshCbuf
+    MeshCbuf,
+    SkyBoxCbuf
 };
 
     

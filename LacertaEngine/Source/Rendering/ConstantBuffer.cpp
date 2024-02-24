@@ -2,6 +2,7 @@
 
 #include "Drawcall.h"
 #include "Renderer.h"
+#include "SkyBoxPassLayouts.h"
 
 namespace LacertaEngine
 {
@@ -21,6 +22,10 @@ ConstantBuffer::~ConstantBuffer()
 
     case ConstantBufferType::SceneCbuf:
         delete static_cast<SceneConstantBuffer*>(m_data);
+        break;
+
+    case ConstantBufferType::SkyBoxCbuf:
+        delete static_cast<SkyBoxConstantBuffer*>(m_data);
         break;
     }
 }

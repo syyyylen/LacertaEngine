@@ -7,6 +7,7 @@
 #include "WinDX11RenderTarget.h"
 #include "WinDX11Shader.h"
 #include "../Drawcall.h"
+#include "../SkyBoxPassLayouts.h"
 #include "../../Logger/Logger.h"
 
 namespace LacertaEngine
@@ -77,57 +78,89 @@ void WinDX11Renderer::Initialize(int* context, int width, int height, int target
         throw std::exception("Failed SwapChain creation");
     }
 
-    ID3D11Buffer* b0;
-    SceneConstantBuffer cb;
-    
-    D3D11_BUFFER_DESC bufferDesc = {};
-    bufferDesc.Usage = D3D11_USAGE_DEFAULT;
-    bufferDesc.ByteWidth = sizeof(SceneConstantBuffer);
-    bufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-    bufferDesc.CPUAccessFlags = 0;
-    bufferDesc.MiscFlags = 0;
-
-    D3D11_SUBRESOURCE_DATA initData = {};
-    initData.pSysMem = &cb;
-
-    if(FAILED(m_device->CreateBuffer(&bufferDesc, &initData, &b0)))
     {
-        std::string errorMsg = std::system_category().message(hr);
-        LOG(Error, errorMsg);
-        LOG(Error, "Create Constant Buffer failed");
-        throw std::exception("Create Constant Buffer failed");
+        ID3D11Buffer* b0;
+        SceneConstantBuffer cb;
+    
+        D3D11_BUFFER_DESC bufferDesc = {};
+        bufferDesc.Usage = D3D11_USAGE_DEFAULT;
+        bufferDesc.ByteWidth = sizeof(SceneConstantBuffer);
+        bufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+        bufferDesc.CPUAccessFlags = 0;
+        bufferDesc.MiscFlags = 0;
+    
+        D3D11_SUBRESOURCE_DATA initData = {};
+        initData.pSysMem = &cb;
+    
+        if(FAILED(m_device->CreateBuffer(&bufferDesc, &initData, &b0)))
+        {
+            std::string errorMsg = std::system_category().message(hr);
+            LOG(Error, errorMsg);
+            LOG(Error, "Create Constant Buffer failed");
+            throw std::exception("Create Constant Buffer failed");
+        }
+    
+        WinDX11Cbuf sceneCbuf;
+        sceneCbuf.Buffer = b0;
+        sceneCbuf.Slot = 0;
+        m_constantBuffers.emplace(ConstantBufferType::SceneCbuf, sceneCbuf);
+    }
+
+    {
+        ID3D11Buffer* b1;
+        SceneMeshConstantBuffer meshCb;
+    
+        D3D11_BUFFER_DESC meshBufferDesc = {};
+        meshBufferDesc.Usage = D3D11_USAGE_DEFAULT;
+        meshBufferDesc.ByteWidth = sizeof(SceneMeshConstantBuffer);
+        meshBufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+        meshBufferDesc.CPUAccessFlags = 0;
+        meshBufferDesc.MiscFlags = 0;
+    
+        D3D11_SUBRESOURCE_DATA meshInitData = {};
+        meshInitData.pSysMem = &meshCb;
+    
+        if(FAILED(m_device->CreateBuffer(&meshBufferDesc, &meshInitData, &b1)))
+        {
+            std::string errorMsg = std::system_category().message(hr);
+            LOG(Error, errorMsg);
+            LOG(Error, "Create Mesh Constant Buffer failed");
+            throw std::exception("Create Mesh Constant Buffer failed");
+        }
+    
+        WinDX11Cbuf meshCbuf;
+        meshCbuf.Buffer = b1;
+        meshCbuf.Slot = 1;
+        m_constantBuffers.emplace(ConstantBufferType::MeshCbuf, meshCbuf);
     }
     
-    WinDX11Cbuf sceneCbuf;
-    sceneCbuf.Buffer = b0;
-    sceneCbuf.Slot = 0;
-    m_constantBuffers.emplace(ConstantBufferType::SceneCbuf, sceneCbuf);
-
-    ID3D11Buffer* b1;
-    SceneMeshConstantBuffer meshCb;
-    
-    D3D11_BUFFER_DESC meshBufferDesc = {};
-    meshBufferDesc.Usage = D3D11_USAGE_DEFAULT;
-    meshBufferDesc.ByteWidth = sizeof(SceneMeshConstantBuffer);
-    meshBufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-    meshBufferDesc.CPUAccessFlags = 0;
-    meshBufferDesc.MiscFlags = 0;
-
-    D3D11_SUBRESOURCE_DATA meshInitData = {};
-    meshInitData.pSysMem = &meshCb;
-
-    if(FAILED(m_device->CreateBuffer(&meshBufferDesc, &meshInitData, &b1)))
     {
-        std::string errorMsg = std::system_category().message(hr);
-        LOG(Error, errorMsg);
-        LOG(Error, "Create Mesh Constant Buffer failed");
-        throw std::exception("Create Mesh Constant Buffer failed");
-    }
+        ID3D11Buffer* b2;
+        SkyBoxConstantBuffer skyboxCb;
     
-    WinDX11Cbuf meshCbuf;
-    meshCbuf.Buffer = b1;
-    meshCbuf.Slot = 1;
-    m_constantBuffers.emplace(ConstantBufferType::MeshCbuf, meshCbuf);
+        D3D11_BUFFER_DESC skyboxBufferDesc = {};
+        skyboxBufferDesc.Usage = D3D11_USAGE_DEFAULT;
+        skyboxBufferDesc.ByteWidth = sizeof(SkyBoxConstantBuffer);
+        skyboxBufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+        skyboxBufferDesc.CPUAccessFlags = 0;
+        skyboxBufferDesc.MiscFlags = 0;
+
+        D3D11_SUBRESOURCE_DATA skyboxInitData = {};
+        skyboxInitData.pSysMem = &skyboxCb;
+
+        if(FAILED(m_device->CreateBuffer(&skyboxBufferDesc, &skyboxInitData, &b2)))
+        {
+            std::string errorMsg = std::system_category().message(hr);
+            LOG(Error, errorMsg);
+            LOG(Error, "Create Skybox Constant Buffer failed");
+            throw std::exception("Create Skybox Constant Buffer failed");
+        }
+    
+        WinDX11Cbuf skyboxCbuf;
+        skyboxCbuf.Buffer = b2;
+        skyboxCbuf.Slot = 2;
+        m_constantBuffers.emplace(ConstantBufferType::SkyBoxCbuf, skyboxCbuf);
+    }
 
     // Changing rasterizer properties & state 
     D3D11_RASTERIZER_DESC rasterizerDesc;
