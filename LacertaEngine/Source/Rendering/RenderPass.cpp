@@ -3,6 +3,7 @@
 #include "Bindable.h"
 #include "Renderer.h"
 #include "RenderTarget.h"
+#include "RHI.h"
 
 namespace LacertaEngine
 {
@@ -39,6 +40,8 @@ void RenderPass::Pass(Renderer* renderer, Vector2 renderTargetSize, bool clear)
     RT->SetActive(renderer);
     if(clear) // TODO remove this, this has nothing to do here
         RT->Clear(renderer, Vector4(0.0f, 0.0f, 0.0f, 0.0f));
+
+    RHI::Get()->SetRasterizerState(m_cullfront);
     
     for(auto bindable : m_globalBindables)
         bindable->Bind(renderer);
@@ -48,6 +51,11 @@ void RenderPass::Pass(Renderer* renderer, Vector2 renderTargetSize, bool clear)
         dc->PreparePass(renderer);
         dc->Pass(renderer);
     }
+}
+
+void RenderPass::SetCullfront(bool state)
+{
+    m_cullfront = state;
 }
 
 void RenderPass::ClearDrawcalls()

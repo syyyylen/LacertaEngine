@@ -16,9 +16,11 @@ enum ConstantBufferType
 class LACERTAENGINE_API ConstantBuffer : public Bindable
 {
 public:
+    ConstantBuffer();
     ConstantBuffer(void* data, ConstantBufferType cbufferType);
     ~ConstantBuffer();
 
+    void SetData(void* data, ConstantBufferType cbufferType);
     void Bind(Renderer* renderer) override;
 
 private:

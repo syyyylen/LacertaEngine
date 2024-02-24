@@ -99,8 +99,6 @@ void WinDX11Shader::PreparePass(Renderer* renderer)
 
 void WinDX11Shader::Pass(Renderer* renderer, Drawcall* dc)
 {
-    RHI::Get()->SetRasterizerState(dc->GetShaderName() == "SkyboxShader"); // TODO remove this plz
-    
     WinDX11Renderer* driver = (WinDX11Renderer*)renderer;
     auto ctx = driver->GetImmediateContext();
     auto drawable = dc->GetDrawable();
