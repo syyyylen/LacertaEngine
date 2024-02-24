@@ -98,9 +98,9 @@ void RHI::DeleteRenderPass(std::string name)
     m_renderer->DeleteRenderPass(name);
 }
 
-void RHI::ExecuteRenderPass(std::string name, Vector2 renderTargetSize)
+void RHI::ExecuteRenderPass(std::string name, Vector2 renderTargetSize, bool clear)
 {
-    m_renderer->ExecuteRenderPass(name, renderTargetSize);
+    m_renderer->ExecuteRenderPass(name, renderTargetSize, clear);
 }
 
 Mesh* RHI::CreateMesh(const wchar_t* filePath)

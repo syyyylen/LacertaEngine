@@ -19,8 +19,9 @@ public:
     void SetRenderTargetIdx(int idx) { m_renderTargetIdx = idx; }
     void AddGlobalBindable(Bindable* bindable);
     void AddDrawcall(std::string shaderName, Drawable* drawable, std::list<Bindable*> bindables);
-    void Pass(Renderer* renderer, Vector2 renderTargetSize);
+    void Pass(Renderer* renderer, Vector2 renderTargetSize, bool clear);
     void ClearDrawcalls();
+    void ClearGlobalBindables();
 
 private:
     std::list<Bindable*> m_globalBindables;

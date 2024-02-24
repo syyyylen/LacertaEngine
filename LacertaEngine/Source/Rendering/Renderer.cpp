@@ -38,10 +38,10 @@ void Renderer::DeleteRenderPass(std::string name)
     delete pass;
 }
 
-void Renderer::ExecuteRenderPass(std::string name, Vector2 renderTargetSize)
+void Renderer::ExecuteRenderPass(std::string name, Vector2 renderTargetSize, bool clear)
 {
     auto pass = m_renderPasses.find(name)->second;
-    pass->Pass(this, renderTargetSize);
+    pass->Pass(this, renderTargetSize, clear);
 }
 
 RenderTarget* Renderer::GetRenderTarget(int index)

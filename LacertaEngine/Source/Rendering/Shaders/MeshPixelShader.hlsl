@@ -1,6 +1,4 @@
-#include "MeshShadersLayouts.hlsli"
-#include "ConstantBuffer.hlsli"
-#include "MeshConstantBuffer.hlsli"
+#include "SceneMeshShaderLayouts.hlsli"
 
 float3 DoDiffuse(float4 lightColor, float3 lightVector, float3 normal)
 {

@@ -26,7 +26,7 @@ void RenderPass::AddDrawcall(std::string shaderName, Drawable* drawable, std::li
     m_drawcalls.push_back(dc);
 }
 
-void RenderPass::Pass(Renderer* renderer, Vector2 renderTargetSize)
+void RenderPass::Pass(Renderer* renderer, Vector2 renderTargetSize, bool clear)
 {
     auto RT = renderer->GetRenderTarget(m_renderTargetIdx);
     RT->SetViewportSize(renderer, (UINT)renderTargetSize.X, (UINT)renderTargetSize.Y);
@@ -37,7 +37,8 @@ void RenderPass::Pass(Renderer* renderer, Vector2 renderTargetSize)
     }
 
     RT->SetActive(renderer);
-    RT->Clear(renderer, Vector4(0.0f, 0.0f, 0.0f, 0.0f));
+    if(clear) // TODO remove this, this has nothing to do here
+        RT->Clear(renderer, Vector4(0.0f, 0.0f, 0.0f, 0.0f));
     
     for(auto bindable : m_globalBindables)
         bindable->Bind(renderer);
@@ -57,4 +58,8 @@ void RenderPass::ClearDrawcalls()
     m_drawcalls.clear();
 }
 
+void RenderPass::ClearGlobalBindables()
+{
+    m_globalBindables.clear();
+}
 }

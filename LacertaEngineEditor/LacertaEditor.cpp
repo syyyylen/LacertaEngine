@@ -7,6 +7,7 @@
 #include "Rendering/ConstantBuffer.h"
 #include "Rendering/Drawcall.h"
 #include "Rendering/RenderPass.h"
+#include "Rendering/SkyBoxPassLayouts.h"
 
 namespace LacertaEngineEditor
 {
@@ -48,27 +49,24 @@ void LacertaEditor::Start()
     HWND hwnd = m_editorWindow->GetHWND();
     RHI::Get()->InitializeRenderer((int*)hwnd, RendererType::RENDERER_WIN_DX11, width, height, 60);
     auto scenePass = RHI::Get()->CreateRenderPass("scene");
+    auto skyboxPass = RHI::Get()->CreateRenderPass("skybox");
     scenePass->SetRenderTargetIdx(1);
+    skyboxPass->SetRenderTargetIdx(1);
 
     // ---------------------------- Debug Scene Creation --------------------
 
     m_activeScene = new Scene("Demo scene");
 
-    // TODO this needs to be created first bc we want it to be rendered first. Isn't it stupid ? (rhetorical question, it is.)
     // -------------------------- Skybox Sphere Creation -----------------------
 
-    m_skyBoxGo = &AddMeshToScene("Skybox", L"Assets/Meshes/sphere_hq.obj", Vector3(0.0f, 0.0f, 0.0f));
+    m_skyBoxGo = &AddMeshToScene("Skybox", L"Assets/Meshes/cube.obj", Vector3(0.0f, 0.0f, 0.0f));
     auto& skyboxTf = m_skyBoxGo->GetComponent<TransformComponent>();
-    skyboxTf.SetScale(Vector3(1000.0f, 1000.0f, 1000.0f));
+    skyboxTf.SetScale(Vector3(1.0f, 1.0f, 1.0f));
     auto& skyBoxMeshComp = m_skyBoxGo->GetComponent<MeshComponent>();
     Texture* skyBoxTex = RHI::Get()->CreateTexture(L"Assets/Textures/skybox1.dds", 5);
-    Texture* irradianceTex = RHI::Get()->CreateTexture(L"Assets/Textures/skybox1IR.dds", 6);
-    Texture* BRDFLut = RHI::Get()->CreateTexture(L"Assets/Textures/ibl_brdf_lut.png", 7);
     skyBoxMeshComp.GetMaterial()->SetTexture(0, skyBoxTex);
-    skyBoxMeshComp.GetMaterial()->SetTexture(1, irradianceTex);
-    skyBoxMeshComp.GetMaterial()->SetTexture(2, BRDFLut);
     skyBoxMeshComp.GetMaterial()->SetShader("SkyboxShader");
-
+    
     // TODO compute irradiance texture instead of use pre computed dds file
 
     // ----------------------------- Debug GO Creation -----------------------
@@ -181,8 +179,9 @@ void LacertaEditor::Update()
 
     // TODO Camera pos & rot are updated here with some hard coded Matrix
     
-    // Constant Buffer Update 
-    SceneConstantBuffer* cc = new SceneConstantBuffer();
+    // Constant Buffer Update
+    auto cc = new SceneConstantBuffer();
+    auto skyboxCC = new SkyBoxConstantBuffer();
     cc->Time = m_globalTimer->Elapsed(); 
     
     cc->WorldMatrix.SetIdentity();
@@ -206,13 +205,16 @@ void LacertaEditor::Update()
     m_sceneCamera = worldCam;
     worldCam.Inverse();
     cc->ViewMatrix = worldCam;
+    skyboxCC->ViewMatrix = worldCam;
     
     // Update the perspective projection to the ImGui viewport size
     cc->ProjectionMatrix.SetPerspectiveFovLH(1.57f, (m_viewportCachedSize.X / m_viewportCachedSize.Y), 0.1f, 5000.0f);
+    skyboxCC->ProjectionMatrix.SetPerspectiveFovLH(1.57f, (m_viewportCachedSize.X / m_viewportCachedSize.Y), 0.1f, 5000.0f);
     m_sceneCameraProjection = cc->ProjectionMatrix;
 
     // Ambient lighting constant
     cc->GlobalAmbient = m_ambient;
+    skyboxCC->GlobalAmbient = m_ambient;
 
     // Directional Light set up
     Matrix4x4 lightRotationMatrix;
@@ -235,11 +237,6 @@ void LacertaEditor::Update()
         cc->PointLights[i].Enabled = false;
     }
     
-    // TODO remove this, render the skybox mesh with a different approach 
-    // We move the sphere skybox at camera pos
-    auto& skyboxTf = m_skyBoxGo->GetComponent<TransformComponent>();
-    skyboxTf.SetPosition(m_sceneCamera.GetTranslation());
-
     // Let's add the point lights to the Constant Buffer
     const auto pointLightsView = m_activeScene->m_registry.group<PointLightComponent>(entt::get<TransformComponent>);
     for(int i = 0; i < pointLightsView.size(); i++)
@@ -264,13 +261,28 @@ void LacertaEditor::Update()
     cc->DefaultColor = m_defaultColor;
 
     auto scenePass = RHI::Get()->GetRenderPass("scene");
+    auto skyboxPass = RHI::Get()->GetRenderPass("skybox");
+
+    scenePass->ClearGlobalBindables();
+    skyboxPass->ClearGlobalBindables();
     
     ConstantBuffer sceneCbuf = ConstantBuffer(cc, ConstantBufferType::SceneCbuf);
     scenePass->AddGlobalBindable(&sceneCbuf);
 
+    Texture* skyBoxTex = RHI::Get()->CreateTexture(L"Assets/Textures/skybox1.dds", 5);
+    Texture* irradianceTex = RHI::Get()->CreateTexture(L"Assets/Textures/skybox1IR.dds", 6);
+    Texture* BRDFLut = RHI::Get()->CreateTexture(L"Assets/Textures/ibl_brdf_lut.png", 7);
+    scenePass->AddGlobalBindable(irradianceTex);
+    scenePass->AddGlobalBindable(BRDFLut);
+    scenePass->AddGlobalBindable(skyBoxTex);
+
+    ConstantBuffer skyboxCbuf = ConstantBuffer(skyboxCC, ConstantBufferType::SkyBoxCbuf);
+    skyboxPass->AddGlobalBindable(&skyboxCbuf);
+
     // ----------------------------- Scene Draw Objects -----------------------
 
     scenePass->ClearDrawcalls();
+    skyboxPass->ClearDrawcalls();
 
     std::list<ConstantBuffer*> removeMe; // TODO remove me
 
@@ -279,7 +291,7 @@ void LacertaEditor::Update()
     {
         auto[transform, meshComponent] = tfMeshesGroup.get<TransformComponent, MeshComponent>(go);
 
-        if(meshComponent.GetMaterial() == nullptr)
+        if(meshComponent.GetMaterial() == nullptr || meshComponent.GetMaterial()->GetShader() == "SkyboxShader") // TODO skybox GO doesn't belong to this pass
             continue;
 
         Mesh* mesh = meshComponent.GetMesh();
@@ -312,7 +324,23 @@ void LacertaEditor::Update()
         }
     }
 
-    RHI::Get()->ExecuteRenderPass("scene", m_viewportCachedSize);
+    auto skyboxMeshComp = m_skyBoxGo->GetComponent<MeshComponent>();
+    auto skyboxMesh = skyboxMeshComp.GetMesh();
+    auto shapes = skyboxMesh->GetShapesData();
+    for(const auto shape : shapes)
+    {
+        auto mat = skyboxMeshComp.GetMaterial();
+        auto texs = mat->GetTextures();
+        
+        std::list<Bindable*> Bindables;
+        for(auto tex : texs)
+            Bindables.emplace_back(tex);
+    
+        skyboxPass->AddDrawcall(mat->GetShader(), shape, Bindables);
+    }
+
+    RHI::Get()->ExecuteRenderPass("scene", m_viewportCachedSize, true);
+    RHI::Get()->ExecuteRenderPass("skybox", m_viewportCachedSize, false);
 
     for(auto rmv : removeMe) // TODO remove me
         delete rmv;

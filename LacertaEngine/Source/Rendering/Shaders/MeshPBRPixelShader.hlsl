@@ -1,6 +1,4 @@
-#include "MeshShadersLayouts.hlsli"
-#include "ConstantBuffer.hlsli"
-#include "MeshConstantBuffer.hlsli"
+#include "SceneMeshShaderLayouts.hlsli"
 
 static const float PI = 3.1415926;
 static const float Epsilon = 0.00001;
@@ -145,7 +143,7 @@ float4 main(VertexOutput input) : SV_Target
     float3 specular = env * (Ks /* * envBRDF.x + envBRDF.y */);
     
     float3 ambiantLight = (Kd * diffuse + specular) * ao;
-
+    
     finalLight += ambiantLight * GlobalAmbient;
     
     return float4(finalLight, 1.0);
