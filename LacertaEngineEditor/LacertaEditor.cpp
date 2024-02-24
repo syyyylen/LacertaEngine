@@ -306,7 +306,7 @@ void LacertaEditor::Update()
             auto mat = meshComponent.GetMaterial();
 
             auto texs = mat->GetTextures();
-            std::list<Bindable*> DcBindables;
+            std::vector<Bindable*> DcBindables;
             for(auto tex : texs)
                 DcBindables.emplace_back(tex);
 
@@ -336,7 +336,7 @@ void LacertaEditor::Update()
         auto mat = skyboxMeshComp.GetMaterial();
         auto texs = mat->GetTextures();
         
-        std::list<Bindable*> Bindables;
+        std::vector<Bindable*> Bindables;
         for(auto tex : texs)
             Bindables.emplace_back(tex);
     

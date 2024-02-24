@@ -21,7 +21,7 @@ void RenderPass::AddGlobalBindable(Bindable* bindable)
     m_globalBindables.emplace_back(bindable);
 }
 
-void RenderPass::AddDrawcall(std::string shaderName, Drawable* drawable, std::list<Bindable*> bindables)
+void RenderPass::AddDrawcall(std::string shaderName, Drawable* drawable, std::vector<Bindable*> bindables)
 {
     auto dc = new Drawcall(shaderName, drawable, bindables);
     m_drawcalls.push_back(dc);

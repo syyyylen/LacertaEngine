@@ -50,9 +50,9 @@ public:
 
 protected:
     std::vector<RenderTarget*> m_renderTargets;
-    std::list<Drawcall*> m_drawcalls;
+    std::vector<Drawcall*> m_drawcalls;
     std::map<std::string, Shader*> m_shaders;
-    std::list<GraphicsResource*> m_graphicsResources;
+    std::vector<GraphicsResource*> m_graphicsResources;
     std::map<std::string, RenderPass*> m_renderPasses;
 };
 }
