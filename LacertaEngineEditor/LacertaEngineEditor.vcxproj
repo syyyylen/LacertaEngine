@@ -177,6 +177,7 @@
     <ClCompile Include="ImGui\UIPanels\DetailsPanel.cpp" />
     <ClCompile Include="ImGui\UIPanels\GlobalSettingsPanel.cpp" />
     <ClCompile Include="ImGui\UIPanels\SceneHierarchyPanel.cpp" />
+    <ClCompile Include="ImGui\UIPanels\TextureViewerPanel.cpp" />
     <ClCompile Include="ImGui\UIRenderer.cpp" />
     <ClCompile Include="LacertaEditor.cpp" />
   </ItemGroup>
@@ -195,6 +196,7 @@
     <ClInclude Include="ImGui\UIPanels\DetailsPanel.h" />
     <ClInclude Include="ImGui\UIPanels\GlobalSettingsPanel.h" />
     <ClInclude Include="ImGui\UIPanels\SceneHierarchyPanel.h" />
+    <ClInclude Include="ImGui\UIPanels\TextureViewerPanel.h" />
     <ClInclude Include="ImGui\UIRenderer.h" />
     <ClInclude Include="LacertaEditor.h" />
   </ItemGroup>

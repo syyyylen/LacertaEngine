@@ -2,12 +2,13 @@
 #include "imgui_impl_dx11.h"
 #include "imgui_impl_win32.h"
 #include "imgui_src/imgui.h"
-#include "Rendering/WinDX11/WinDX11Renderer.h"
-#include "Rendering/WinDX11/WinDX11RenderTarget.h"
 #include "UIPanels/DetailsPanel.h"
 #include "UIPanels/GlobalSettingsPanel.h"
 #include "UIPanels/SceneHierarchyPanel.h"
 #include "imgui_src/ImGuizmo.h"
+#include "Rendering/RenderTarget.h"
+#include "Rendering/WinDX11/WinDX11Renderer.h"
+#include "UIPanels/TextureViewerPanel.h"
 
 namespace LacertaEngineEditor
 {
@@ -73,6 +74,7 @@ void UIRenderer::InitializeUI(HWND hwnd, LacertaEditor* editor)
     m_panels.push_back(new GlobalSettingsPanel());
     m_panels.push_back(new SceneHierarchyPanel());
     m_panels.push_back(new DetailsPanel());
+    m_panels.push_back(new TextureViewerPanel());
 
     for(auto panel : m_panels)
         panel->Start();
@@ -151,10 +153,8 @@ void UIRenderer::Update()
     }
 
     //Viewport 
-    
-    // TODO get the infos more properly + DX11 agnostic 
-    WinDX11Renderer* Dx11Renderer = (WinDX11Renderer*)RHI::Get()->GetRenderer(); 
-    WinDX11RenderTarget* SceneTextureRenderTarget = (WinDX11RenderTarget*)Dx11Renderer->GetRenderTarget(1);
+    auto renderer = RHI::Get()->GetRenderer(); 
+    auto SceneTextureRenderTarget = renderer->GetRenderTarget(1);
     
     if(SceneTextureRenderTarget != nullptr)
     {
@@ -165,7 +165,7 @@ void UIRenderer::Update()
 
                 ImVec2 viewportSize = ImGui::GetContentRegionAvail();
                 m_editor->SetViewportCachedSize(Vector2(viewportSize.x, viewportSize.y));
-                ImGui::Image((void*)SceneTextureRenderTarget->GetTextureShaderResView(), viewportSize);
+                ImGui::Image(SceneTextureRenderTarget->GetSRV(), viewportSize);
 
                 // Gizmos
                 if(m_editor->HasSelectedGo())

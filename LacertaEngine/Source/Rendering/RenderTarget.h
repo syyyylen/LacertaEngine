@@ -17,8 +17,14 @@ public:
     virtual void Clear(Renderer* renderer, Vector4 color) = 0;
     virtual void SetViewportSize(Renderer* renderer, UINT width, UINT height) = 0;
     virtual void Resize(Renderer* renderer, unsigned width, unsigned height) = 0;
+    virtual void* GetSRV() = 0;
 
-private:
+    void SetRenderToTexture(bool renderToTexture) { m_renderToTexture = renderToTexture; }
+    bool RenderToTexture() const { return m_renderToTexture; }
+
+protected:
+    bool m_renderToTexture;
+    
     int m_width;
     int m_length;
 };
