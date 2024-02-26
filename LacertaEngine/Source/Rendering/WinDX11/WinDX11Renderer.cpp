@@ -215,15 +215,6 @@ void WinDX11Renderer::Initialize(int* context, int width, int height, int target
     }
 }
 
-void WinDX11Renderer::CreateBackbufferRenderTarget(int width, int height)
-{
-    LOG(Debug, "WinDX11Renderer : Create Render Target");
-
-    WinDX11RenderTarget* newRendTarg = new WinDX11RenderTarget();
-    newRendTarg->Initialize(this, width, height);
-    m_renderTargets.emplace_back(newRendTarg);
-}
-
 void WinDX11Renderer::LoadShaders()
 {
     LOG(Debug, "Loading Shaders");
@@ -394,11 +385,10 @@ void WinDX11Renderer::SetRasterizerCullState(bool cullFront)
     cullFront ? m_deviceContext->RSSetState(m_rasterizerCullFrontState) :  m_deviceContext->RSSetState(m_rasterizerCullBackState); 
 }
 
-RenderTarget* WinDX11Renderer::CreateRenderTarget(int width, int height, int& outRTidx)
+RenderTarget* WinDX11Renderer::CreateRenderTarget(int width, int height, RenderTargetType renderTargetType, int& outRTidx)
 {
     WinDX11RenderTarget* textureRendTarg = new WinDX11RenderTarget();
-    textureRendTarg->SetRenderToTexture(true);
-    textureRendTarg->Initialize(this, width, height);
+    textureRendTarg->Initialize(this, width, height, renderTargetType);
     m_renderTargets.emplace_back(textureRendTarg);
 
     outRTidx = (int)m_renderTargets.size() - 1;
