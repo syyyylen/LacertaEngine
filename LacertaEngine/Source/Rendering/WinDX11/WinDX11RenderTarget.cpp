@@ -206,5 +206,10 @@ void WinDX11RenderTarget::SetViewportSize(Renderer* renderer, UINT width, UINT h
     vp.MaxDepth = 1.0f;
     localRenderer->GetImmediateContext()->RSSetViewports(1, &vp);
 }
+
+void* WinDX11RenderTarget::GetSRV()
+{
+    return (void*)GetTextureShaderResView();
+}
     
 }

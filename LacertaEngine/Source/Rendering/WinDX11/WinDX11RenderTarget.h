@@ -18,15 +18,12 @@ public:
     void Resize(Renderer* renderer, unsigned width, unsigned height) override;
     void Clear(Renderer* renderer, Vector4 color) override;
     void SetViewportSize(Renderer* renderer, UINT width, UINT height) override;
-
-    void SetRenderToTexture(bool renderToTexture) { m_renderToTexture = renderToTexture; }
-    bool RenderToTexture() const { return m_renderToTexture; }
+    void* GetSRV() override;
 
     ID3D11ShaderResourceView* GetTextureShaderResView() const { return m_targetTextureShaderResView; }
     ID3D11RenderTargetView* GetRtv() { return m_renderTarget; }
 
 private:
-    bool m_renderToTexture;
     ID3D11ShaderResourceView* m_targetTextureShaderResView;
     ID3D11RenderTargetView* m_renderTarget;
     ID3D11DepthStencilView* m_depthStencil;
