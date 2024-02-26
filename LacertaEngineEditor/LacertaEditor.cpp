@@ -50,6 +50,8 @@ void LacertaEditor::Start()
     RHI::Create();
     HWND hwnd = m_editorWindow->GetHWND();
     RHI::Get()->InitializeRenderer((int*)hwnd, RendererType::RENDERER_WIN_DX11, width, height, 60);
+
+    // Render passes
     auto scenePass = RHI::Get()->CreateRenderPass("scene");
     auto skyboxPass = RHI::Get()->CreateRenderPass("skybox");
     scenePass->SetRenderTargetIdx(1);
@@ -304,7 +306,6 @@ void LacertaEditor::Update()
         for(const auto shape : shapes)
         {
             auto mat = meshComponent.GetMaterial();
-
             auto texs = mat->GetTextures();
             std::vector<Bindable*> DcBindables;
             for(auto tex : texs)
@@ -324,6 +325,7 @@ void LacertaEditor::Update()
             MeshesBuffers[i].SetData(meshCb, ConstantBufferType::MeshCbuf);
             DcBindables.emplace_back(&MeshesBuffers[i]);
             i++;
+            
             scenePass->AddDrawcall(mat->GetShader(), shape, DcBindables);
         }
     }
