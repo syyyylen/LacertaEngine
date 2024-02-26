@@ -8,6 +8,7 @@
 #include "Rendering/Drawcall.h"
 #include "Rendering/RenderPass.h"
 #include "Rendering/SkyBoxPassLayouts.h"
+#include "Rendering/Texture.h"
 
 #define MAX_MESHES 50
 
@@ -50,12 +51,13 @@ void LacertaEditor::Start()
     RHI::Create();
     HWND hwnd = m_editorWindow->GetHWND();
     RHI::Get()->InitializeRenderer((int*)hwnd, RendererType::RENDERER_WIN_DX11, width, height, 60);
+    RHI::Get()->CreateRenderTarget(width, height, m_sceneRTidx);
 
     // Render passes
     auto scenePass = RHI::Get()->CreateRenderPass("scene");
     auto skyboxPass = RHI::Get()->CreateRenderPass("skybox");
-    scenePass->SetRenderTargetIdx(1);
-    skyboxPass->SetRenderTargetIdx(1);
+    scenePass->SetRenderTargetIdx(m_sceneRTidx);
+    skyboxPass->SetRenderTargetIdx(m_sceneRTidx);
     skyboxPass->SetCullfront(true);
 
     // ---------------------------- Debug Scene Creation --------------------

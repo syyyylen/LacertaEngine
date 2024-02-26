@@ -48,7 +48,7 @@ void RHI::InitializeRenderer(int* context, RendererType type, int width, int hei
     if(m_renderer)
     {
         m_renderer->Initialize(context, width, height, targetRefreshRate);
-        m_renderer->CreateRenderTarget(width, height);
+        m_renderer->CreateBackbufferRenderTarget(width, height);
         m_renderer->LoadShaders();
     }
 }
@@ -81,6 +81,16 @@ void RHI::PresentSwapChain()
 {
     if(m_renderer)
         m_renderer->PresentSwapChain();
+}
+
+RenderTarget* RHI::CreateRenderTarget(int width, int height, int& outRTidx)
+{
+    return m_renderer->CreateRenderTarget(width, height, outRTidx);
+}
+
+RenderTarget* RHI::GetRenderTarget(int idx)
+{
+    return m_renderer->GetRenderTarget(idx);
 }
 
 RenderPass* RHI::CreateRenderPass(std::string name)

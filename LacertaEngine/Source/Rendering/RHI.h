@@ -2,9 +2,7 @@
 
 #include "GraphicsResource.h"
 #include "Renderer.h"
-#include "Texture.h"
 #include "../Core.h"
-#include "../Logger/Logger.h"
 
 namespace LacertaEngine
 {
@@ -33,6 +31,8 @@ public:
     void SetBackbufferViewportSize(int width, int height);
     void SetRasterizerState(bool cullFront);
     void PresentSwapChain();
+    RenderTarget* CreateRenderTarget(int width, int height, int& outRTidx);
+    RenderTarget* GetRenderTarget(int idx);
     RenderPass* CreateRenderPass(std::string name);
     RenderPass* GetRenderPass(std::string name);
     void DeleteRenderPass(std::string name);
