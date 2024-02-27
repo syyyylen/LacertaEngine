@@ -1,6 +1,7 @@
 ﻿#include "WinDX11RenderTarget.h"
 
 #include "WinDX11Renderer.h"
+#include "WinDX11Texture.h"
 #include "../../Logger/Logger.h"
 
 namespace LacertaEngine
@@ -13,6 +14,7 @@ WinDX11RenderTarget::WinDX11RenderTarget()
 WinDX11RenderTarget::~WinDX11RenderTarget()
 {
     delete m_renderTarget;
+    delete[] m_rtv;
 }
 
 void WinDX11RenderTarget::Initialize(Renderer* renderer, int width, int height, RenderTargetType renderTargetType)
@@ -29,6 +31,12 @@ void WinDX11RenderTarget::SetActive(Renderer* renderer)
 {
     WinDX11Renderer* localRenderer = (WinDX11Renderer*)renderer;
     localRenderer->GetImmediateContext()->OMSetRenderTargets(1, &m_renderTarget, m_depthStencil);
+}
+
+void WinDX11RenderTarget::SetActive(Renderer* renderer, int idx)
+{
+    WinDX11Renderer* localRenderer = (WinDX11Renderer*)renderer;
+    localRenderer->GetImmediateContext()->OMSetRenderTargets(1, &m_rtv[idx], m_depthStencil);
 }
 
 void WinDX11RenderTarget::ReloadBuffers(Renderer* renderer, unsigned width, unsigned height)
@@ -115,7 +123,56 @@ void WinDX11RenderTarget::ReloadBuffers(Renderer* renderer, unsigned width, unsi
 
     case RenderTargetType::TextureCube:
         {
-            // TODO implement
+            D3D11_TEXTURE2D_DESC textureCubeDesc;
+            textureCubeDesc.Width = 64;
+            textureCubeDesc.Height = 64;
+            textureCubeDesc.MipLevels = 1;
+            textureCubeDesc.ArraySize = 6;
+            textureCubeDesc.Format = DXGI_FORMAT_R16G16B16A16_FLOAT;
+            textureCubeDesc.Usage = D3D11_USAGE_DEFAULT;
+            textureCubeDesc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
+            textureCubeDesc.CPUAccessFlags = 0;
+            textureCubeDesc.MiscFlags = D3D11_RESOURCE_MISC_TEXTURECUBE | D3D11_RESOURCE_MISC_GENERATE_MIPS;
+            textureCubeDesc.SampleDesc.Count = 1;
+            textureCubeDesc.SampleDesc.Quality = 0;
+            
+            D3D11_RENDER_TARGET_VIEW_DESC rtvDesc;
+            ZeroMemory(&rtvDesc, sizeof(rtvDesc));
+            rtvDesc.Format = textureCubeDesc.Format;
+            rtvDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2DARRAY;
+            rtvDesc.Texture2DArray.ArraySize = 1;
+            rtvDesc.Texture2DArray.MipSlice = 0;
+            
+            D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc;
+            ZeroMemory(&srvDesc, sizeof(srvDesc));
+            srvDesc.Format = textureCubeDesc.Format;
+            srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURECUBE;
+            srvDesc.TextureCube.MostDetailedMip = 0;
+            srvDesc.TextureCube.MipLevels = 1;
+
+            hr = device->CreateTexture2D(&textureCubeDesc, NULL, &buffer);
+            if(FAILED(hr))
+            {
+                std::string errorMsg = std::system_category().message(hr);
+                LOG(Error, errorMsg);
+                LOG(Error, "Failed scene texture creation");
+                throw std::exception("Failed scene texture creation");
+            }
+
+            hr = device->CreateShaderResourceView(buffer, &srvDesc, &m_targetTextureShaderResView);
+            if(FAILED(hr))
+            {
+                std::string errorMsg = std::system_category().message(hr);
+                LOG(Error, errorMsg);
+                LOG(Error, "Failed Scene texture Shader Res View creation");
+                throw std::exception("Failed Scene texture Shader Res View creation");
+            }
+
+            for(int i = 0; i < 6; i++)
+            {
+                rtvDesc.Texture2DArray.FirstArraySlice = i;
+                device->CreateRenderTargetView(buffer, &rtvDesc, &m_rtv[i]);
+            }
 
             break;
         }
@@ -213,12 +270,19 @@ void WinDX11RenderTarget::Clear(Renderer* renderer, Vector4 color)
     ctx->ClearDepthStencilView(m_depthStencil, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1, 0);
 }
 
+void WinDX11RenderTarget::Clear(Renderer* renderer, Vector4 color, int idx)
+{
+    ID3D11DeviceContext* ctx = ((WinDX11Renderer*)renderer)->GetImmediateContext();
+    FLOAT clearColor[] = { color.X, color.Y, color.Z, color.W };
+    ctx->ClearRenderTargetView(m_rtv[idx], clearColor);
+}
+
 void WinDX11RenderTarget::SetViewportSize(Renderer* renderer, UINT width, UINT height)
 {
     WinDX11Renderer* localRenderer = (WinDX11Renderer*)renderer;
     D3D11_VIEWPORT vp = {};
-    vp.Width = width;
-    vp.Height = height;
+    vp.Width = (float)width;
+    vp.Height = (float)height;
     vp.MinDepth = 0.0f;
     vp.MaxDepth = 1.0f;
     localRenderer->GetImmediateContext()->RSSetViewports(1, &vp);
@@ -227,6 +291,14 @@ void WinDX11RenderTarget::SetViewportSize(Renderer* renderer, UINT width, UINT h
 void* WinDX11RenderTarget::GetSRV()
 {
     return (void*)GetTextureShaderResView();
+}
+
+Texture* WinDX11RenderTarget::CreateTextureFromRT(int texBindIdx)
+{
+    auto tex = new WinDX11Texture();
+    tex->SetSRV(GetTextureShaderResView());
+    tex->SetTextureIdx(texBindIdx);
+    return tex;
 }
     
 }

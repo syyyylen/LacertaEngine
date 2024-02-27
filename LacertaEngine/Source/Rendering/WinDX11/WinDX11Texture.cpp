@@ -13,7 +13,6 @@ WinDX11Texture::WinDX11Texture()
 
 WinDX11Texture::~WinDX11Texture()
 {
-    m_resource->Release();
     m_resourceView->Release();
 }
 
@@ -71,7 +70,6 @@ void WinDX11Texture::CreateResource(const wchar_t* filePath, Renderer* renderer)
             throw std::exception("Texture not created");
         }
 
-        m_resource = Tex;
         m_resourceView = Srv;
 
         return;
@@ -113,7 +111,6 @@ void WinDX11Texture::CreateResource(const wchar_t* filePath, Renderer* renderer)
         throw std::exception("Texture not created");
     }
 
-    m_resource = Tex;
     m_resourceView = Srv;
 }
 
@@ -126,5 +123,9 @@ void WinDX11Texture::Bind(Renderer* renderer)
     ctx->PSSetShaderResources(m_idx, 1, &m_resourceView);
 }
 
+void WinDX11Texture::SetSRV(ID3D11ShaderResourceView* srv)
+{
+    m_resourceView = srv;
+}
 }
 

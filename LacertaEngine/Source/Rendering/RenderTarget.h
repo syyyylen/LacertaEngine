@@ -1,10 +1,12 @@
 ﻿#pragma once
 #include "../Core.h"
-#include "Renderer.h"
 #include "../Maths/Vector4.h"
+#include "Renderer.h"
 
 namespace LacertaEngine
 {
+
+class Texture;
 
 enum RenderTargetType
 {
@@ -21,10 +23,13 @@ public:
 
     virtual void Initialize(Renderer* renderer, int width, int height, RenderTargetType renderTargetType) = 0;
     virtual void SetActive(Renderer* renderer) = 0;
+    virtual void SetActive(Renderer* renderer, int idx) = 0;
     virtual void Clear(Renderer* renderer, Vector4 color) = 0;
+    virtual void Clear(Renderer* renderer, Vector4 color, int idx) = 0;
     virtual void SetViewportSize(Renderer* renderer, UINT width, UINT height) = 0;
     virtual void Resize(Renderer* renderer, unsigned width, unsigned height) = 0;
     virtual void* GetSRV() = 0;
+    virtual Texture* CreateTextureFromRT(int texBindIdx) = 0;
 
     bool RenderToTexture() const { return m_renderTargetType == RenderTargetType::Texture2D; }
 
