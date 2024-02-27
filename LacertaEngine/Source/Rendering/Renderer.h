@@ -18,6 +18,7 @@ class Drawable;
 class Bindable;
 class RenderPass;
 enum ConstantBufferType;
+enum RenderTargetType;
 
 class LACERTAENGINE_API Renderer
 {
@@ -26,13 +27,13 @@ public:
     virtual ~Renderer();
 
     virtual void Initialize(int* context, int width, int height, int targetRefreshRate) = 0;
-    virtual void CreateRenderTarget(int width, int height) = 0;
     virtual void LoadShaders() = 0;
     virtual void SetBackbufferRenderTargetActive() = 0;
     virtual void OnResizeWindow(unsigned width, unsigned height) = 0;
     virtual void PresentSwapChain() = 0;
     virtual void UpdateConstantBuffer(void* buffer, ConstantBufferType cbufType) = 0;
     virtual void SetRasterizerCullState(bool cullFront) = 0;
+    virtual RenderTarget* CreateRenderTarget(int width, int height, RenderTargetType renderTargetType, int& outRTidx) = 0;
     RenderPass* CreateRenderPass(std::string name);
     RenderPass* GetRenderPass(std::string name);
     void DeleteRenderPass(std::string name);

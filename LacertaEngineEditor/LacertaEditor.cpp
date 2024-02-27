@@ -7,7 +7,9 @@
 #include "Rendering/ConstantBuffer.h"
 #include "Rendering/Drawcall.h"
 #include "Rendering/RenderPass.h"
+#include "Rendering/RenderTarget.h"
 #include "Rendering/SkyBoxPassLayouts.h"
+#include "Rendering/Texture.h"
 
 #define MAX_MESHES 50
 
@@ -43,19 +45,20 @@ void LacertaEditor::Start()
     RECT windowRect = m_editorWindow->GetClientWindowRect();
     int width = windowRect.right - windowRect.left;
     int height = windowRect.bottom - windowRect.top;
-    InputSystem::Get()->SetCursorPosition(Vector2(width/2.0f, height/2.0f));
+    InputSystem::Get()->SetCursorPosition(Vector2((float)width/2.0f, (float)height/2.0f));
 
     // ----------------------- Graphics Engine Creation & Renderer Initialization  ------------------------
     
     RHI::Create();
     HWND hwnd = m_editorWindow->GetHWND();
     RHI::Get()->InitializeRenderer((int*)hwnd, RendererType::RENDERER_WIN_DX11, width, height, 60);
+    RHI::Get()->CreateRenderTarget(width, height, RenderTargetType::Texture2D, m_sceneRTidx);
 
     // Render passes
     auto scenePass = RHI::Get()->CreateRenderPass("scene");
     auto skyboxPass = RHI::Get()->CreateRenderPass("skybox");
-    scenePass->SetRenderTargetIdx(1);
-    skyboxPass->SetRenderTargetIdx(1);
+    scenePass->SetRenderTargetIdx(m_sceneRTidx);
+    skyboxPass->SetRenderTargetIdx(m_sceneRTidx);
     skyboxPass->SetCullfront(true);
 
     // ---------------------------- Debug Scene Creation --------------------
@@ -72,7 +75,14 @@ void LacertaEditor::Start()
     skyBoxMeshComp.GetMaterial()->SetTexture(0, skyBoxTex);
     skyBoxMeshComp.GetMaterial()->SetShader("SkyboxShader");
     
-    // TODO compute irradiance texture instead of use pre computed dds file
+    // -------------------------- IBL Irradiance Pass -----------------------
+
+    /*
+    auto irradiancePass = RHI::Get()->CreateRenderPass("irradiance");
+    RHI::Get()->CreateRenderTarget(width, height, RenderTargetType::TextureCube, m_irradianceRTidx);
+    irradiancePass->SetRenderTargetIdx(m_irradianceRTidx);
+    irradiancePass->SetCullfront(true);
+    */
 
     // ----------------------------- Debug GO Creation -----------------------
 

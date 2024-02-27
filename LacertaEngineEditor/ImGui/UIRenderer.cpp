@@ -153,8 +153,7 @@ void UIRenderer::Update()
     }
 
     //Viewport 
-    auto renderer = RHI::Get()->GetRenderer(); 
-    auto SceneTextureRenderTarget = renderer->GetRenderTarget(1);
+    auto SceneTextureRenderTarget = RHI::Get()->GetRenderTarget(1);
     
     if(SceneTextureRenderTarget != nullptr)
     {

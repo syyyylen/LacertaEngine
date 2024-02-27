@@ -37,6 +37,7 @@ void RHI::InitializeRenderer(int* context, RendererType type, int width, int hei
     LOG(Debug, "GraphicsEngine : Initialize Renderer");
 
     m_rendererType = type;
+    int backbufferIdx;
 
     switch (m_rendererType)
     {
@@ -48,7 +49,7 @@ void RHI::InitializeRenderer(int* context, RendererType type, int width, int hei
     if(m_renderer)
     {
         m_renderer->Initialize(context, width, height, targetRefreshRate);
-        m_renderer->CreateRenderTarget(width, height);
+        m_renderer->CreateRenderTarget(width, height, RenderTargetType::BackBuffer, backbufferIdx);
         m_renderer->LoadShaders();
     }
 }
@@ -81,6 +82,16 @@ void RHI::PresentSwapChain()
 {
     if(m_renderer)
         m_renderer->PresentSwapChain();
+}
+
+RenderTarget* RHI::CreateRenderTarget(int width, int height, RenderTargetType renderTargetType, int& outRTidx)
+{
+    return m_renderer->CreateRenderTarget(width, height, renderTargetType, outRTidx);
+}
+
+RenderTarget* RHI::GetRenderTarget(int idx)
+{
+    return m_renderer->GetRenderTarget(idx);
 }
 
 RenderPass* RHI::CreateRenderPass(std::string name)

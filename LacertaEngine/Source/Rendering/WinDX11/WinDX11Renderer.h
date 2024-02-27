@@ -22,14 +22,14 @@ public:
     ~WinDX11Renderer();
 
     void Initialize(int* context, int width, int height, int targetRefreshRate) override;
-    void CreateRenderTarget(int width, int height) override;
     void LoadShaders() override;
-    
     void SetBackbufferRenderTargetActive() override;
     void PresentSwapChain() override;
     void OnResizeWindow(unsigned width, unsigned height) override;
     void UpdateConstantBuffer(void* buffer, ConstantBufferType cbufType) override;
     void SetRasterizerCullState(bool cullFront) override;
+
+    RenderTarget* CreateRenderTarget(int width, int height, RenderTargetType renderTargetType, int& outRTidx) override;
 
     ID3D11Buffer* CreateVBO(std::vector<SceneVertexMesh> vertices);
     ID3D11Buffer* CreateIBO(std::vector<unsigned> indices);
