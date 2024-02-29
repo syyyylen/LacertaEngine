@@ -219,9 +219,9 @@ void WinDX11Renderer::LoadShaders()
 {
     LOG(Debug, "Loading Shaders");
 
-    // m_shaders.emplace("MeshShader", CompileShader(L"../LacertaEngine/Source/Rendering/Shaders/MeshVertex.hlsl", L"../LacertaEngine/Source/Rendering/Shaders/MeshPixelShader.hlsl"));
     m_shaders.emplace("MeshPBRShader", CompileShader(L"../LacertaEngine/Source/Rendering/Shaders/MeshVertex.hlsl", L"../LacertaEngine/Source/Rendering/Shaders/MeshPBRPixelShader.hlsl"));
     m_shaders.emplace("SkyboxShader", CompileShader(L"../LacertaEngine/Source/Rendering/Shaders/SkyBoxVertexShader.hlsl", L"../LacertaEngine/Source/Rendering/Shaders/SkyBoxPixelShader.hlsl"));
+    m_shaders.emplace("IrradianceShader", CompileShader(L"../LacertaEngine/Source/Rendering/Shaders/SkyBoxVertexShader.hlsl", L"../LacertaEngine/Source/Rendering/Shaders/IrradiancePixelShader.hlsl"));
 }
 
 ID3D11Buffer* WinDX11Renderer::CreateVBO(std::vector<SceneVertexMesh> vertices)

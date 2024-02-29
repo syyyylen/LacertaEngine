@@ -14,6 +14,7 @@ public:
     virtual void CreateResource(const wchar_t* filePath, Renderer* renderer) = 0;
     virtual void SetTextureIdx(int idx) { m_idx = idx; }
     virtual void Bind(Renderer* renderer) = 0;
+    virtual void* GetTextureSRV() = 0;
 
 protected:
     int m_idx;
