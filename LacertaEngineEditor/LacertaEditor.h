@@ -77,6 +77,9 @@ public:
 
     Vector4 m_defaultColor = Vector4(1.0f, 1.0f, 1.0f, 1.0f);
 
+    Texture* m_irradianceTex; // TODO clean this
+    Texture* m_skyBoxTex; // TODO clean this
+
 private:
     EditorWindow* m_editorWindow;
     Timer* m_globalTimer;

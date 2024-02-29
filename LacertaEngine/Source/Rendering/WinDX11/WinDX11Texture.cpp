@@ -127,5 +127,11 @@ void WinDX11Texture::SetSRV(ID3D11ShaderResourceView* srv)
 {
     m_resourceView = srv;
 }
+
+void* WinDX11Texture::GetTextureSRV()
+{
+    return m_resourceView;
+}
+    
 }
 

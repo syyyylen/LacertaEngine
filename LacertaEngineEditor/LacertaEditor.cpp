@@ -71,14 +71,14 @@ void LacertaEditor::Start()
     auto& skyboxTf = m_skyBoxGo->GetComponent<TransformComponent>();
     skyboxTf.SetScale(Vector3(1.0f, 1.0f, 1.0f));
     auto& skyBoxMeshComp = m_skyBoxGo->GetComponent<MeshComponent>();
-    Texture* skyBoxTex = RHI::Get()->CreateTexture(L"Assets/Textures/skybox1.dds", 5);
-    skyBoxMeshComp.GetMaterial()->SetTexture(0, skyBoxTex);
+    m_skyBoxTex = RHI::Get()->CreateTexture(L"Assets/Textures/skybox1.dds", 5);
+    skyBoxMeshComp.GetMaterial()->SetTexture(0, m_skyBoxTex);
     skyBoxMeshComp.GetMaterial()->SetShader("SkyboxShader");
     
     // -------------------------- IBL Irradiance Pass -----------------------
 
     /*
-    auto irradiancePass = RHI::Get()->CreateRenderPass("irradiance");
+    auto irradiancePass = RHI::Get()->CreateRenderPass("IrradiancePass");
     RHI::Get()->CreateRenderTarget(64, 64, RenderTargetType::TextureCube, m_irradianceRTidx);
     irradiancePass->SetRenderTargetIdx(m_irradianceRTidx);
     irradiancePass->SetCullfront(true);
@@ -87,7 +87,7 @@ void LacertaEditor::Start()
     auto shapeData = mesh->GetShapesData();
     auto cubeShape = shapeData[0];
     std::vector<Bindable*> bindables;
-    irradiancePass->AddDrawcall("TODO", cubeShape, bindables);
+    irradiancePass->AddDrawcall("IrradianceShader", cubeShape, bindables);
     
     auto RT = RHI::Get()->GetRenderTarget(m_irradianceRTidx);
 
@@ -95,15 +95,27 @@ void LacertaEditor::Start()
     {
         auto Renderer = RHI::Get()->GetRenderer();
         RT->SetActive(Renderer, i);
-        RT->Clear(Renderer, Vector4(0.0f, 0.0f, 0.0f, 0.0f));
+        RT->Clear(Renderer, Vector4(255.0f, 240.0f, 0.0f, 1.0f), i);
 
-        // TODO set active convolution shader
-        // TODO set camera matrix (view & projection)
-        // TODO execute pass
+        auto skyboxCC = new SkyBoxConstantBuffer();
+        if (i == 0) skyboxCC->ViewMatrix.SetRotationY(90.0f);
+        if (i == 1) skyboxCC->ViewMatrix.SetRotationY(270.0f);
+        if (i == 2) skyboxCC->ViewMatrix.SetRotationX(-90.0f);
+        if (i == 3) skyboxCC->ViewMatrix.SetRotationX(90.0f);
+        if (i == 4) skyboxCC->ViewMatrix.SetIdentity();
+        if (i == 5) skyboxCC->ViewMatrix.SetRotationY(180.0f);
+        skyboxCC->ProjectionMatrix.SetPerspectiveFovLH(0.5f * 3.1415926f, 1.0f, 0.1f, 100.0f);
+
+        ConstantBuffer skyboxCbuf = ConstantBuffer(skyboxCC, ConstantBufferType::SkyBoxCbuf);
+        irradiancePass->AddGlobalBindable(&skyboxCbuf);
+        irradiancePass->AddGlobalBindable(m_skyBoxTex);
+        
+        RHI::Get()->ExecuteRenderPass("IrradiancePass", Vector2(64, 64), false);
+
+        irradiancePass->ClearGlobalBindables();
     }
 
-    auto diffuseIrradiance = RT->CreateTextureFromRT(6);
-    // TODO delete the render target
+    m_irradianceTex = RT->CreateTextureFromRT(6);
     */
 
     // ----------------------------- Debug GO Creation -----------------------
@@ -306,12 +318,11 @@ void LacertaEditor::Update()
     ConstantBuffer sceneCbuf = ConstantBuffer(cc, ConstantBufferType::SceneCbuf);
     scenePass->AddGlobalBindable(&sceneCbuf);
 
-    Texture* skyBoxTex = RHI::Get()->CreateTexture(L"Assets/Textures/skybox1.dds", 5);
     Texture* irradianceTex = RHI::Get()->CreateTexture(L"Assets/Textures/skybox1IR.dds", 6);
     Texture* BRDFLut = RHI::Get()->CreateTexture(L"Assets/Textures/ibl_brdf_lut.png", 7);
     scenePass->AddGlobalBindable(irradianceTex);
     scenePass->AddGlobalBindable(BRDFLut);
-    scenePass->AddGlobalBindable(skyBoxTex);
+    scenePass->AddGlobalBindable(m_skyBoxTex);
 
     ConstantBuffer skyboxCbuf = ConstantBuffer(skyboxCC, ConstantBufferType::SkyBoxCbuf);
     skyboxPass->AddGlobalBindable(&skyboxCbuf);

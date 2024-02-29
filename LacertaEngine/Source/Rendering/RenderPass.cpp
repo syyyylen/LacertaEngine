@@ -30,7 +30,7 @@ void RenderPass::AddDrawcall(std::string shaderName, Drawable* drawable, std::ve
 void RenderPass::Pass(Renderer* renderer, Vector2 renderTargetSize, bool clear)
 {
     auto RT = renderer->GetRenderTarget(m_renderTargetIdx);
-    if(RT->GetRenderTargetType() != RenderTargetType::TextureCube) // for texture cubes (multiple RT) user need to set active and clear by hand
+    if(RT->GetRenderTargetType() != RenderTargetType::TextureCube) // for texture cubes (multiple RT) user need to set active and clear by hand // TODO this can be improved a lot
     {
         RT->SetViewportSize(renderer, (UINT)renderTargetSize.X, (UINT)renderTargetSize.Y);
         if(m_cachedRenderTargetSize.X != renderTargetSize.X || m_cachedRenderTargetSize.Y != renderTargetSize.Y)

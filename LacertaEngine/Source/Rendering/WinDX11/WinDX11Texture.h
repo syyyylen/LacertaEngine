@@ -15,6 +15,7 @@ public:
     void CreateResource(const wchar_t* filePath, Renderer* renderer) override;
     void Bind(Renderer* renderer) override;
     void SetSRV(ID3D11ShaderResourceView* srv);
+    void* GetTextureSRV() override;
 
 private:
     ID3D11ShaderResourceView* m_resourceView;
