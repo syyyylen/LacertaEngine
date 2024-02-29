@@ -30,17 +30,20 @@ void RenderPass::AddDrawcall(std::string shaderName, Drawable* drawable, std::ve
 void RenderPass::Pass(Renderer* renderer, Vector2 renderTargetSize, bool clear)
 {
     auto RT = renderer->GetRenderTarget(m_renderTargetIdx);
-    RT->SetViewportSize(renderer, (UINT)renderTargetSize.X, (UINT)renderTargetSize.Y);
-    if(m_cachedRenderTargetSize.X != renderTargetSize.X || m_cachedRenderTargetSize.Y != renderTargetSize.Y)
+    if(RT->GetRenderTargetType() != RenderTargetType::TextureCube) // for texture cubes (multiple RT) user need to set active and clear by hand
     {
-        RT->Resize(renderer, renderTargetSize.X, renderTargetSize.Y);
-        m_cachedRenderTargetSize = renderTargetSize;
+        RT->SetViewportSize(renderer, (UINT)renderTargetSize.X, (UINT)renderTargetSize.Y);
+        if(m_cachedRenderTargetSize.X != renderTargetSize.X || m_cachedRenderTargetSize.Y != renderTargetSize.Y)
+        {
+            RT->Resize(renderer, renderTargetSize.X, renderTargetSize.Y);
+            m_cachedRenderTargetSize = renderTargetSize;
+        }
+
+        RT->SetActive(renderer);
+        if(clear) // TODO remove this, this has nothing to do here
+            RT->Clear(renderer, Vector4(0.0f, 0.0f, 0.0f, 0.0f));
     }
-
-    RT->SetActive(renderer);
-    if(clear) // TODO remove this, this has nothing to do here
-        RT->Clear(renderer, Vector4(0.0f, 0.0f, 0.0f, 0.0f));
-
+    
     RHI::Get()->SetRasterizerState(m_cullfront);
     
     for(auto bindable : m_globalBindables)

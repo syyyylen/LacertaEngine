@@ -79,9 +79,31 @@ void LacertaEditor::Start()
 
     /*
     auto irradiancePass = RHI::Get()->CreateRenderPass("irradiance");
-    RHI::Get()->CreateRenderTarget(width, height, RenderTargetType::TextureCube, m_irradianceRTidx);
+    RHI::Get()->CreateRenderTarget(64, 64, RenderTargetType::TextureCube, m_irradianceRTidx);
     irradiancePass->SetRenderTargetIdx(m_irradianceRTidx);
     irradiancePass->SetCullfront(true);
+
+    auto mesh = RHI::Get()->CreateMesh(L"Assets/Meshes/cube.obj");
+    auto shapeData = mesh->GetShapesData();
+    auto cubeShape = shapeData[0];
+    std::vector<Bindable*> bindables;
+    irradiancePass->AddDrawcall("TODO", cubeShape, bindables);
+    
+    auto RT = RHI::Get()->GetRenderTarget(m_irradianceRTidx);
+
+    for(int i = 0; i < 6; i++)
+    {
+        auto Renderer = RHI::Get()->GetRenderer();
+        RT->SetActive(Renderer, i);
+        RT->Clear(Renderer, Vector4(0.0f, 0.0f, 0.0f, 0.0f));
+
+        // TODO set active convolution shader
+        // TODO set camera matrix (view & projection)
+        // TODO execute pass
+    }
+
+    auto diffuseIrradiance = RT->CreateTextureFromRT(6);
+    // TODO delete the render target
     */
 
     // ----------------------------- Debug GO Creation -----------------------
@@ -317,9 +339,9 @@ void LacertaEditor::Update()
         {
             auto mat = meshComponent.GetMaterial();
             auto texs = mat->GetTextures();
-            std::vector<Bindable*> DcBindables;
+            std::vector<Bindable*> bindables;
             for(auto tex : texs)
-                DcBindables.emplace_back(tex);
+                bindables.emplace_back(tex);
 
             SceneMeshConstantBuffer* meshCb = new SceneMeshConstantBuffer(); // this is deleted by CBuf
 
@@ -333,10 +355,10 @@ void LacertaEditor::Update()
             meshCb->LocalMatrix = transform.GetTransformMatrix();
 
             MeshesBuffers[i].SetData(meshCb, ConstantBufferType::MeshCbuf);
-            DcBindables.emplace_back(&MeshesBuffers[i]);
+            bindables.emplace_back(&MeshesBuffers[i]);
             i++;
             
-            scenePass->AddDrawcall(mat->GetShader(), shape, DcBindables);
+            scenePass->AddDrawcall(mat->GetShader(), shape, bindables);
         }
     }
 
@@ -348,11 +370,11 @@ void LacertaEditor::Update()
         auto mat = skyboxMeshComp.GetMaterial();
         auto texs = mat->GetTextures();
         
-        std::vector<Bindable*> Bindables;
+        std::vector<Bindable*> bindables;
         for(auto tex : texs)
-            Bindables.emplace_back(tex);
+            bindables.emplace_back(tex);
     
-        skyboxPass->AddDrawcall(mat->GetShader(), shape, Bindables);
+        skyboxPass->AddDrawcall(mat->GetShader(), shape, bindables);
     }
 
     RHI::Get()->ExecuteRenderPass("scene", m_viewportCachedSize, true);

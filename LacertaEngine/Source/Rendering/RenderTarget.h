@@ -32,6 +32,7 @@ public:
     virtual Texture* CreateTextureFromRT(int texBindIdx) = 0;
 
     bool RenderToTexture() const { return m_renderTargetType == RenderTargetType::Texture2D; }
+    RenderTargetType GetRenderTargetType() const { return m_renderTargetType; }
 
 protected:
     RenderTargetType m_renderTargetType;
