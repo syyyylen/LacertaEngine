@@ -48,7 +48,7 @@ void LacertaEditor::Start()
     InputSystem::Get()->SetCursorPosition(Vector2((float)width/2.0f, (float)height/2.0f));
 
     // ----------------------- Graphics Engine Creation & Renderer Initialization  ------------------------
-    
+        
     RHI::Create();
     HWND hwnd = m_editorWindow->GetHWND();
     RHI::Get()->InitializeRenderer((int*)hwnd, RendererType::RENDERER_WIN_DX11, width, height, 60);
@@ -272,10 +272,10 @@ void LacertaEditor::Update()
         m_lightRotationY = m_lightRotationY + m_deltaTime * m_directionalLightAutoRotateScalar;
 
     temp.SetIdentity();
-    temp.SetRotationY(m_lightRotationY);
+    temp.SetRotationX(m_lightRotationX);
     lightRotationMatrix *= temp;
     temp.SetIdentity();
-    temp.SetRotationX(m_lightRotationX);
+    temp.SetRotationY(m_lightRotationY);
     lightRotationMatrix *= temp;
     
     cc->DirectionalLightDirection = lightRotationMatrix.GetZDirection();
@@ -454,6 +454,11 @@ Scene* LacertaEditor::LoadSceneFromFile(const wchar_t* filePath)
     // TODO parse scene file and create scene obj fully loaded from it
     
     return nullptr;
+}
+
+void LacertaEditor::ReloadShaders()
+{
+    RHI::Get()->GetRenderer()->LoadShaders();
 }
 
 void LacertaEditor::DestroyGo(GameObject* goToDestroy)
