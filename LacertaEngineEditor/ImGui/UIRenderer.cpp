@@ -148,6 +148,14 @@ void UIRenderer::Update()
                 ImGui::EndMenu();
             }
 
+            if (ImGui::BeginMenu("Tools"))
+            {
+                if (ImGui::MenuItem("Reload Shaders", NULL, false))
+                    m_editor->ReloadShaders();
+
+                ImGui::EndMenu();
+            }
+
             ImGui::EndMenuBar();
         }
     }

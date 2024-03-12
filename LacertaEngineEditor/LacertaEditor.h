@@ -34,6 +34,8 @@ public:
     
     void SaveActiveScene();
     Scene* LoadSceneFromFile(const wchar_t* filePath);
+
+    void ReloadShaders();
     
     bool HasSelectedGo() { return m_selectedObject != nullptr; }
     void SetSelectedGo(GameObject* selectedGo) { m_selectedObject = selectedGo; }

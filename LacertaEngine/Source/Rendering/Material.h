@@ -37,8 +37,6 @@ private:
     MatLightProperties m_lightProperties;
     std::string m_shaderName;
     std::vector<Texture*> m_textures;
-
-    bool m_isSkyBox = false; // TODO this is beyond cringe
 };
 
 }
