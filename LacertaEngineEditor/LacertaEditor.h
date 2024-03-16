@@ -82,13 +82,15 @@ public:
     Texture* m_irradianceTex; // TODO clean this
     Texture* m_skyBoxTex; // TODO clean this
 
+    int m_sceneRTidx;
+    int m_irradianceRTidx;
+    int m_shadowMapRTidx;
+
 private:
     EditorWindow* m_editorWindow;
     Timer* m_globalTimer;
     Vector2 m_viewportCachedSize = Vector2(1920.0f, 1080.0f);
-    int m_sceneRTidx;
-    int m_irradianceRTidx;
-
+    
     unsigned long m_previousTickCount;
     float m_deltaTime;
 

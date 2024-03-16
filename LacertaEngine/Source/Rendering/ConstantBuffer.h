@@ -9,9 +9,9 @@ enum ConstantBufferType
 {
     SceneCbuf,
     MeshCbuf,
-    SkyBoxCbuf
+    SkyBoxCbuf,
+    SMLightCubf
 };
-
     
 class LACERTAENGINE_API ConstantBuffer : public Bindable
 {

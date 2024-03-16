@@ -67,7 +67,7 @@ struct SceneMeshConstantBuffer
     int HasRoughness;
     int HasMetallic;
     // 16 bytes
-    int HasAmbiant;
+    int HasAmbiant; // TODO what are you doing here sir ? may I help you ? 
 };
 
 struct SceneVertexMesh

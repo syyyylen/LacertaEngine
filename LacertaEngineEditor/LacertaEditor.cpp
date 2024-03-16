@@ -8,6 +8,7 @@
 #include "Rendering/Drawcall.h"
 #include "Rendering/RenderPass.h"
 #include "Rendering/RenderTarget.h"
+#include "Rendering/ShadowMapPassLayouts.h"
 #include "Rendering/SkyBoxPassLayouts.h"
 #include "Rendering/Texture.h"
 
@@ -57,9 +58,17 @@ void LacertaEditor::Start()
     // Render passes
     auto scenePass = RHI::Get()->CreateRenderPass("scene");
     auto skyboxPass = RHI::Get()->CreateRenderPass("skybox");
+    auto shadowMapPass = RHI::Get()->CreateRenderPass("shadowMap");
+    
     scenePass->SetRenderTargetIdx(m_sceneRTidx);
+    
     skyboxPass->SetRenderTargetIdx(m_sceneRTidx);
     skyboxPass->SetCullfront(true);
+
+    RHI::Get()->CreateRenderTarget(width, height, RenderTargetType::Texture2D, m_shadowMapRTidx);
+    shadowMapPass->SetRenderTargetIdx(m_shadowMapRTidx);
+    shadowMapPass->SetComparisonSampling(true);
+    shadowMapPass->SetCullfront(true);
 
     // ---------------------------- Debug Scene Creation --------------------
 
@@ -226,6 +235,54 @@ void LacertaEditor::Update()
 
     // ----------------------------- Rendering Update  --------------------------
 
+    // Directional light shadow map pass ---------------------------------------------------------------------------
+    auto shadowMapPass = RHI::Get()->GetRenderPass("shadowMap");
+    shadowMapPass->ClearGlobalBindables();
+    shadowMapPass->ClearDrawcalls();
+    
+    auto shadowMapCC = new ShadowMapLightConstantBuffer();
+    Matrix4x4 shadowMapView;
+    Matrix4x4 m;
+    shadowMapView.SetIdentity();
+    m.SetIdentity();
+    m.SetRotationX(m_lightRotationX);
+    shadowMapView *= m;
+    m.SetIdentity();
+    m.SetRotationY(m_lightRotationY);
+    shadowMapView *= m;
+    shadowMapCC->ViewMatrix = shadowMapView;
+    shadowMapCC->ProjectionMatrix.SetOrthoLH(150.0f, 150.0f, 0.1f, 5000.0f);
+
+    ConstantBuffer shadowMapCbuf = ConstantBuffer(shadowMapCC, ConstantBufferType::SMLightCubf);
+    shadowMapPass->AddGlobalBindable(&shadowMapCbuf);
+
+    ConstantBuffer MeshesBufs[MAX_MESHES];
+    int j = 0;
+    auto tfMeshesGrp = m_activeScene->m_registry.group<TransformComponent>(entt::get<MeshComponent>);
+    for(auto go : tfMeshesGrp)
+    {
+        auto[transform, meshComponent] = tfMeshesGrp.get<TransformComponent, MeshComponent>(go);
+        if(meshComponent.GetMaterial() == nullptr || meshComponent.GetMaterial()->GetShader() == "SkyboxShader") // TODO skybox GO doesn't belong to this pass
+            continue;
+
+        Mesh* mesh = meshComponent.GetMesh();
+        auto shapes = mesh->GetShapesData();
+        for(const auto shape : shapes)
+        {
+            std::vector<Bindable*> bindables;
+            SceneMeshConstantBuffer* meshCb = new SceneMeshConstantBuffer(); // this is deleted by CBuf
+            meshCb->LocalMatrix = transform.GetTransformMatrix();
+            MeshesBufs[j].SetData(meshCb, ConstantBufferType::MeshCbuf);
+            bindables.emplace_back(&MeshesBufs[j]);
+            j++;
+            shadowMapPass->AddDrawcall("ShadowMapShader", shape, bindables);
+        }
+    }
+
+    RHI::Get()->ExecuteRenderPass("shadowMap", m_viewportCachedSize, true);
+
+    // ---------------------------------------------------------------------------------------------------------
+    
     // TODO Camera pos & rot are updated here with some hard coded Matrix
     
     // Constant Buffer Update
