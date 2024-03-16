@@ -21,6 +21,7 @@ public:
     void AddDrawcall(std::string shaderName, Drawable* drawable, std::vector<Bindable*> bindables);
     void Pass(Renderer* renderer, Vector2 renderTargetSize, bool clear);
     void SetCullfront(bool state);
+    void SetComparisonSampling(bool compare);
     void ClearDrawcalls();
     void ClearGlobalBindables();
 
@@ -30,6 +31,7 @@ private:
     int m_renderTargetIdx;
     Vector2 m_cachedRenderTargetSize;
     bool m_cullfront = false;
+    bool m_comparisonSampling = false;
 };
 
 }

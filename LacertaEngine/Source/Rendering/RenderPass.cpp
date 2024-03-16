@@ -44,7 +44,8 @@ void RenderPass::Pass(Renderer* renderer, Vector2 renderTargetSize, bool clear)
             RT->Clear(renderer, Vector4(0.0f, 0.0f, 0.0f, 0.0f));
     }
     
-    RHI::Get()->SetRasterizerState(m_cullfront);
+    renderer->SetRasterizerCullState(m_cullfront);
+    renderer->SetSamplerState(m_comparisonSampling);
     
     for(auto bindable : m_globalBindables)
         bindable->Bind(renderer);
@@ -59,6 +60,11 @@ void RenderPass::Pass(Renderer* renderer, Vector2 renderTargetSize, bool clear)
 void RenderPass::SetCullfront(bool state)
 {
     m_cullfront = state;
+}
+
+void RenderPass::SetComparisonSampling(bool compare)
+{
+    m_comparisonSampling = compare;
 }
 
 void RenderPass::ClearDrawcalls()

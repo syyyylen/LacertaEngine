@@ -213,6 +213,28 @@ void WinDX11Renderer::Initialize(int* context, int width, int height, int target
         LOG(Error, "Create Sampler State failed");
         throw std::exception("Create Sampler State failed");
     }
+
+    D3D11_SAMPLER_DESC comparisonSamplerDesc;
+    ZeroMemory(&comparisonSamplerDesc, sizeof(D3D11_SAMPLER_DESC));
+    comparisonSamplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_BORDER;
+    comparisonSamplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_BORDER;
+    comparisonSamplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_BORDER;
+    comparisonSamplerDesc.BorderColor[0] = 1.0f;
+    comparisonSamplerDesc.BorderColor[1] = 1.0f;
+    comparisonSamplerDesc.BorderColor[2] = 1.0f;
+    comparisonSamplerDesc.BorderColor[3] = 1.0f;
+    comparisonSamplerDesc.MinLOD = 0.f;
+    comparisonSamplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
+    comparisonSamplerDesc.MipLODBias = 0.f;
+    comparisonSamplerDesc.MaxAnisotropy = 0;
+    comparisonSamplerDesc.ComparisonFunc = D3D11_COMPARISON_LESS_EQUAL;
+    comparisonSamplerDesc.Filter = D3D11_FILTER_COMPARISON_MIN_MAG_MIP_POINT;
+
+    if(FAILED(m_device->CreateSamplerState(&comparisonSamplerDesc, &m_comparisonSamplerState)))
+    {
+        LOG(Error, "Create Sampler State failed");
+        throw std::exception("Create Sampler State failed");
+    }
 }
 
 void WinDX11Renderer::LoadShaders()
@@ -385,6 +407,12 @@ void WinDX11Renderer::UpdateConstantBuffer(void* buffer, ConstantBufferType cbuf
 void WinDX11Renderer::SetRasterizerCullState(bool cullFront)
 {
     cullFront ? m_deviceContext->RSSetState(m_rasterizerCullFrontState) :  m_deviceContext->RSSetState(m_rasterizerCullBackState); 
+}
+
+void WinDX11Renderer::SetSamplerState(bool comparisonSampler)
+{
+    ID3D11SamplerState* SamplerState = comparisonSampler ? m_comparisonSamplerState : m_samplerState;
+    m_deviceContext->PSSetSamplers(0, 1, &SamplerState);
 }
 
 RenderTarget* WinDX11Renderer::CreateRenderTarget(int width, int height, RenderTargetType renderTargetType, int& outRTidx)
