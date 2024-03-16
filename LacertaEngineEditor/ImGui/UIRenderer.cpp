@@ -74,7 +74,7 @@ void UIRenderer::InitializeUI(HWND hwnd, LacertaEditor* editor)
     m_panels.push_back(new GlobalSettingsPanel());
     m_panels.push_back(new SceneHierarchyPanel());
     m_panels.push_back(new DetailsPanel());
-    m_panels.push_back(new TextureViewerPanel());
+    // m_panels.push_back(new TextureViewerPanel());
 
     for(auto panel : m_panels)
         panel->Start();

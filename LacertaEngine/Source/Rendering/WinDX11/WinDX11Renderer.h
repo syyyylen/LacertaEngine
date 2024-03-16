@@ -28,6 +28,7 @@ public:
     void OnResizeWindow(unsigned width, unsigned height) override;
     void UpdateConstantBuffer(void* buffer, ConstantBufferType cbufType) override;
     void SetRasterizerCullState(bool cullFront) override;
+    void SetSamplerState(bool comparisonSampler) override;
 
     RenderTarget* CreateRenderTarget(int width, int height, RenderTargetType renderTargetType, int& outRTidx) override;
 
@@ -42,6 +43,7 @@ public:
     IDXGISwapChain* GetDXGISwapChain() { return m_dxgiSwapChain; }
     ID3D11DeviceContext* GetImmediateContext() { return m_deviceContext; }
     ID3D11SamplerState* GetSamplerState() const { return m_samplerState; }
+    ID3D11SamplerState* GetComparisonSamplerState() const { return m_comparisonSamplerState; }
 
 private:
     WinDX11Shader* CompileShader(LPCWSTR VSFilePath,  LPCWSTR PSFilePath);
@@ -52,6 +54,7 @@ private:
     ID3D11RasterizerState* m_rasterizerCullFrontState;
     IDXGISwapChain* m_dxgiSwapChain;
     ID3D11SamplerState* m_samplerState;
+    ID3D11SamplerState* m_comparisonSamplerState;
     D3D_FEATURE_LEVEL m_featureLevel;
     ID3D11Buffer* m_constantBuffer; 
 

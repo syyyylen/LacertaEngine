@@ -29,6 +29,7 @@ public:
     virtual void SetViewportSize(Renderer* renderer, UINT width, UINT height) = 0;
     virtual void Resize(Renderer* renderer, unsigned width, unsigned height) = 0;
     virtual void* GetSRV() = 0;
+    virtual void* GetDepthSRV() = 0;
     virtual Texture* CreateTextureFromRT(int texBindIdx) = 0;
 
     bool RenderToTexture() const { return m_renderTargetType == RenderTargetType::Texture2D; }

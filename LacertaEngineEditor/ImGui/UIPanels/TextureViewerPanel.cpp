@@ -1,6 +1,7 @@
 ﻿#include "TextureViewerPanel.h"
 #include "../UIRenderer.h"
 #include "../imgui_src/imgui.h"
+#include "Rendering/RenderTarget.h"
 #include "Rendering/Texture.h"
 
 namespace LacertaEngineEditor
@@ -25,12 +26,23 @@ void TextureViewerPanel::Update()
     { 
         ImGui::Begin("Texture Viewer");
         
-        ImGui::Text("Irradiance tex : ");
-        if(editor->m_irradianceTex)
+        ImGui::Text("Scene depth : ");
+
+        auto SceneTextureRenderTarget = RHI::Get()->GetRenderTarget(1);
+        if(SceneTextureRenderTarget != nullptr)
         {
-            ImVec2 viewportSize = ImGui::GetContentRegionAvail();
-            ImGui::Image(editor->m_irradianceTex->GetTextureSRV(), viewportSize);
+            if(SceneTextureRenderTarget->RenderToTexture())
+            {
+                ImVec2 viewportSize = ImGui::GetContentRegionAvail();
+                ImGui::Image(SceneTextureRenderTarget->GetDepthSRV(), viewportSize);
+            }
         }
+        
+        // if(editor->m_irradianceTex)
+        // {
+        //     ImVec2 viewportSize = ImGui::GetContentRegionAvail();
+        //     ImGui::Image(editor->m_irradianceTex->GetTextureSRV(), viewportSize);
+        // }
 
         ImGui::End();
     }
