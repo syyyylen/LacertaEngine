@@ -48,7 +48,7 @@ void WinDX11RenderTarget::ReloadBuffers(Renderer* renderer, unsigned width, unsi
 
     switch (m_renderTargetType)
     {
-    case RenderTargetType::BackBuffer:
+        case RenderTargetType::BackBuffer:
         {
             hr = localRenderer->GetDXGISwapChain()->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)&buffer);
             if(FAILED(hr))
@@ -67,7 +67,7 @@ void WinDX11RenderTarget::ReloadBuffers(Renderer* renderer, unsigned width, unsi
             break;
         }
 
-    case RenderTargetType::Texture2D:
+        case RenderTargetType::Texture2D:
         {
             D3D11_TEXTURE2D_DESC textureDesc = {};
             textureDesc.Width = width;
@@ -121,7 +121,7 @@ void WinDX11RenderTarget::ReloadBuffers(Renderer* renderer, unsigned width, unsi
             break;
         }
 
-    case RenderTargetType::TextureCube:
+        case RenderTargetType::TextureCube:
         {
             D3D11_TEXTURE2D_DESC textureCubeDesc;
             textureCubeDesc.Width = 64;
@@ -184,9 +184,9 @@ void WinDX11RenderTarget::ReloadBuffers(Renderer* renderer, unsigned width, unsi
     D3D11_TEXTURE2D_DESC tex_desc = {};
     tex_desc.Width = width;
     tex_desc.Height = height;
-    tex_desc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+    tex_desc.Format = DXGI_FORMAT_R24G8_TYPELESS;
     tex_desc.Usage = D3D11_USAGE_DEFAULT;
-    tex_desc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
+    tex_desc.BindFlags = D3D11_BIND_DEPTH_STENCIL | D3D11_BIND_SHADER_RESOURCE;
     tex_desc.MipLevels = 1;
     tex_desc.SampleDesc.Count = 1;
     tex_desc.SampleDesc.Quality = 0;
@@ -212,25 +212,53 @@ void WinDX11RenderTarget::ReloadBuffers(Renderer* renderer, unsigned width, unsi
     desc.BackFace.StencilDepthFailOp = D3D11_STENCIL_OP_DECR;
     desc.BackFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
     desc.BackFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
+
+    D3D11_DEPTH_STENCIL_VIEW_DESC dsvDesc;
+    dsvDesc.Flags = 0;
+    dsvDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT ;
+    dsvDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
+    dsvDesc.Texture2D.MipSlice = 0;
+
+    D3D11_SHADER_RESOURCE_VIEW_DESC depthSrvDesc;
+    ZeroMemory(&depthSrvDesc, sizeof(D3D11_SHADER_RESOURCE_VIEW_DESC));
+    depthSrvDesc.Format = DXGI_FORMAT_R24_UNORM_X8_TYPELESS ;
+    depthSrvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+    depthSrvDesc.Texture2D.MipLevels = 1;
+    depthSrvDesc.Texture2D.MostDetailedMip = 0;
     
     hr = device->CreateTexture2D(&tex_desc, nullptr, &buffer);
     if(FAILED(hr))
     {
         LOG(Error, "Failed depth buffer creation");
+        std::string errorMsg = std::system_category().message(hr);
+        LOG(Error, errorMsg);
         throw std::exception("Failed depth buffer creation");
     }
     
-    hr = device->CreateDepthStencilView(buffer, NULL, &m_depthStencil);
+    hr = device->CreateDepthStencilView(buffer, &dsvDesc, &m_depthStencil);
     if(FAILED(hr))
     {
         LOG(Error, "Failed depth buffer creation");
+        std::string errorMsg = std::system_category().message(hr);
+        LOG(Error, errorMsg);
         throw std::exception("Failed depth buffer creation");
+    }
+
+    hr = device->CreateShaderResourceView(buffer, &depthSrvDesc, &m_depthShaderResView);
+    if(FAILED(hr))
+    {
+        LOG(Error, "Failed depth buffer srv creation");
+        std::string errorMsg = std::system_category().message(hr);
+        LOG(Error, errorMsg);
+        throw std::exception("Failed depth buffer srv creation");
     }
 
     hr = device->CreateDepthStencilState(&desc, &m_depthStencilState);
     if(FAILED(hr))
     {
         LOG(Error, "Failed depth state buffer creation");
+        std::string errorMsg = std::system_category().message(hr);
+        LOG(Error, errorMsg);
         throw std::exception("Failed depth state buffer creation");
     }
     localRenderer->GetImmediateContext()->OMSetDepthStencilState(m_depthStencilState, 1);
@@ -291,6 +319,11 @@ void WinDX11RenderTarget::SetViewportSize(Renderer* renderer, UINT width, UINT h
 void* WinDX11RenderTarget::GetSRV()
 {
     return (void*)GetTextureShaderResView();
+}
+
+void* WinDX11RenderTarget::GetDepthSRV()
+{
+    return (void*)m_depthShaderResView;
 }
 
 Texture* WinDX11RenderTarget::CreateTextureFromRT(int texBindIdx)
