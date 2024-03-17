@@ -74,7 +74,7 @@ float3 PBR(float3 F0, float3 N, float3 V, float3 L, float3 H, float3 radiance, f
 
 float2 TexOffset(int u, int v)
 {
-    return float2( u * 1.0f/1920.0f, v * 1.0f/1080.0f);
+    return float2( u * 1.0f/2048.0f, v * 1.0f/2048.0f);
 }
 
 float4 main(VertexOutput input) : SV_Target

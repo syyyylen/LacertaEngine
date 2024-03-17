@@ -78,7 +78,7 @@ public:
     float m_directionalLightAutoRotateScalar = 0.8f;
 
     Vector4 m_defaultColor = Vector4(1.0f, 1.0f, 1.0f, 1.0f);
-    Vector2 m_shadowMapResolution = Vector2(1920.0f, 1080.0f);
+    Vector2 m_shadowMapResolution = Vector2(2048.0f, 2048.0f);
 
     Texture* m_irradianceTex; // TODO clean this
     Texture* m_skyBoxTex; // TODO clean this
