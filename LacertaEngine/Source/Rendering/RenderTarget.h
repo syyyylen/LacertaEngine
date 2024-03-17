@@ -31,6 +31,7 @@ public:
     virtual void* GetSRV() = 0;
     virtual void* GetDepthSRV() = 0;
     virtual Texture* CreateTextureFromRT(int texBindIdx) = 0;
+    virtual Texture* CreateTextureFromDepth(int texBindIdx) = 0;
 
     bool RenderToTexture() const { return m_renderTargetType == RenderTargetType::Texture2D; }
     RenderTargetType GetRenderTargetType() const { return m_renderTargetType; }

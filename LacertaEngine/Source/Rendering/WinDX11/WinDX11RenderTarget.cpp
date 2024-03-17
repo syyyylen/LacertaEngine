@@ -333,5 +333,13 @@ Texture* WinDX11RenderTarget::CreateTextureFromRT(int texBindIdx)
     tex->SetTextureIdx(texBindIdx);
     return tex;
 }
+
+Texture* WinDX11RenderTarget::CreateTextureFromDepth(int texBindIdx)
+{
+    auto tex = new WinDX11Texture();
+    tex->SetSRV(m_depthShaderResView);
+    tex->SetTextureIdx(texBindIdx);
+    return tex;
+}
     
 }

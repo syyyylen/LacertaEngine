@@ -254,7 +254,7 @@ void LacertaEditor::Update()
     shadowMapView *= m;
     shadowMapView.Inverse();
     shadowMapCC->ViewMatrix = shadowMapView;
-    shadowMapCC->ProjectionMatrix.SetOrthoLH(200.0f, 200.0f, -5000.0f, 5000.0f);
+    shadowMapCC->ProjectionMatrix.SetOrthoLH(500.0f, 500.0f, -200.0f, 200.0f);
 
     ConstantBuffer shadowMapCbuf = ConstantBuffer(shadowMapCC, ConstantBufferType::SMLightCubf);
     shadowMapPass->AddGlobalBindable(&shadowMapCbuf);
@@ -384,6 +384,9 @@ void LacertaEditor::Update()
     scenePass->AddGlobalBindable(irradianceTex);
     scenePass->AddGlobalBindable(BRDFLut);
     scenePass->AddGlobalBindable(m_skyBoxTex);
+    auto shadowMapRT = RHI::Get()->GetRenderTarget(m_shadowMapRTidx);
+    auto shadowMap = shadowMapRT->CreateTextureFromDepth(8);
+    scenePass->AddGlobalBindable(shadowMap);
     scenePass->AddGlobalBindable(&shadowMapCbuf);
 
     ConstantBuffer skyboxCbuf = ConstantBuffer(skyboxCC, ConstantBufferType::SkyBoxCbuf);
@@ -452,6 +455,8 @@ void LacertaEditor::Update()
 
     RHI::Get()->ExecuteRenderPass("scene", m_viewportCachedSize, true);
     RHI::Get()->ExecuteRenderPass("skybox", m_viewportCachedSize, false);
+
+    delete shadowMap;
 
     // We get the backbuffer back to render UI in it
     RHI::Get()->SetBackbufferRenderTargetActive();

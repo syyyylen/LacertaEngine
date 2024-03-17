@@ -77,16 +77,14 @@ float4 main(VertexOutput input) : SV_Target
     float4 directionalColor = float4(1.0f, 1.0f, 1.0f, 1.0f) * DirectionalIntensity; // default white color
     float3 normal = input.normal;
     float2 uv = float2(input.texcoord.x, 1.0 - input.texcoord.y);
-
-    /*
     
-    input.lightSpacePos.xyz / input.lightSpacePos.w;
+    input.lightSpacePos.xyz /= input.lightSpacePos.w;
 
     if(!(input.lightSpacePos.x < -1.0f || input.lightSpacePos.x > 1.0f || input.lightSpacePos.y < -1.0f || input.lightSpacePos.y > 1.0f || input.lightSpacePos.z < 0.0f  || input.lightSpacePos.z > 1.0f))
     {
         input.lightSpacePos.x = input.lightSpacePos.x/2 + 0.5;
         input.lightSpacePos.y = input.lightSpacePos.y/-2 + 0.5;
-        // input.lightSpacePos.z -= 0.5f;
+        input.lightSpacePos.z -= 0.002f;
         
         float shadowMapDepth = ShadowMap.Sample(TextureSampler, input.lightSpacePos.xy).r;
 
@@ -94,7 +92,6 @@ float4 main(VertexOutput input) : SV_Target
             return float4(0.0f, 0.0f, 0.0f, 1.0f);
     }
 
-    */
     
     if(HasNormalMap)
     {

@@ -5,6 +5,7 @@ VertexOutput main(VertexInput input)
     VertexOutput ret;
 
     ret.position = mul(input.position, Local);
+    float4 p = ret.position;
     ret.position = mul(ret.position, World);
     ret.positionWS = ret.position.xyz;
     ret.viewVector = normalize(ret.position.xyz - CameraPosition.xyz);
@@ -17,7 +18,7 @@ VertexOutput main(VertexInput input)
     ret.tbn[1] = normalize(mul(input.binormal, World));
     ret.tbn[2] = normalize(mul(input.normal, World));
 
-    ret.lightSpacePos = mul(float4(ret.positionWS, 1.0), SMLightView);
+    ret.lightSpacePos = mul(p, SMLightView);
     ret.lightSpacePos = mul(ret.lightSpacePos, SMLightProjection);
     
     return ret;
