@@ -212,6 +212,8 @@
     <AdditionalFiles Include="Source\Rendering\Shaders\MeshPBRPixelShader.hlsl" />
     <Content Include="Source\Rendering\Shaders\SkyBoxVertexShader.hlsl" />
     <AdditionalFiles Include="Source\Rendering\Shaders\IrradiancePixelShader.hlsl" />
+    <AdditionalFiles Include="Source\Rendering\Shaders\ShadowMapShader.hlsl" />
+    <AdditionalFiles Include="Source\Rendering\Shaders\ShadowMapPixelShader.hlsl" />
     <ClCompile Include="Source\Rendering\Texture.cpp" />
     <ClCompile Include="Source\Rendering\WinDX11\WinDX11Mesh.cpp" />
     <ClCompile Include="Source\Rendering\WinDX11\WinDX11Renderer.cpp" />
@@ -259,6 +261,7 @@
     <ClInclude Include="Source\Rendering\Shader.h" />
     <AdditionalFiles Include="Source\Rendering\Shaders\SceneMeshShaderLayouts.hlsli" />
     <Content Include="Source\Rendering\Shaders\SkyBoxPixelShader.hlsl" />
+    <ClInclude Include="Source\Rendering\ShadowMapPassLayouts.h" />
     <ClInclude Include="Source\Rendering\SkyBoxPassLayouts.h" />
     <ClInclude Include="Source\Rendering\Texture.h" />
     <ClInclude Include="Source\Rendering\WinDX11\WinDX11Mesh.h" />

@@ -28,13 +28,13 @@ void TextureViewerPanel::Update()
         
         ImGui::Text("Scene depth : ");
 
-        auto SceneTextureRenderTarget = RHI::Get()->GetRenderTarget(1);
-        if(SceneTextureRenderTarget != nullptr)
+        auto ShadowMapRenderTarget = RHI::Get()->GetRenderTarget(editor->m_shadowMapRTidx);
+        if(ShadowMapRenderTarget != nullptr)
         {
-            if(SceneTextureRenderTarget->RenderToTexture())
+            if(ShadowMapRenderTarget->RenderToTexture())
             {
                 ImVec2 viewportSize = ImGui::GetContentRegionAvail();
-                ImGui::Image(SceneTextureRenderTarget->GetDepthSRV(), viewportSize);
+                ImGui::Image(ShadowMapRenderTarget->GetDepthSRV(), viewportSize);
             }
         }
         

@@ -8,6 +8,7 @@
 #include "Rendering/Drawcall.h"
 #include "Rendering/RenderPass.h"
 #include "Rendering/RenderTarget.h"
+#include "Rendering/ShadowMapPassLayouts.h"
 #include "Rendering/SkyBoxPassLayouts.h"
 #include "Rendering/Texture.h"
 
@@ -57,9 +58,17 @@ void LacertaEditor::Start()
     // Render passes
     auto scenePass = RHI::Get()->CreateRenderPass("scene");
     auto skyboxPass = RHI::Get()->CreateRenderPass("skybox");
+    auto shadowMapPass = RHI::Get()->CreateRenderPass("shadowMap");
+    
     scenePass->SetRenderTargetIdx(m_sceneRTidx);
+    
     skyboxPass->SetRenderTargetIdx(m_sceneRTidx);
     skyboxPass->SetCullfront(true);
+
+    RHI::Get()->CreateRenderTarget(width, height, RenderTargetType::Texture2D, m_shadowMapRTidx);
+    shadowMapPass->SetRenderTargetIdx(m_shadowMapRTidx);
+    shadowMapPass->SetComparisonSampling(true);
+    shadowMapPass->SetCullfront(true);
 
     // ---------------------------- Debug Scene Creation --------------------
 
@@ -194,9 +203,9 @@ void LacertaEditor::Start()
         L"Assets/Textures/PBR/worn-shiny-metal-Metallic.png",
          L"Assets/Textures/PBR/worn-shiny-metal-ao.png");
     
-    GameObject& groundGo = AddMeshToScene("Ground", L"Assets/Meshes/cube.obj", Vector3(35.0f, -16.0f, 9.0f));
+    GameObject& groundGo = AddMeshToScene("Ground", L"Assets/Meshes/cube.obj", Vector3(130.0f, -16.0f, 9.0f));
     TransformComponent& groundGoTf = groundGo.GetComponent<TransformComponent>();
-    groundGoTf.SetScale(Vector3(62.0f, 1.5f, 42.0f));
+    groundGoTf.SetScale(Vector3(160.0f, 1.5f, 50.0f));
 
     // -------------------------- Adding Point Lights --------------------------
 
@@ -226,6 +235,55 @@ void LacertaEditor::Update()
 
     // ----------------------------- Rendering Update  --------------------------
 
+    // Directional light shadow map pass ---------------------------------------------------------------------------
+    auto shadowMapPass = RHI::Get()->GetRenderPass("shadowMap");
+    shadowMapPass->ClearGlobalBindables();
+    shadowMapPass->ClearDrawcalls();
+    
+    auto shadowMapCC = new ShadowMapLightConstantBuffer();
+    Matrix4x4 shadowMapView;
+    Matrix4x4 m;
+    shadowMapView.SetIdentity();
+    m.SetIdentity();
+    m.SetRotationX(m_lightRotationX);
+    shadowMapView *= m;
+    m.SetIdentity();
+    m.SetRotationY(m_lightRotationY);
+    shadowMapView *= m;
+    shadowMapView.Inverse();
+    shadowMapCC->ViewMatrix = shadowMapView;
+    shadowMapCC->ProjectionMatrix.SetOrthoLH(200.0f, 200.0f, -5000.0f, 5000.0f);
+
+    ConstantBuffer shadowMapCbuf = ConstantBuffer(shadowMapCC, ConstantBufferType::SMLightCubf);
+    shadowMapPass->AddGlobalBindable(&shadowMapCbuf);
+
+    ConstantBuffer MeshesBufs[MAX_MESHES];
+    int j = 0;
+    auto tfMeshesGrp = m_activeScene->m_registry.group<TransformComponent>(entt::get<MeshComponent>);
+    for(auto go : tfMeshesGrp)
+    {
+        auto[transform, meshComponent] = tfMeshesGrp.get<TransformComponent, MeshComponent>(go);
+        if(meshComponent.GetMaterial() == nullptr || meshComponent.GetMaterial()->GetShader() == "SkyboxShader") // TODO skybox GO doesn't belong to this pass
+            continue;
+
+        Mesh* mesh = meshComponent.GetMesh();
+        auto shapes = mesh->GetShapesData();
+        for(const auto shape : shapes)
+        {
+            std::vector<Bindable*> bindables;
+            SceneMeshConstantBuffer* meshCb = new SceneMeshConstantBuffer(); // this is deleted by CBuf
+            meshCb->LocalMatrix = transform.GetTransformMatrix();
+            MeshesBufs[j].SetData(meshCb, ConstantBufferType::MeshCbuf);
+            bindables.emplace_back(&MeshesBufs[j]);
+            j++;
+            shadowMapPass->AddDrawcall("ShadowMapShader", shape, bindables);
+        }
+    }
+
+    RHI::Get()->ExecuteRenderPass("shadowMap", m_viewportCachedSize, true);
+
+    // ---------------------------------------------------------------------------------------------------------
+    
     // TODO Camera pos & rot are updated here with some hard coded Matrix
     
     // Constant Buffer Update
@@ -323,6 +381,7 @@ void LacertaEditor::Update()
     scenePass->AddGlobalBindable(irradianceTex);
     scenePass->AddGlobalBindable(BRDFLut);
     scenePass->AddGlobalBindable(m_skyBoxTex);
+    scenePass->AddGlobalBindable(&shadowMapCbuf);
 
     ConstantBuffer skyboxCbuf = ConstantBuffer(skyboxCC, ConstantBufferType::SkyBoxCbuf);
     skyboxPass->AddGlobalBindable(&skyboxCbuf);

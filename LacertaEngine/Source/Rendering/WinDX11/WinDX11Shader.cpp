@@ -92,9 +92,6 @@ void WinDX11Shader::PreparePass(Renderer* renderer)
 
     ctx->VSSetShader(m_vertexShader, nullptr, 0);
     ctx->PSSetShader(m_fragmentShader, nullptr, 0);
-
-    // ID3D11SamplerState* SamplerState = driver->GetSamplerState();
-    // ctx->PSSetSamplers(0, 1, &SamplerState);
 }
 
 void WinDX11Shader::Pass(Renderer* renderer, Drawcall* dc)

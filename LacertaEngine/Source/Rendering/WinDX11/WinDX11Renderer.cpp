@@ -8,6 +8,7 @@
 #include "WinDX11Shader.h"
 #include "../Drawcall.h"
 #include "../SkyBoxPassLayouts.h"
+#include "../ShadowMapPassLayouts.h"
 #include "../../Logger/Logger.h"
 
 namespace LacertaEngine
@@ -162,6 +163,34 @@ void WinDX11Renderer::Initialize(int* context, int width, int height, int target
         m_constantBuffers.emplace(ConstantBufferType::SkyBoxCbuf, skyboxCbuf);
     }
 
+    {
+        ID3D11Buffer* b2;
+        ShadowMapLightConstantBuffer smlightCb;
+    
+        D3D11_BUFFER_DESC smlightCbDesc = {};
+        smlightCbDesc.Usage = D3D11_USAGE_DEFAULT;
+        smlightCbDesc.ByteWidth = sizeof(ShadowMapLightConstantBuffer);
+        smlightCbDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+        smlightCbDesc.CPUAccessFlags = 0;
+        smlightCbDesc.MiscFlags = 0;
+
+        D3D11_SUBRESOURCE_DATA smlightInitData = {};
+        smlightInitData.pSysMem = &smlightCb;
+
+        if(FAILED(m_device->CreateBuffer(&smlightCbDesc, &smlightInitData, &b2)))
+        {
+            std::string errorMsg = std::system_category().message(hr);
+            LOG(Error, errorMsg);
+            LOG(Error, "Create Shadow Map Light Constant Buffer failed");
+            throw std::exception("Create Shadow Map Light Constant Buffer failed");
+        }
+    
+        WinDX11Cbuf smlightCbuf;
+        smlightCbuf.Buffer = b2;
+        smlightCbuf.Slot = 3;
+        m_constantBuffers.emplace(ConstantBufferType::SMLightCubf, smlightCbuf);
+    }
+
     // Changing rasterizer properties & state 
     D3D11_RASTERIZER_DESC rasterizerDesc;
     ZeroMemory(&rasterizerDesc, sizeof(D3D11_RASTERIZER_DESC));
@@ -246,6 +275,7 @@ void WinDX11Renderer::LoadShaders()
     m_shaders.emplace("MeshPBRShader", CompileShader(L"../LacertaEngine/Source/Rendering/Shaders/MeshVertex.hlsl", L"../LacertaEngine/Source/Rendering/Shaders/MeshPBRPixelShader.hlsl"));
     m_shaders.emplace("SkyboxShader", CompileShader(L"../LacertaEngine/Source/Rendering/Shaders/SkyBoxVertexShader.hlsl", L"../LacertaEngine/Source/Rendering/Shaders/SkyBoxPixelShader.hlsl"));
     m_shaders.emplace("IrradianceShader", CompileShader(L"../LacertaEngine/Source/Rendering/Shaders/SkyBoxVertexShader.hlsl", L"../LacertaEngine/Source/Rendering/Shaders/IrradiancePixelShader.hlsl"));
+    m_shaders.emplace("ShadowMapShader", CompileShader(L"../LacertaEngine/Source/Rendering/Shaders/ShadowMapShader.hlsl", L"../LacertaEngine/Source/Rendering/Shaders/ShadowMapPixelShader.hlsl"));
 }
 
 ID3D11Buffer* WinDX11Renderer::CreateVBO(std::vector<SceneVertexMesh> vertices)
@@ -355,7 +385,7 @@ WinDX11Shader* WinDX11Renderer::CompileShader(LPCWSTR VSFilePath, LPCWSTR PSFile
 
     ID3DBlob* pixelErrorBlob = nullptr;
     ID3DBlob* pixelBlob;
-    
+
     hr = D3DCompileFromFile(PSFilePath, nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, "main", "ps_5_0", 0, 0, &pixelBlob, &pixelErrorBlob);
     if(FAILED(hr))
     {
