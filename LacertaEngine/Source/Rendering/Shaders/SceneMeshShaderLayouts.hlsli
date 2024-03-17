@@ -10,6 +10,7 @@ Texture2D BRDFLut: register(t7);
 Texture2D ShadowMap: register(t8);
 
 sampler TextureSampler: register(s0);
+SamplerComparisonState ComparisonSampler: register(s1);
 
 // ------------------------------------------- VS Input / Output layout -------------------------------------------
 struct VertexInput
@@ -28,7 +29,7 @@ struct VertexOutput
     float3 viewVector : TEXCOORD1;
     float2 texcoord : TEXCOORD2;
     float3 normal : NORMAL;
-    float4 ligthSpacePos : TEXCOORD3;
+    float4 lightSpacePos : TEXCOORD3;
     row_major float3x3 tbn: TEXCOORD4;
 };
 

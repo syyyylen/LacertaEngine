@@ -443,6 +443,7 @@ void WinDX11Renderer::SetSamplerState(bool comparisonSampler)
 {
     ID3D11SamplerState* SamplerState = comparisonSampler ? m_comparisonSamplerState : m_samplerState;
     m_deviceContext->PSSetSamplers(0, 1, &SamplerState);
+    m_deviceContext->PSSetSamplers(1, 1, &m_comparisonSamplerState);
 }
 
 RenderTarget* WinDX11Renderer::CreateRenderTarget(int width, int height, RenderTargetType renderTargetType, int& outRTidx)

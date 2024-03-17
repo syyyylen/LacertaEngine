@@ -23,6 +23,7 @@ public:
     void* GetSRV() override;
     void* GetDepthSRV() override;
     Texture* CreateTextureFromRT(int texBindIdx) override;
+    Texture* CreateTextureFromDepth(int texBindIdx) override;
 
     ID3D11ShaderResourceView* GetTextureShaderResView() const { return m_targetTextureShaderResView; }
     ID3D11RenderTargetView* GetRtv() { return m_renderTarget; }
