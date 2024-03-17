@@ -13,6 +13,7 @@ Features :
 * Cube maps skyboxes
 * ECS with entt
 * 2D UI with imgui
+* Shadow Mapping
 * IBL (wip)
 
 ![alt text](https://github.com/syyyylen/LacertaEngine/blob/main/LacertaEngineEditor/Assets/Screenshots/1.png?raw=true)
@@ -25,7 +26,7 @@ Features :
 
 Things I want to add :
 * Diffuse irradiance convolution for IBL
-* Shadow maps
+* Better Shadow maps
 * Deferred rendering
 * DX12 support
 * Render thread
