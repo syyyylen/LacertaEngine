@@ -90,7 +90,7 @@ float4 main(VertexOutput input) : SV_Target
     {
         input.lightSpacePos.x = input.lightSpacePos.x/2 + 0.5;
         input.lightSpacePos.y = input.lightSpacePos.y/-2 + 0.5;
-        input.lightSpacePos.z -= 0.002f;
+        input.lightSpacePos.z -= 0.001f;
         
         float sum = 0;
         float x, y;
