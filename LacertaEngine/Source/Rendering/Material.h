@@ -31,12 +31,16 @@ public:
             return nullptr;
     }
 
-    const std::vector<Texture*>& GetTextures() { return m_textures; } 
+    const std::vector<Texture*>& GetTextures() { return m_textures; }
+
+    bool CastShadow() { return m_castShadow; }
+    void SetCastShadow(bool cast) { m_castShadow = cast; }
     
 private:
     MatLightProperties m_lightProperties;
     std::string m_shaderName;
     std::vector<Texture*> m_textures;
+    bool m_castShadow = true;
 };
 
 }

@@ -17,8 +17,8 @@ VertexOutput main(VertexInput input)
     ret.tbn[1] = normalize(mul(input.binormal, World));
     ret.tbn[2] = normalize(mul(input.normal, World));
 
-    ret.ligthSpacePos = mul(float4(ret.positionWS, 1.0), SMLightView);
-    ret.ligthSpacePos = mul(ret.ligthSpacePos, SMLightProjection);
+    ret.lightSpacePos = mul(float4(ret.positionWS, 1.0), SMLightView);
+    ret.lightSpacePos = mul(ret.lightSpacePos, SMLightProjection);
     
     return ret;
 }

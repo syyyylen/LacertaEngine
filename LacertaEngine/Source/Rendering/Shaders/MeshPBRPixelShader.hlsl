@@ -80,17 +80,22 @@ float4 main(VertexOutput input) : SV_Target
 
     /*
     
-    input.ligthSpacePos.xyz / input.ligthSpacePos.w;
-    input.ligthSpacePos.x = input.ligthSpacePos.x/2 + 0.5;
-    input.ligthSpacePos.y = input.ligthSpacePos.y/2 + 0.5;
-    input.ligthSpacePos.z -= 0.5f;
-    float shadowMapDepth = ShadowMap.Sample(TextureSampler, input.ligthSpacePos.xy).r;
+    input.lightSpacePos.xyz / input.lightSpacePos.w;
 
-    if(shadowMapDepth < input.ligthSpacePos.z)
-        return float4(0.0f, 0.0f, 0.0f, 1.0f);
+    if(!(input.lightSpacePos.x < -1.0f || input.lightSpacePos.x > 1.0f || input.lightSpacePos.y < -1.0f || input.lightSpacePos.y > 1.0f || input.lightSpacePos.z < 0.0f  || input.lightSpacePos.z > 1.0f))
+    {
+        input.lightSpacePos.x = input.lightSpacePos.x/2 + 0.5;
+        input.lightSpacePos.y = input.lightSpacePos.y/-2 + 0.5;
+        // input.lightSpacePos.z -= 0.5f;
+        
+        float shadowMapDepth = ShadowMap.Sample(TextureSampler, input.lightSpacePos.xy).r;
+
+        if(shadowMapDepth < input.lightSpacePos.z)
+            return float4(0.0f, 0.0f, 0.0f, 1.0f);
+    }
 
     */
-
+    
     if(HasNormalMap)
     {
         float4 normalSampled = NormalMap.Sample(TextureSampler, uv);

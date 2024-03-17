@@ -28,7 +28,7 @@ struct VertexOutput
     float3 viewVector : TEXCOORD1;
     float2 texcoord : TEXCOORD2;
     float3 normal : NORMAL;
-    float4 ligthSpacePos : TEXCOORD3;
+    float4 lightSpacePos : TEXCOORD3;
     row_major float3x3 tbn: TEXCOORD4;
 };
 

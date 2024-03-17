@@ -206,6 +206,8 @@ void LacertaEditor::Start()
     GameObject& groundGo = AddMeshToScene("Ground", L"Assets/Meshes/cube.obj", Vector3(130.0f, -16.0f, 9.0f));
     TransformComponent& groundGoTf = groundGo.GetComponent<TransformComponent>();
     groundGoTf.SetScale(Vector3(160.0f, 1.5f, 50.0f));
+    auto cubeMeshComp = groundGo.GetComponent<MeshComponent>();
+    cubeMeshComp.GetMaterial()->SetCastShadow(false);
 
     // -------------------------- Adding Point Lights --------------------------
 
@@ -263,7 +265,8 @@ void LacertaEditor::Update()
     for(auto go : tfMeshesGrp)
     {
         auto[transform, meshComponent] = tfMeshesGrp.get<TransformComponent, MeshComponent>(go);
-        if(meshComponent.GetMaterial() == nullptr || meshComponent.GetMaterial()->GetShader() == "SkyboxShader") // TODO skybox GO doesn't belong to this pass
+        if(meshComponent.GetMaterial() == nullptr || meshComponent.GetMaterial()->GetShader() == "SkyboxShader"
+            || !meshComponent.GetMaterial()->CastShadow()) // TODO skybox GO doesn't belong to this pass
             continue;
 
         Mesh* mesh = meshComponent.GetMesh();
