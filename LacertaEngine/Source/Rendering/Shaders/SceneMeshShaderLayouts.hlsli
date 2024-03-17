@@ -7,6 +7,7 @@ Texture2D AmbiantOcclusionMap: register(t4);
 TextureCube SkyBox: register(t5); 
 TextureCube IrradianceMap: register(t6);
 Texture2D BRDFLut: register(t7);
+Texture2D ShadowMap: register(t8);
 
 sampler TextureSampler: register(s0);
 
@@ -27,7 +28,8 @@ struct VertexOutput
     float3 viewVector : TEXCOORD1;
     float2 texcoord : TEXCOORD2;
     float3 normal : NORMAL;
-    row_major float3x3 tbn: TEXCOORD3;
+    float4 ligthSpacePos : TEXCOORD3;
+    row_major float3x3 tbn: TEXCOORD4;
 };
 
 // ------------------------------------------- Per Instance CBuffer -------------------------------------------
@@ -96,3 +98,9 @@ cbuffer CBuffer : register(b0)
     // 16 bytes boundary
     PointLight PointLights[MAX_LIGHTS]; // 348 bytes (8 * 48 bytes)
 }; // size 572 bytes (348 + 16 + 16 + 192)
+
+cbuffer ShadowMapLightCBuffer : register(b3)
+{
+    row_major float4x4 SMLightView;
+    row_major float4x4 SMLightProjection;
+};

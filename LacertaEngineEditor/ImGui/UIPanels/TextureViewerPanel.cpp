@@ -34,7 +34,7 @@ void TextureViewerPanel::Update()
             if(ShadowMapRenderTarget->RenderToTexture())
             {
                 ImVec2 viewportSize = ImGui::GetContentRegionAvail();
-                ImGui::Image(ShadowMapRenderTarget->GetSRV(), viewportSize);
+                ImGui::Image(ShadowMapRenderTarget->GetDepthSRV(), viewportSize);
             }
         }
         

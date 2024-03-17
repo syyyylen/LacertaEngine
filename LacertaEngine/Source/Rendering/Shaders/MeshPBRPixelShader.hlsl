@@ -78,6 +78,19 @@ float4 main(VertexOutput input) : SV_Target
     float3 normal = input.normal;
     float2 uv = float2(input.texcoord.x, 1.0 - input.texcoord.y);
 
+    /*
+    
+    input.ligthSpacePos.xyz / input.ligthSpacePos.w;
+    input.ligthSpacePos.x = input.ligthSpacePos.x/2 + 0.5;
+    input.ligthSpacePos.y = input.ligthSpacePos.y/2 + 0.5;
+    input.ligthSpacePos.z -= 0.5f;
+    float shadowMapDepth = ShadowMap.Sample(TextureSampler, input.ligthSpacePos.xy).r;
+
+    if(shadowMapDepth < input.ligthSpacePos.z)
+        return float4(0.0f, 0.0f, 0.0f, 1.0f);
+
+    */
+
     if(HasNormalMap)
     {
         float4 normalSampled = NormalMap.Sample(TextureSampler, uv);

@@ -203,9 +203,9 @@ void LacertaEditor::Start()
         L"Assets/Textures/PBR/worn-shiny-metal-Metallic.png",
          L"Assets/Textures/PBR/worn-shiny-metal-ao.png");
     
-    GameObject& groundGo = AddMeshToScene("Ground", L"Assets/Meshes/cube.obj", Vector3(35.0f, -16.0f, 9.0f));
+    GameObject& groundGo = AddMeshToScene("Ground", L"Assets/Meshes/cube.obj", Vector3(130.0f, -16.0f, 9.0f));
     TransformComponent& groundGoTf = groundGo.GetComponent<TransformComponent>();
-    groundGoTf.SetScale(Vector3(62.0f, 1.5f, 42.0f));
+    groundGoTf.SetScale(Vector3(160.0f, 1.5f, 50.0f));
 
     // -------------------------- Adding Point Lights --------------------------
 
@@ -250,8 +250,9 @@ void LacertaEditor::Update()
     m.SetIdentity();
     m.SetRotationY(m_lightRotationY);
     shadowMapView *= m;
+    shadowMapView.Inverse();
     shadowMapCC->ViewMatrix = shadowMapView;
-    shadowMapCC->ProjectionMatrix.SetOrthoLH(150.0f, 150.0f, 0.1f, 5000.0f);
+    shadowMapCC->ProjectionMatrix.SetOrthoLH(200.0f, 200.0f, -5000.0f, 5000.0f);
 
     ConstantBuffer shadowMapCbuf = ConstantBuffer(shadowMapCC, ConstantBufferType::SMLightCubf);
     shadowMapPass->AddGlobalBindable(&shadowMapCbuf);
@@ -380,6 +381,7 @@ void LacertaEditor::Update()
     scenePass->AddGlobalBindable(irradianceTex);
     scenePass->AddGlobalBindable(BRDFLut);
     scenePass->AddGlobalBindable(m_skyBoxTex);
+    scenePass->AddGlobalBindable(&shadowMapCbuf);
 
     ConstantBuffer skyboxCbuf = ConstantBuffer(skyboxCC, ConstantBufferType::SkyBoxCbuf);
     skyboxPass->AddGlobalBindable(&skyboxCbuf);
