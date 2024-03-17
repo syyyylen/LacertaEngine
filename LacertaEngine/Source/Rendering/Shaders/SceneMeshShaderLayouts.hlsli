@@ -10,6 +10,7 @@ Texture2D BRDFLut: register(t7);
 Texture2D ShadowMap: register(t8);
 
 sampler TextureSampler: register(s0);
+SamplerComparisonState ComparisonSampler: register(s1);
 
 // ------------------------------------------- VS Input / Output layout -------------------------------------------
 struct VertexInput

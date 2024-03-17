@@ -72,26 +72,42 @@ float3 PBR(float3 F0, float3 N, float3 V, float3 L, float3 H, float3 radiance, f
     return outgoingLight;
 }
 
+float2 TexOffset(int u, int v)
+{
+    return float2( u * 1.0f/1920.0f, v * 1.0f/1080.0f);
+}
+
 float4 main(VertexOutput input) : SV_Target
 {
     float4 directionalColor = float4(1.0f, 1.0f, 1.0f, 1.0f) * DirectionalIntensity; // default white color
     float3 normal = input.normal;
     float2 uv = float2(input.texcoord.x, 1.0 - input.texcoord.y);
-    
-    input.lightSpacePos.xyz /= input.lightSpacePos.w;
 
+    // bool isInShadow = false;
+    float shadowFactor = 1.0;
+    input.lightSpacePos.xyz /= input.lightSpacePos.w;
     if(!(input.lightSpacePos.x < -1.0f || input.lightSpacePos.x > 1.0f || input.lightSpacePos.y < -1.0f || input.lightSpacePos.y > 1.0f || input.lightSpacePos.z < 0.0f  || input.lightSpacePos.z > 1.0f))
     {
         input.lightSpacePos.x = input.lightSpacePos.x/2 + 0.5;
         input.lightSpacePos.y = input.lightSpacePos.y/-2 + 0.5;
         input.lightSpacePos.z -= 0.002f;
         
-        float shadowMapDepth = ShadowMap.Sample(TextureSampler, input.lightSpacePos.xy).r;
+        float sum = 0;
+        float x, y;
+        for (y = -1.5; y <= 1.5; y += 1.0)
+        {
+            for (x = -1.5; x <= 1.5; x += 1.0)
+                sum += ShadowMap.SampleCmpLevelZero( ComparisonSampler, input.lightSpacePos.xy + TexOffset(x,y), input.lightSpacePos.z);
+        }
 
-        if(shadowMapDepth < input.lightSpacePos.z)
-            return float4(0.0f, 0.0f, 0.0f, 1.0f);
+        shadowFactor = sum / 16.0f;
+        
+        // shadowFactor = ShadowMap.SampleCmpLevelZero(ComparisonSampler, input.lightSpacePos.xy, input.lightSpacePos.z);
+        // return float4(shadowFactor, shadowFactor, shadowFactor, 1.0f);
+        
+        // float shadowMapDepth = ShadowMap.Sample(TextureSampler, input.lightSpacePos.xy).r;
+        // isInShadow = shadowMapDepth < input.lightSpacePos.z;
     }
-
     
     if(HasNormalMap)
     {
@@ -159,7 +175,13 @@ float4 main(VertexOutput input) : SV_Target
     
     float3 ambiantLight = (Kd * diffuse + specular) * ao;
     
-    finalLight += ambiantLight * GlobalAmbient;
+    // if(isInShadow)
+    //     return float4(ambiantLight, 1.0);
+    
+    float3 l = (ambiantLight * GlobalAmbient) + finalLight * shadowFactor;
+    return float4(l, 1.0);
+    
+    // finalLight += ambiantLight * GlobalAmbient;
     
     return float4(finalLight, 1.0);
 }

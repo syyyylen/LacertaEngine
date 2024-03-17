@@ -65,7 +65,7 @@ void LacertaEditor::Start()
     skyboxPass->SetRenderTargetIdx(m_sceneRTidx);
     skyboxPass->SetCullfront(true);
 
-    RHI::Get()->CreateRenderTarget(width, height, RenderTargetType::Texture2D, m_shadowMapRTidx);
+    RHI::Get()->CreateRenderTarget((int)m_shadowMapResolution.X, (int)m_shadowMapResolution.Y, RenderTargetType::Texture2D, m_shadowMapRTidx);
     shadowMapPass->SetRenderTargetIdx(m_shadowMapRTidx);
     shadowMapPass->SetComparisonSampling(true);
     shadowMapPass->SetCullfront(true);
@@ -205,7 +205,7 @@ void LacertaEditor::Start()
     
     GameObject& groundGo = AddMeshToScene("Ground", L"Assets/Meshes/cube.obj", Vector3(130.0f, -16.0f, 9.0f));
     TransformComponent& groundGoTf = groundGo.GetComponent<TransformComponent>();
-    groundGoTf.SetScale(Vector3(160.0f, 1.5f, 50.0f));
+    groundGoTf.SetScale(Vector3(160.0f, 1.5f, 100.0f));
     auto cubeMeshComp = groundGo.GetComponent<MeshComponent>();
     cubeMeshComp.GetMaterial()->SetCastShadow(false);
 
@@ -254,7 +254,7 @@ void LacertaEditor::Update()
     shadowMapView *= m;
     shadowMapView.Inverse();
     shadowMapCC->ViewMatrix = shadowMapView;
-    shadowMapCC->ProjectionMatrix.SetOrthoLH(500.0f, 500.0f, -200.0f, 200.0f);
+    shadowMapCC->ProjectionMatrix.SetOrthoLH(800.0f, 800.0f, -200.0f, 200.0f);
 
     ConstantBuffer shadowMapCbuf = ConstantBuffer(shadowMapCC, ConstantBufferType::SMLightCubf);
     shadowMapPass->AddGlobalBindable(&shadowMapCbuf);
@@ -283,7 +283,7 @@ void LacertaEditor::Update()
         }
     }
 
-    RHI::Get()->ExecuteRenderPass("shadowMap", m_viewportCachedSize, true);
+    RHI::Get()->ExecuteRenderPass("shadowMap", m_shadowMapResolution, true);
 
     // ---------------------------------------------------------------------------------------------------------
     
