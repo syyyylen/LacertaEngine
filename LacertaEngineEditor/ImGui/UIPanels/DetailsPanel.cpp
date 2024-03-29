@@ -64,6 +64,7 @@ void DetailsPanel::Update()
                 Material* mat = meshComp.GetMaterial();
                 
                 ImGui::Text("Material Shader : %s", mat->GetShader().c_str());
+                ImGui::Checkbox("Cast Shadow", &mat->m_castShadow);
                 ImGui::Spacing();
 
                 MatLightProperties lightProperties = mat->GetMatLightProperties();
