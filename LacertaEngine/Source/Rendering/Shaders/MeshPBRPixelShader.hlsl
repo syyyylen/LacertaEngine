@@ -74,7 +74,7 @@ float3 PBR(float3 F0, float3 N, float3 V, float3 L, float3 H, float3 radiance, f
 
 float2 TexOffset(int u, int v)
 {
-    return float2( u * 1.0f/1920.0f, v * 1.0f/1080.0f);
+    return float2( u * 1.0f/2048.0f, v * 1.0f/2048.0f);
 }
 
 float4 main(VertexOutput input) : SV_Target
@@ -83,7 +83,6 @@ float4 main(VertexOutput input) : SV_Target
     float3 normal = input.normal;
     float2 uv = float2(input.texcoord.x, 1.0 - input.texcoord.y);
 
-    // bool isInShadow = false;
     float shadowFactor = 1.0;
     input.lightSpacePos.xyz /= input.lightSpacePos.w;
     if(!(input.lightSpacePos.x < -1.0f || input.lightSpacePos.x > 1.0f || input.lightSpacePos.y < -1.0f || input.lightSpacePos.y > 1.0f || input.lightSpacePos.z < 0.0f  || input.lightSpacePos.z > 1.0f))
@@ -101,12 +100,6 @@ float4 main(VertexOutput input) : SV_Target
         }
 
         shadowFactor = sum / 16.0f;
-        
-        // shadowFactor = ShadowMap.SampleCmpLevelZero(ComparisonSampler, input.lightSpacePos.xy, input.lightSpacePos.z);
-        // return float4(shadowFactor, shadowFactor, shadowFactor, 1.0f);
-        
-        // float shadowMapDepth = ShadowMap.Sample(TextureSampler, input.lightSpacePos.xy).r;
-        // isInShadow = shadowMapDepth < input.lightSpacePos.z;
     }
     
     if(HasNormalMap)

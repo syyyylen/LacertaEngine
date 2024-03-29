@@ -35,12 +35,13 @@ public:
 
     bool CastShadow() { return m_castShadow; }
     void SetCastShadow(bool cast) { m_castShadow = cast; }
+
+    bool m_castShadow = true;
     
 private:
     MatLightProperties m_lightProperties;
     std::string m_shaderName;
     std::vector<Texture*> m_textures;
-    bool m_castShadow = true;
 };
 
 }
