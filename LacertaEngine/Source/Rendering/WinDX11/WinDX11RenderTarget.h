@@ -26,13 +26,13 @@ public:
     Texture* CreateTextureFromDepth(int texBindIdx) override;
 
     ID3D11ShaderResourceView* GetTextureShaderResView() const { return m_targetTextureShaderResView; }
-    ID3D11RenderTargetView* GetRtv() { return m_renderTarget; }
+    ID3D11RenderTargetView* GetRtv() { return m_renderTargets[0]; }
 
 private:
     ID3D11ShaderResourceView* m_targetTextureShaderResView;
     ID3D11ShaderResourceView* m_depthShaderResView;
-    ID3D11RenderTargetView* m_renderTarget;
-    ID3D11DepthStencilView* m_depthStencil;
+    ID3D11RenderTargetView** m_renderTargets;
+    ID3D11DepthStencilView** m_depthStencils;
     ID3D11DepthStencilState* m_depthStencilState;
 };
 
