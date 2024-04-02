@@ -8,7 +8,6 @@ TextureCube SkyBox: register(t5);
 TextureCube IrradianceMap: register(t6);
 Texture2D BRDFLut: register(t7);
 Texture2DArray ShadowMap: register(t8);
-// Texture2D ShadowMap[3]: register(t8);
 
 sampler TextureSampler: register(s0);
 SamplerComparisonState ComparisonSampler: register(s1);
@@ -103,6 +102,6 @@ cbuffer CBuffer : register(b0)
 
 cbuffer ShadowMapLightCBuffer : register(b3)
 {
-    row_major float4x4 SMLightView;
-    row_major float4x4 SMLightProjection;
+    row_major float4x4 SMLightView[4];
+    row_major float4x4 SMLightProjection[4];
 };

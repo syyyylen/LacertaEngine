@@ -17,9 +17,9 @@ VertexOutput main(VertexInput input)
     ret.tbn[0] = normalize(mul(input.tangent, World));
     ret.tbn[1] = normalize(mul(input.binormal, World));
     ret.tbn[2] = normalize(mul(input.normal, World));
-
-    ret.lightSpacePos = mul(p, SMLightView);
-    ret.lightSpacePos = mul(ret.lightSpacePos, SMLightProjection);
+    
+    ret.lightSpacePos = mul(p, SMLightView[0]); // TODO sample the correct csm
+    ret.lightSpacePos = mul(ret.lightSpacePos, SMLightProjection[0]);
     
     return ret;
 }

@@ -85,6 +85,7 @@ float4 main(VertexOutput input) : SV_Target
 
     float shadowFactor = 1.0;
     input.lightSpacePos.xyz /= input.lightSpacePos.w;
+
     if(!(input.lightSpacePos.x < -1.0f || input.lightSpacePos.x > 1.0f || input.lightSpacePos.y < -1.0f || input.lightSpacePos.y > 1.0f || input.lightSpacePos.z < 0.0f  || input.lightSpacePos.z > 1.0f))
     {
         input.lightSpacePos.x = input.lightSpacePos.x/2 + 0.5;

@@ -6,8 +6,8 @@ namespace LacertaEngine
     
 struct ShadowMapLightConstantBuffer
 {
-    Matrix4x4 ViewMatrix;
-    Matrix4x4 ProjectionMatrix;
+    Matrix4x4 ViewMatrix[4];
+    Matrix4x4 ProjectionMatrix[4];
 };
     
 }
