@@ -95,6 +95,11 @@ void WinDX11RenderTarget::ReloadBuffers(Renderer* renderer, unsigned width, unsi
             renderTargetViewDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
             renderTargetViewDesc.ViewDimension = m_numRt > 1 ? D3D11_RTV_DIMENSION_TEXTURE2DARRAY : D3D11_RTV_DIMENSION_TEXTURE2D; 
             renderTargetViewDesc.Texture2D.MipSlice = 0;
+            if(m_numRt > 1)
+            {
+                renderTargetViewDesc.Texture2DArray.ArraySize = m_numRt;
+                renderTargetViewDesc.Texture2DArray.MipSlice = 0;
+            }
 
             hr = device->CreateRenderTargetView(buffer, &renderTargetViewDesc, &m_renderTarget);
             if(FAILED(hr))
@@ -200,7 +205,7 @@ void WinDX11RenderTarget::ReloadBuffers(Renderer* renderer, unsigned width, unsi
     tex_desc.SampleDesc.Count = 1;
     tex_desc.SampleDesc.Quality = 0;
     tex_desc.MiscFlags = 0;
-    tex_desc.ArraySize = 1;
+    tex_desc.ArraySize = m_numRt;
     tex_desc.CPUAccessFlags = 0;
 
     D3D11_DEPTH_STENCIL_DESC desc = {};
@@ -224,14 +229,24 @@ void WinDX11RenderTarget::ReloadBuffers(Renderer* renderer, unsigned width, unsi
 
     D3D11_DEPTH_STENCIL_VIEW_DESC dsvDesc;
     dsvDesc.Flags = 0;
-    dsvDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT ;
-    dsvDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
+    dsvDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
     dsvDesc.Texture2D.MipSlice = 0;
+    dsvDesc.ViewDimension = m_numRt > 1 ? D3D11_DSV_DIMENSION_TEXTURE2DARRAY : D3D11_DSV_DIMENSION_TEXTURE2D;
+    if(m_numRt > 1)
+    {
+        dsvDesc.Texture2DArray.ArraySize = m_numRt;
+        dsvDesc.Texture2DArray.MipSlice = 0;
+    }
 
     D3D11_SHADER_RESOURCE_VIEW_DESC depthSrvDesc;
     ZeroMemory(&depthSrvDesc, sizeof(D3D11_SHADER_RESOURCE_VIEW_DESC));
     depthSrvDesc.Format = DXGI_FORMAT_R24_UNORM_X8_TYPELESS ;
-    depthSrvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+    depthSrvDesc.ViewDimension = m_numRt > 1 ? D3D11_SRV_DIMENSION_TEXTURE2DARRAY : D3D11_SRV_DIMENSION_TEXTURE2D;
+    if(m_numRt > 1)
+    {
+        depthSrvDesc.Texture2DArray.ArraySize = m_numRt;
+        depthSrvDesc.Texture2DArray.MipLevels = 1;
+    }
     depthSrvDesc.Texture2D.MipLevels = 1;
     depthSrvDesc.Texture2D.MostDetailedMip = 0;
     
