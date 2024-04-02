@@ -14,6 +14,8 @@
 
 #define MAX_MESHES 50
 
+#define SHADOW_CASCADES 3
+
 namespace LacertaEngineEditor
 {
 
@@ -65,7 +67,7 @@ void LacertaEditor::Start()
     skyboxPass->SetRenderTargetIdx(m_sceneRTidx);
     skyboxPass->SetCullfront(true);
 
-    RHI::Get()->CreateRenderTarget((int)m_shadowMapResolution.X, (int)m_shadowMapResolution.Y, RenderTargetType::Texture2D, m_shadowMapRTidx);
+    RHI::Get()->CreateRenderTarget((int)m_shadowMapResolution.X, (int)m_shadowMapResolution.Y, RenderTargetType::Texture2D, m_shadowMapRTidx, SHADOW_CASCADES);
     shadowMapPass->SetRenderTargetIdx(m_shadowMapRTidx);
     shadowMapPass->SetComparisonSampling(true);
     shadowMapPass->SetCullfront(true);
@@ -283,6 +285,7 @@ void LacertaEditor::Update()
         }
     }
 
+    shadowMapPass->SetRenderTargetSubresourceIdx(0); // TODO debug here
     RHI::Get()->ExecuteRenderPass("shadowMap", m_shadowMapResolution, true);
 
     // ---------------------------------------------------------------------------------------------------------

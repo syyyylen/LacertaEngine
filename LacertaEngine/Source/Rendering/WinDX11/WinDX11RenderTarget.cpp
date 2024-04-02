@@ -100,8 +100,10 @@ void WinDX11RenderTarget::ReloadBuffers(Renderer* renderer, unsigned width, unsi
             shaderResourceViewDesc.ViewDimension = m_numRt > 1 ? D3D11_SRV_DIMENSION_TEXTURE2DARRAY : D3D11_SRV_DIMENSION_TEXTURE2D;
             if(m_numRt > 1)
             {
+                shaderResourceViewDesc.Texture2DArray.ArraySize = m_numRt;
                 shaderResourceViewDesc.Texture2DArray.MostDetailedMip = 0;
                 shaderResourceViewDesc.Texture2DArray.MipLevels = 1;
+                shaderResourceViewDesc.Texture2DArray.FirstArraySlice = 0;
             }
             else
             {
@@ -109,7 +111,7 @@ void WinDX11RenderTarget::ReloadBuffers(Renderer* renderer, unsigned width, unsi
                 shaderResourceViewDesc.Texture2D.MipLevels = 1;
             }
                 
-            hr = device->CreateShaderResourceView(buffer, &shaderResourceViewDesc, &m_targetTextureShaderResView);
+            hr = device->CreateShaderResourceView(buffer, nullptr, &m_targetTextureShaderResView);
             if(FAILED(hr))
             {
                 std::string errorMsg = std::system_category().message(hr);
@@ -128,6 +130,7 @@ void WinDX11RenderTarget::ReloadBuffers(Renderer* renderer, unsigned width, unsi
                 {
                     renderTargetViewDesc.Texture2DArray.ArraySize = 1;
                     renderTargetViewDesc.Texture2DArray.MipSlice = 0;
+                    renderTargetViewDesc.Texture2DArray.FirstArraySlice = i;
                 }
 
                 hr = device->CreateRenderTargetView(buffer, &renderTargetViewDesc, &m_renderTargets[i]);
@@ -247,6 +250,8 @@ void WinDX11RenderTarget::ReloadBuffers(Renderer* renderer, unsigned width, unsi
     {
         depthSrvDesc.Texture2DArray.ArraySize = m_numRt;
         depthSrvDesc.Texture2DArray.MipLevels = 1;
+        depthSrvDesc.Texture2DArray.FirstArraySlice = 0;
+        depthSrvDesc.Texture2DArray.MostDetailedMip = 0;
     }
     depthSrvDesc.Texture2D.MipLevels = 1;
     depthSrvDesc.Texture2D.MostDetailedMip = 0;
@@ -280,6 +285,7 @@ void WinDX11RenderTarget::ReloadBuffers(Renderer* renderer, unsigned width, unsi
         {
             dsvDesc.Texture2DArray.ArraySize = 1;
             dsvDesc.Texture2DArray.MipSlice = 0;
+            dsvDesc.Texture2DArray.FirstArraySlice = i;
         }
 
         hr = device->CreateDepthStencilView(buffer, &dsvDesc, &m_depthStencils[i]);
@@ -307,14 +313,14 @@ void WinDX11RenderTarget::ReloadBuffers(Renderer* renderer, unsigned width, unsi
 
 void WinDX11RenderTarget::Resize(Renderer* renderer, unsigned width, unsigned height)
 {
-    if(m_renderTargets)
-        m_renderTargets[0]->Release();
-
+    for(int i = 0; i < m_numRt; i++)
+    {
+        m_renderTargets[i]->Release();
+        m_depthStencils[i]->Release();
+    }
+    
     if(m_targetTextureShaderResView)
         m_targetTextureShaderResView->Release();
-
-    if(m_depthStencils)
-        m_depthStencils[0]->Release();
 
     // If this render target is the backbuffer, we want to resize it on app window size change
     if(m_renderTargetType == RenderTargetType::BackBuffer)
@@ -331,10 +337,7 @@ void WinDX11RenderTarget::Resize(Renderer* renderer, unsigned width, unsigned he
 
 void WinDX11RenderTarget::Clear(Renderer* renderer, Vector4 color)
 {
-    ID3D11DeviceContext* ctx = ((WinDX11Renderer*)renderer)->GetImmediateContext();
-    FLOAT clearColor[] = { color.X, color.Y, color.Z, color.W };
-    ctx->ClearRenderTargetView(m_renderTargets[0], clearColor);
-    ctx->ClearDepthStencilView(m_depthStencils[0], D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1, 0);
+    Clear(renderer, color, 0);
 }
 
 void WinDX11RenderTarget::Clear(Renderer* renderer, Vector4 color, int idx)
@@ -371,6 +374,7 @@ Texture* WinDX11RenderTarget::CreateTextureFromRT(int texBindIdx)
     auto tex = new WinDX11Texture();
     tex->SetSRV(GetTextureShaderResView());
     tex->SetTextureIdx(texBindIdx);
+    tex->SetNumTexs(m_numRt);
     return tex;
 }
 
@@ -379,6 +383,7 @@ Texture* WinDX11RenderTarget::CreateTextureFromDepth(int texBindIdx)
     auto tex = new WinDX11Texture();
     tex->SetSRV(m_depthShaderResView);
     tex->SetTextureIdx(texBindIdx);
+    tex->SetNumTexs(m_numRt);
     return tex;
 }
     

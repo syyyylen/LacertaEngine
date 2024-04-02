@@ -96,7 +96,10 @@ float4 main(VertexOutput input) : SV_Target
         for (y = -1.5; y <= 1.5; y += 1.0)
         {
             for (x = -1.5; x <= 1.5; x += 1.0)
-                sum += ShadowMap.SampleCmpLevelZero( ComparisonSampler, input.lightSpacePos.xy + TexOffset(x,y), input.lightSpacePos.z);
+            {
+                float2 coord = float2(input.lightSpacePos.xy + TexOffset(x,y));
+                sum += ShadowMap.SampleCmpLevelZero(ComparisonSampler, float3(coord.x, coord.y, 0 /* tex idx */), input.lightSpacePos.z);
+            }
         }
 
         shadowFactor = sum / 16.0f;
