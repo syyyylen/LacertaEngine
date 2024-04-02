@@ -49,7 +49,7 @@ void RHI::InitializeRenderer(int* context, RendererType type, int width, int hei
     if(m_renderer)
     {
         m_renderer->Initialize(context, width, height, targetRefreshRate);
-        m_renderer->CreateRenderTarget(width, height, RenderTargetType::BackBuffer, backbufferIdx);
+        m_renderer->CreateRenderTarget(width, height, RenderTargetType::BackBuffer, backbufferIdx, 0);
         m_renderer->LoadShaders();
     }
 }
@@ -86,7 +86,12 @@ void RHI::PresentSwapChain()
 
 RenderTarget* RHI::CreateRenderTarget(int width, int height, RenderTargetType renderTargetType, int& outRTidx)
 {
-    return m_renderer->CreateRenderTarget(width, height, renderTargetType, outRTidx);
+    return m_renderer->CreateRenderTarget(width, height, renderTargetType, outRTidx, 0);
+}
+
+RenderTarget* RHI::CreateRenderTarget(int width, int height, RenderTargetType renderTargetType, int& outRTidx, int numRt)
+{
+    return m_renderer->CreateRenderTarget(width, height, renderTargetType, outRTidx, numRt);
 }
 
 RenderTarget* RHI::GetRenderTarget(int idx)

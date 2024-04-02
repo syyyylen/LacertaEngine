@@ -446,10 +446,10 @@ void WinDX11Renderer::SetSamplerState(bool comparisonSampler)
     m_deviceContext->PSSetSamplers(1, 1, &m_comparisonSamplerState);
 }
 
-RenderTarget* WinDX11Renderer::CreateRenderTarget(int width, int height, RenderTargetType renderTargetType, int& outRTidx)
+RenderTarget* WinDX11Renderer::CreateRenderTarget(int width, int height, RenderTargetType renderTargetType, int& outRTidx, int numRt)
 {
     WinDX11RenderTarget* textureRendTarg = new WinDX11RenderTarget();
-    textureRendTarg->Initialize(this, width, height, renderTargetType);
+    textureRendTarg->Initialize(this, width, height, renderTargetType, numRt);
     m_renderTargets.emplace_back(textureRendTarg);
 
     outRTidx = (int)m_renderTargets.size() - 1;

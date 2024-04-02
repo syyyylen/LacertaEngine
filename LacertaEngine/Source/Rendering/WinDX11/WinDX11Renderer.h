@@ -30,7 +30,7 @@ public:
     void SetRasterizerCullState(bool cullFront) override;
     void SetSamplerState(bool comparisonSampler) override;
 
-    RenderTarget* CreateRenderTarget(int width, int height, RenderTargetType renderTargetType, int& outRTidx) override;
+    RenderTarget* CreateRenderTarget(int width, int height, RenderTargetType renderTargetType, int& outRTidx, int numRt) override;
 
     ID3D11Buffer* CreateVBO(std::vector<SceneVertexMesh> vertices);
     ID3D11Buffer* CreateIBO(std::vector<unsigned> indices);

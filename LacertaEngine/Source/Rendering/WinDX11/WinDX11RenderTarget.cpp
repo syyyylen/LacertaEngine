@@ -14,14 +14,15 @@ WinDX11RenderTarget::WinDX11RenderTarget()
 WinDX11RenderTarget::~WinDX11RenderTarget()
 {
     delete m_renderTarget;
-    delete[] m_rtv;
 }
 
-void WinDX11RenderTarget::Initialize(Renderer* renderer, int width, int height, RenderTargetType renderTargetType)
+void WinDX11RenderTarget::Initialize(Renderer* renderer, int width, int height, RenderTargetType renderTargetType, int numRt)
 {
     LOG(Debug, "WinDX11RenderTarget : Initialize");
 
     m_renderTargetType = renderTargetType;
+    if(numRt > 1)
+        m_numRt = numRt;    
     
     ReloadBuffers(renderer, width, height);
     SetViewportSize(renderer, width, height);
@@ -30,13 +31,13 @@ void WinDX11RenderTarget::Initialize(Renderer* renderer, int width, int height, 
 void WinDX11RenderTarget::SetActive(Renderer* renderer)
 {
     WinDX11Renderer* localRenderer = (WinDX11Renderer*)renderer;
-    localRenderer->GetImmediateContext()->OMSetRenderTargets(1, &m_renderTarget, m_depthStencil);
+    localRenderer->GetImmediateContext()->OMSetRenderTargets(1, &m_renderTarget[0], m_depthStencil);
 }
 
 void WinDX11RenderTarget::SetActive(Renderer* renderer, int idx)
 {
     WinDX11Renderer* localRenderer = (WinDX11Renderer*)renderer;
-    localRenderer->GetImmediateContext()->OMSetRenderTargets(1, &m_rtv[idx], m_depthStencil);
+    localRenderer->GetImmediateContext()->OMSetRenderTargets(1, &m_renderTarget[idx], m_depthStencil);
 }
 
 void WinDX11RenderTarget::ReloadBuffers(Renderer* renderer, unsigned width, unsigned height)
@@ -50,6 +51,8 @@ void WinDX11RenderTarget::ReloadBuffers(Renderer* renderer, unsigned width, unsi
     {
         case RenderTargetType::BackBuffer:
         {
+            m_renderTarget = new ID3D11RenderTargetView*[1];
+                
             hr = localRenderer->GetDXGISwapChain()->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)&buffer);
             if(FAILED(hr))
             {
@@ -57,7 +60,7 @@ void WinDX11RenderTarget::ReloadBuffers(Renderer* renderer, unsigned width, unsi
                 throw std::exception("Failed Backbuffer creation");
             }
     
-            hr = device->CreateRenderTargetView(buffer, nullptr, &m_renderTarget);
+            hr = device->CreateRenderTargetView(buffer, nullptr, &m_renderTarget[0]);
             if(FAILED(hr))
             {
                 LOG(Error, "Failed Render Target creation");
@@ -69,6 +72,8 @@ void WinDX11RenderTarget::ReloadBuffers(Renderer* renderer, unsigned width, unsi
 
         case RenderTargetType::Texture2D:
         {
+            m_renderTarget = new ID3D11RenderTargetView*[1];
+                
             D3D11_TEXTURE2D_DESC textureDesc = {};
             textureDesc.Width = width;
             textureDesc.Height = height;
@@ -95,7 +100,7 @@ void WinDX11RenderTarget::ReloadBuffers(Renderer* renderer, unsigned width, unsi
             renderTargetViewDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
             renderTargetViewDesc.Texture2D.MipSlice = 0;
             
-            hr = device->CreateRenderTargetView(buffer, &renderTargetViewDesc, &m_renderTarget);
+            hr = device->CreateRenderTargetView(buffer, &renderTargetViewDesc, &m_renderTarget[0]);
             if(FAILED(hr))
             {
                 std::string errorMsg = std::system_category().message(hr);
@@ -123,6 +128,8 @@ void WinDX11RenderTarget::ReloadBuffers(Renderer* renderer, unsigned width, unsi
 
         case RenderTargetType::TextureCube:
         {
+            m_renderTarget = new ID3D11RenderTargetView*[6];
+                
             D3D11_TEXTURE2D_DESC textureCubeDesc;
             textureCubeDesc.Width = 64;
             textureCubeDesc.Height = 64;
@@ -171,7 +178,7 @@ void WinDX11RenderTarget::ReloadBuffers(Renderer* renderer, unsigned width, unsi
             for(int i = 0; i < 6; i++)
             {
                 rtvDesc.Texture2DArray.FirstArraySlice = i;
-                device->CreateRenderTargetView(buffer, &rtvDesc, &m_rtv[i]);
+                device->CreateRenderTargetView(buffer, &rtvDesc, &m_renderTarget[i]);
             }
 
             break;
@@ -269,7 +276,7 @@ void WinDX11RenderTarget::ReloadBuffers(Renderer* renderer, unsigned width, unsi
 void WinDX11RenderTarget::Resize(Renderer* renderer, unsigned width, unsigned height)
 {
     if(m_renderTarget)
-        m_renderTarget->Release();
+        m_renderTarget[0]->Release();
 
     if(m_targetTextureShaderResView)
         m_targetTextureShaderResView->Release();
@@ -294,7 +301,7 @@ void WinDX11RenderTarget::Clear(Renderer* renderer, Vector4 color)
 {
     ID3D11DeviceContext* ctx = ((WinDX11Renderer*)renderer)->GetImmediateContext();
     FLOAT clearColor[] = { color.X, color.Y, color.Z, color.W };
-    ctx->ClearRenderTargetView(m_renderTarget, clearColor);
+    ctx->ClearRenderTargetView(m_renderTarget[0], clearColor);
     ctx->ClearDepthStencilView(m_depthStencil, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1, 0);
 }
 
@@ -302,7 +309,7 @@ void WinDX11RenderTarget::Clear(Renderer* renderer, Vector4 color, int idx)
 {
     ID3D11DeviceContext* ctx = ((WinDX11Renderer*)renderer)->GetImmediateContext();
     FLOAT clearColor[] = { color.X, color.Y, color.Z, color.W };
-    ctx->ClearRenderTargetView(m_rtv[idx], clearColor);
+    ctx->ClearRenderTargetView(m_renderTarget[idx], clearColor);
 }
 
 void WinDX11RenderTarget::SetViewportSize(Renderer* renderer, UINT width, UINT height)

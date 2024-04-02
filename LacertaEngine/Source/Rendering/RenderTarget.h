@@ -21,7 +21,7 @@ public:
     RenderTarget();
     virtual ~RenderTarget();
 
-    virtual void Initialize(Renderer* renderer, int width, int height, RenderTargetType renderTargetType) = 0;
+    virtual void Initialize(Renderer* renderer, int width, int height, RenderTargetType renderTargetType, int numRt) = 0;
     virtual void SetActive(Renderer* renderer) = 0;
     virtual void SetActive(Renderer* renderer, int idx) = 0;
     virtual void Clear(Renderer* renderer, Vector4 color) = 0;
