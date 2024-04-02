@@ -12,7 +12,7 @@ public:
     WinDX11RenderTarget();
     virtual ~WinDX11RenderTarget();
 
-    void Initialize(Renderer* renderer, int width, int height, RenderTargetType renderTargetType) override;
+    void Initialize(Renderer* renderer, int width, int height, RenderTargetType renderTargetType, int numRt) override;
     void SetActive(Renderer* renderer) override;
     void SetActive(Renderer* renderer, int idx) override;
     void ReloadBuffers(Renderer* renderer, unsigned width, unsigned height);
@@ -35,8 +35,7 @@ private:
     ID3D11DepthStencilView* m_depthStencil;
     ID3D11DepthStencilState* m_depthStencilState;
 
-    // TODO find a better solution
-    ID3D11RenderTargetView* m_rtv[6];
+    int m_numRt = 1;
 };
 
 }

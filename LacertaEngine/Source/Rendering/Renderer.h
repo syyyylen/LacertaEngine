@@ -34,7 +34,7 @@ public:
     virtual void UpdateConstantBuffer(void* buffer, ConstantBufferType cbufType) = 0;
     virtual void SetRasterizerCullState(bool cullFront) = 0;
     virtual void SetSamplerState(bool comparisonSampler) = 0;
-    virtual RenderTarget* CreateRenderTarget(int width, int height, RenderTargetType renderTargetType, int& outRTidx) = 0;
+    virtual RenderTarget* CreateRenderTarget(int width, int height, RenderTargetType renderTargetType, int& outRTidx, int numRt) = 0;
     RenderPass* CreateRenderPass(std::string name);
     RenderPass* GetRenderPass(std::string name);
     void DeleteRenderPass(std::string name);

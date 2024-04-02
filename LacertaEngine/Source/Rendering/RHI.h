@@ -32,6 +32,7 @@ public:
     void SetRasterizerState(bool cullFront);
     void PresentSwapChain();
     RenderTarget* CreateRenderTarget(int width, int height, RenderTargetType renderTargetType, int& outRTidx);
+    RenderTarget* CreateRenderTarget(int width, int height, RenderTargetType renderTargetType, int& outRTidx, int numRt);
     RenderTarget* GetRenderTarget(int idx);
     RenderPass* CreateRenderPass(std::string name);
     RenderPass* GetRenderPass(std::string name);

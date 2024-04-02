@@ -14,14 +14,15 @@ WinDX11RenderTarget::WinDX11RenderTarget()
 WinDX11RenderTarget::~WinDX11RenderTarget()
 {
     delete m_renderTarget;
-    delete[] m_rtv;
 }
 
-void WinDX11RenderTarget::Initialize(Renderer* renderer, int width, int height, RenderTargetType renderTargetType)
+void WinDX11RenderTarget::Initialize(Renderer* renderer, int width, int height, RenderTargetType renderTargetType, int numRt)
 {
     LOG(Debug, "WinDX11RenderTarget : Initialize");
 
     m_renderTargetType = renderTargetType;
+    if(numRt > 1)
+        m_numRt = numRt;    
     
     ReloadBuffers(renderer, width, height);
     SetViewportSize(renderer, width, height);
@@ -33,10 +34,10 @@ void WinDX11RenderTarget::SetActive(Renderer* renderer)
     localRenderer->GetImmediateContext()->OMSetRenderTargets(1, &m_renderTarget, m_depthStencil);
 }
 
-void WinDX11RenderTarget::SetActive(Renderer* renderer, int idx)
+void WinDX11RenderTarget::SetActive(Renderer* renderer, int idx) // TODO solve this 
 {
     WinDX11Renderer* localRenderer = (WinDX11Renderer*)renderer;
-    localRenderer->GetImmediateContext()->OMSetRenderTargets(1, &m_rtv[idx], m_depthStencil);
+    localRenderer->GetImmediateContext()->OMSetRenderTargets(1, &m_renderTarget, m_depthStencil);
 }
 
 void WinDX11RenderTarget::ReloadBuffers(Renderer* renderer, unsigned width, unsigned height)
@@ -73,7 +74,7 @@ void WinDX11RenderTarget::ReloadBuffers(Renderer* renderer, unsigned width, unsi
             textureDesc.Width = width;
             textureDesc.Height = height;
             textureDesc.MipLevels = 1;
-            textureDesc.ArraySize = 1;
+            textureDesc.ArraySize = m_numRt;
             textureDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
             textureDesc.SampleDesc.Count = 1;
             textureDesc.Usage = D3D11_USAGE_DEFAULT;
@@ -92,9 +93,9 @@ void WinDX11RenderTarget::ReloadBuffers(Renderer* renderer, unsigned width, unsi
 
             D3D11_RENDER_TARGET_VIEW_DESC renderTargetViewDesc;
             renderTargetViewDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-            renderTargetViewDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
+            renderTargetViewDesc.ViewDimension = m_numRt > 1 ? D3D11_RTV_DIMENSION_TEXTURE2DARRAY : D3D11_RTV_DIMENSION_TEXTURE2D; 
             renderTargetViewDesc.Texture2D.MipSlice = 0;
-            
+
             hr = device->CreateRenderTargetView(buffer, &renderTargetViewDesc, &m_renderTarget);
             if(FAILED(hr))
             {
@@ -106,9 +107,17 @@ void WinDX11RenderTarget::ReloadBuffers(Renderer* renderer, unsigned width, unsi
 
             D3D11_SHADER_RESOURCE_VIEW_DESC shaderResourceViewDesc;
             shaderResourceViewDesc.Format = textureDesc.Format;
-            shaderResourceViewDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
-            shaderResourceViewDesc.Texture2D.MostDetailedMip = 0;
-            shaderResourceViewDesc.Texture2D.MipLevels = 1;
+            shaderResourceViewDesc.ViewDimension = m_numRt > 1 ? D3D11_SRV_DIMENSION_TEXTURE2DARRAY : D3D11_SRV_DIMENSION_TEXTURE2D;
+            if(m_numRt > 1)
+            {
+                shaderResourceViewDesc.Texture2DArray.MostDetailedMip = 0;
+                shaderResourceViewDesc.Texture2DArray.MipLevels = 1;
+            }
+            else
+            {
+                shaderResourceViewDesc.Texture2D.MostDetailedMip = 0;
+                shaderResourceViewDesc.Texture2D.MipLevels = 1;
+            }
             hr = device->CreateShaderResourceView(buffer, &shaderResourceViewDesc, &m_targetTextureShaderResView);
             if(FAILED(hr))
             {
@@ -168,10 +177,10 @@ void WinDX11RenderTarget::ReloadBuffers(Renderer* renderer, unsigned width, unsi
                 throw std::exception("Failed Scene texture Shader Res View creation");
             }
 
-            for(int i = 0; i < 6; i++)
+            for(int i = 0; i < 6; i++) // TODO this is not good
             {
                 rtvDesc.Texture2DArray.FirstArraySlice = i;
-                device->CreateRenderTargetView(buffer, &rtvDesc, &m_rtv[i]);
+                device->CreateRenderTargetView(buffer, &rtvDesc, &m_renderTarget);
             }
 
             break;
@@ -298,11 +307,11 @@ void WinDX11RenderTarget::Clear(Renderer* renderer, Vector4 color)
     ctx->ClearDepthStencilView(m_depthStencil, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1, 0);
 }
 
-void WinDX11RenderTarget::Clear(Renderer* renderer, Vector4 color, int idx)
+void WinDX11RenderTarget::Clear(Renderer* renderer, Vector4 color, int idx) // TODO Solve this
 {
     ID3D11DeviceContext* ctx = ((WinDX11Renderer*)renderer)->GetImmediateContext();
     FLOAT clearColor[] = { color.X, color.Y, color.Z, color.W };
-    ctx->ClearRenderTargetView(m_rtv[idx], clearColor);
+    ctx->ClearRenderTargetView(m_renderTarget, clearColor);
 }
 
 void WinDX11RenderTarget::SetViewportSize(Renderer* renderer, UINT width, UINT height)
