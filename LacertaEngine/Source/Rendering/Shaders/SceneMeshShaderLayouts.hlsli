@@ -7,7 +7,7 @@ Texture2D AmbiantOcclusionMap: register(t4);
 TextureCube SkyBox: register(t5); 
 TextureCube IrradianceMap: register(t6);
 Texture2D BRDFLut: register(t7);
-Texture2D ShadowMap: register(t8);
+Texture2DArray ShadowMap: register(t8);
 
 sampler TextureSampler: register(s0);
 SamplerComparisonState ComparisonSampler: register(s1);
@@ -29,8 +29,8 @@ struct VertexOutput
     float3 viewVector : TEXCOORD1;
     float2 texcoord : TEXCOORD2;
     float3 normal : NORMAL;
-    float4 lightSpacePos : TEXCOORD3;
-    row_major float3x3 tbn: TEXCOORD4;
+    float4 lightSpacePos[3] : TEXCOORD4;
+    row_major float3x3 tbn : TEXCOORD7;
 };
 
 // ------------------------------------------- Per Instance CBuffer -------------------------------------------
@@ -102,6 +102,6 @@ cbuffer CBuffer : register(b0)
 
 cbuffer ShadowMapLightCBuffer : register(b3)
 {
-    row_major float4x4 SMLightView;
-    row_major float4x4 SMLightProjection;
+    row_major float4x4 SMLightView[4];
+    row_major float4x4 SMLightProjection[4];
 };

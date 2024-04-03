@@ -84,19 +84,28 @@ float4 main(VertexOutput input) : SV_Target
     float2 uv = float2(input.texcoord.x, 1.0 - input.texcoord.y);
 
     float shadowFactor = 1.0;
-    input.lightSpacePos.xyz /= input.lightSpacePos.w;
-    if(!(input.lightSpacePos.x < -1.0f || input.lightSpacePos.x > 1.0f || input.lightSpacePos.y < -1.0f || input.lightSpacePos.y > 1.0f || input.lightSpacePos.z < 0.0f  || input.lightSpacePos.z > 1.0f))
+    float d = length(input.positionWS - CameraPosition.xyz);
+    int csm = 0;
+    if(d > 50) csm = 1;
+    if(d > 150) csm = 2;
+    float4 lightSpacePos = input.lightSpacePos[csm];
+    lightSpacePos.xyz /= lightSpacePos.w;
+
+    if(!(lightSpacePos.x < -1.0f || lightSpacePos.x > 1.0f || lightSpacePos.y < -1.0f || lightSpacePos.y > 1.0f || lightSpacePos.z < 0.0f  || lightSpacePos.z > 1.0f))
     {
-        input.lightSpacePos.x = input.lightSpacePos.x/2 + 0.5;
-        input.lightSpacePos.y = input.lightSpacePos.y/-2 + 0.5;
-        input.lightSpacePos.z -= 0.001f;
+        lightSpacePos.x = lightSpacePos.x/2 + 0.5;
+        lightSpacePos.y = lightSpacePos.y/-2 + 0.5;
+        lightSpacePos.z -= 0.001f;
         
         float sum = 0;
         float x, y;
         for (y = -1.5; y <= 1.5; y += 1.0)
         {
             for (x = -1.5; x <= 1.5; x += 1.0)
-                sum += ShadowMap.SampleCmpLevelZero( ComparisonSampler, input.lightSpacePos.xy + TexOffset(x,y), input.lightSpacePos.z);
+            {
+                float2 coord = float2(lightSpacePos.xy + TexOffset(x,y));
+                sum += ShadowMap.SampleCmpLevelZero(ComparisonSampler, float3(coord.x, coord.y, csm /* tex idx */), lightSpacePos.z);
+            }
         }
 
         shadowFactor = sum / 16.0f;

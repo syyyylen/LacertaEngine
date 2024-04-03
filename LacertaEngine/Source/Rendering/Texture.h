@@ -16,8 +16,12 @@ public:
     virtual void Bind(Renderer* renderer) = 0;
     virtual void* GetTextureSRV() = 0;
 
+    void SetNumTexs(int num) { m_numTex = num; }
+    bool IsTexArray() { return m_numTex > 1; }
+
 protected:
     int m_idx;
+    int m_numTex = 1;
 };
     
 }

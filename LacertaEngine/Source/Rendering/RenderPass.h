@@ -17,6 +17,7 @@ public:
     ~RenderPass();
 
     void SetRenderTargetIdx(int idx) { m_renderTargetIdx = idx; }
+    void SetRenderTargetSubresourceIdx(int idx) { m_renderTargetSubresourceIdx = idx; }
     void AddGlobalBindable(Bindable* bindable);
     void AddDrawcall(std::string shaderName, Drawable* drawable, std::vector<Bindable*> bindables);
     void Pass(Renderer* renderer, Vector2 renderTargetSize, bool clear);
@@ -29,6 +30,7 @@ private:
     std::vector<Bindable*> m_globalBindables;
     std::vector<Drawcall*> m_drawcalls;
     int m_renderTargetIdx;
+    int m_renderTargetSubresourceIdx = 0;
     Vector2 m_cachedRenderTargetSize;
     bool m_cullfront = false;
     bool m_comparisonSampling = false;

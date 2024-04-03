@@ -14,6 +14,8 @@
 
 #define MAX_MESHES 50
 
+#define SHADOW_CASCADES 3
+
 namespace LacertaEngineEditor
 {
 
@@ -65,7 +67,7 @@ void LacertaEditor::Start()
     skyboxPass->SetRenderTargetIdx(m_sceneRTidx);
     skyboxPass->SetCullfront(true);
 
-    RHI::Get()->CreateRenderTarget((int)m_shadowMapResolution.X, (int)m_shadowMapResolution.Y, RenderTargetType::Texture2D, m_shadowMapRTidx);
+    RHI::Get()->CreateRenderTarget((int)m_shadowMapResolution.X, (int)m_shadowMapResolution.Y, RenderTargetType::Texture2D, m_shadowMapRTidx, SHADOW_CASCADES);
     shadowMapPass->SetRenderTargetIdx(m_shadowMapRTidx);
     shadowMapPass->SetComparisonSampling(true);
     shadowMapPass->SetCullfront(true);
@@ -239,26 +241,8 @@ void LacertaEditor::Update()
 
     // Directional light shadow map pass ---------------------------------------------------------------------------
     auto shadowMapPass = RHI::Get()->GetRenderPass("shadowMap");
-    shadowMapPass->ClearGlobalBindables();
     shadowMapPass->ClearDrawcalls();
     
-    auto shadowMapCC = new ShadowMapLightConstantBuffer();
-    Matrix4x4 shadowMapView;
-    Matrix4x4 m;
-    shadowMapView.SetIdentity();
-    m.SetIdentity();
-    m.SetRotationX(m_lightRotationX);
-    shadowMapView *= m;
-    m.SetIdentity();
-    m.SetRotationY(m_lightRotationY);
-    shadowMapView *= m;
-    shadowMapView.Inverse();
-    shadowMapCC->ViewMatrix = shadowMapView;
-    shadowMapCC->ProjectionMatrix.SetOrthoLH(800.0f, 800.0f, -200.0f, 200.0f);
-
-    ConstantBuffer shadowMapCbuf = ConstantBuffer(shadowMapCC, ConstantBufferType::SMLightCubf);
-    shadowMapPass->AddGlobalBindable(&shadowMapCbuf);
-
     ConstantBuffer MeshesBufs[MAX_MESHES];
     int j = 0;
     auto tfMeshesGrp = m_activeScene->m_registry.group<TransformComponent>(entt::get<MeshComponent>);
@@ -283,7 +267,42 @@ void LacertaEditor::Update()
         }
     }
 
-    RHI::Get()->ExecuteRenderPass("shadowMap", m_shadowMapResolution, true);
+    auto shadowMapCC = new ShadowMapLightConstantBuffer();
+    
+    for(int i = 0; i < SHADOW_CASCADES; i++)
+    {
+        shadowMapPass->ClearGlobalBindables();
+
+        auto smCC = new ShadowMapLightConstantBuffer();
+        
+        Matrix4x4 shadowMapView;
+        Matrix4x4 m;
+        shadowMapView.SetIdentity();
+        m.SetIdentity();
+        m.SetRotationX(m_lightRotationX);
+        shadowMapView *= m;
+        m.SetIdentity();
+        m.SetRotationY(m_lightRotationY);
+        shadowMapView *= m;
+        shadowMapView.SetTranslation(m_sceneCamera.GetTranslation());
+        shadowMapView.Inverse();
+        smCC->ViewMatrix[0] = shadowMapView;
+        
+        float size; // TODO clean all this
+        if(i == 0) size = 100.0;
+        if(i == 1) size = 300.0;
+        if(i == 2) size = 1000.0;
+        smCC->ProjectionMatrix[0].SetOrthoLH(size, size, -200.0f, 200.0f);
+
+        shadowMapCC->ViewMatrix[i] = shadowMapView;
+        shadowMapCC->ProjectionMatrix[i].SetOrthoLH(size, size, -200.0f, 200.0f);
+
+        ConstantBuffer shadowMapCbuf = ConstantBuffer(smCC, ConstantBufferType::SMLightCubf);
+        shadowMapPass->AddGlobalBindable(&shadowMapCbuf);
+
+        shadowMapPass->SetRenderTargetSubresourceIdx(i);
+        RHI::Get()->ExecuteRenderPass("shadowMap", m_shadowMapResolution, true);
+    }
 
     // ---------------------------------------------------------------------------------------------------------
     
@@ -387,6 +406,7 @@ void LacertaEditor::Update()
     auto shadowMapRT = RHI::Get()->GetRenderTarget(m_shadowMapRTidx);
     auto shadowMap = shadowMapRT->CreateTextureFromDepth(8);
     scenePass->AddGlobalBindable(shadowMap);
+    ConstantBuffer shadowMapCbuf = ConstantBuffer(shadowMapCC, ConstantBufferType::SMLightCubf);
     scenePass->AddGlobalBindable(&shadowMapCbuf);
 
     ConstantBuffer skyboxCbuf = ConstantBuffer(skyboxCC, ConstantBufferType::SkyBoxCbuf);

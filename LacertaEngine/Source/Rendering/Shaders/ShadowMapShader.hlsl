@@ -11,8 +11,8 @@ ShadowMapPixelInput main(VertexInput input)
     float4 p = float4(input.position.xyz, 1.0f);
 
     p = mul(p, Local);
-    p = mul(p, SMLightView);
-    p = mul(p, SMLightProjection);
+    p = mul(p, SMLightView[0]);
+    p = mul(p, SMLightProjection[0]);
 
     ret.pos = p;
 
