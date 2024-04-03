@@ -29,8 +29,8 @@ struct VertexOutput
     float3 viewVector : TEXCOORD1;
     float2 texcoord : TEXCOORD2;
     float3 normal : NORMAL;
-    float4 lightSpacePos : TEXCOORD3;
-    row_major float3x3 tbn: TEXCOORD4;
+    float4 lightSpacePos[3] : TEXCOORD4;
+    row_major float3x3 tbn : TEXCOORD7;
 };
 
 // ------------------------------------------- Per Instance CBuffer -------------------------------------------

@@ -289,9 +289,9 @@ void LacertaEditor::Update()
         smCC->ViewMatrix[0] = shadowMapView;
         
         float size; // TODO clean all this
-        if(i == 0) size = 500.0;
-        if(i == 1) size = 800.0;
-        if(i == 2) size = 1200.0;
+        if(i == 0) size = 100.0;
+        if(i == 1) size = 300.0;
+        if(i == 2) size = 1000.0;
         smCC->ProjectionMatrix[0].SetOrthoLH(size, size, -200.0f, 200.0f);
 
         shadowMapCC->ViewMatrix[i] = shadowMapView;
