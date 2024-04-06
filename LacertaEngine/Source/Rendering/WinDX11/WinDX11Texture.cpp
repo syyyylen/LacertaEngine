@@ -121,11 +121,20 @@ void WinDX11Texture::Bind(Renderer* renderer)
 
     ctx->VSSetShaderResources(m_idx, 1, &m_resourceView);
     ctx->PSSetShaderResources(m_idx, 1, &m_resourceView);
+    ctx->CSSetShaderResources(m_idx, 1, &m_resourceView);
+
+    if(m_unorderedAccessView) // TODO refactor this, slot is always 0...
+        ctx->CSSetUnorderedAccessViews(0, 1, &m_unorderedAccessView, NULL);
 }
 
 void WinDX11Texture::SetSRV(ID3D11ShaderResourceView* srv)
 {
     m_resourceView = srv;
+}
+
+void WinDX11Texture::SetUAV(ID3D11UnorderedAccessView* uav)
+{
+    m_unorderedAccessView = uav;
 }
 
 void* WinDX11Texture::GetTextureSRV()

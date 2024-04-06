@@ -29,8 +29,8 @@ public:
     void UpdateConstantBuffer(void* buffer, ConstantBufferType cbufType) override;
     void SetRasterizerCullState(bool cullFront) override;
     void SetSamplerState(bool comparisonSampler) override;
-
     RenderTarget* CreateRenderTarget(int width, int height, RenderTargetType renderTargetType, int& outRTidx, int numRt) override;
+    void ExecuteComputeShader(std::string name, UINT x, UINT y, UINT z) override; 
 
     ID3D11Buffer* CreateVBO(std::vector<SceneVertexMesh> vertices);
     ID3D11Buffer* CreateIBO(std::vector<unsigned> indices);
@@ -47,6 +47,7 @@ public:
 
 private:
     WinDX11Shader* CompileShader(LPCWSTR VSFilePath,  LPCWSTR PSFilePath);
+    ID3D11ComputeShader* CompileComputeShader(LPCWSTR CSFilePath);
     
     ID3D11Device* m_device;
     ID3D11DeviceContext* m_deviceContext;
@@ -61,6 +62,8 @@ private:
     Vector2 m_previousViewportSize;
 
     std::map<ConstantBufferType, WinDX11Cbuf> m_constantBuffers;
+
+    std::map<std::string, ID3D11ComputeShader*> m_computeShaders; // TODO clean and refactor this
 };
 
 }

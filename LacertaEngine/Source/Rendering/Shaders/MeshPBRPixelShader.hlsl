@@ -168,6 +168,7 @@ float4 main(VertexOutput input) : SV_Target
     Kd *= 1.0 - metallic;
     float3 r = reflect(-v, normal);
     float3 irradiance = float3(IrradianceMap.Sample(TextureSampler, r).rgb);
+
     float3 diffuse = albedo * irradiance;
     
     float3 enviro = float4(SkyBox.Sample(TextureSampler, r));
@@ -177,13 +178,6 @@ float4 main(VertexOutput input) : SV_Target
     
     float3 ambiantLight = (Kd * diffuse + specular) * ao;
     
-    // if(isInShadow)
-    //     return float4(ambiantLight, 1.0);
-    
     float3 l = (ambiantLight * GlobalAmbient) + finalLight * shadowFactor;
     return float4(l, 1.0);
-    
-    // finalLight += ambiantLight * GlobalAmbient;
-    
-    return float4(finalLight, 1.0);
 }

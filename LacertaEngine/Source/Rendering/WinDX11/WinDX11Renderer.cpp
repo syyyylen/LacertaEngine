@@ -276,6 +276,9 @@ void WinDX11Renderer::LoadShaders()
     m_shaders.emplace("SkyboxShader", CompileShader(L"../LacertaEngine/Source/Rendering/Shaders/SkyBoxVertexShader.hlsl", L"../LacertaEngine/Source/Rendering/Shaders/SkyBoxPixelShader.hlsl"));
     m_shaders.emplace("IrradianceShader", CompileShader(L"../LacertaEngine/Source/Rendering/Shaders/SkyBoxVertexShader.hlsl", L"../LacertaEngine/Source/Rendering/Shaders/IrradiancePixelShader.hlsl"));
     m_shaders.emplace("ShadowMapShader", CompileShader(L"../LacertaEngine/Source/Rendering/Shaders/ShadowMapShader.hlsl", L"../LacertaEngine/Source/Rendering/Shaders/ShadowMapPixelShader.hlsl"));
+
+    m_computeShaders.clear();
+    m_computeShaders.emplace("IrradianceCS", CompileComputeShader(L"../LacertaEngine/Source/Rendering/Shaders/IrradianceComputeShader.hlsl"));
 }
 
 ID3D11Buffer* WinDX11Renderer::CreateVBO(std::vector<SceneVertexMesh> vertices)
@@ -406,6 +409,38 @@ WinDX11Shader* WinDX11Renderer::CompileShader(LPCWSTR VSFilePath, LPCWSTR PSFile
     return Shader;
 }
 
+ID3D11ComputeShader* WinDX11Renderer::CompileComputeShader(LPCWSTR CSFilePath)
+{
+    ID3DBlob* csErrorBlob = nullptr;
+    ID3DBlob* csBlob;
+
+    HRESULT hr = D3DCompileFromFile(CSFilePath, nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, "main", "cs_5_0", 0, 0, &csBlob, &csErrorBlob);
+    if(FAILED(hr))
+    {
+        LOG(Error, "WinDX11Shader : Failed compute shader compilation !");
+        std::string errorMsg = std::system_category().message(hr);
+        LOG(Error, errorMsg);
+
+        if (csErrorBlob) 
+        {
+            std::string errorMessage(static_cast<const char*>(csErrorBlob->GetBufferPointer()), csErrorBlob->GetBufferSize());
+            LOG(Error, errorMessage);
+            csErrorBlob->Release();
+        }
+    }
+
+    ID3D11ComputeShader* cs;
+    hr = m_device->CreateComputeShader(csBlob->GetBufferPointer(), csBlob->GetBufferSize(), nullptr, &cs);
+    if(FAILED(hr))
+    {
+        LOG(Error, "WinDX11Shader : Failed compute shader creation !");
+        std::string errorMsg = std::system_category().message(hr);
+        LOG(Error, errorMsg);
+    }
+    
+    return cs;
+}
+
 void WinDX11Renderer::SetBackbufferRenderTargetActive()
 {
     // setting back the backbuffer render target
@@ -454,6 +489,14 @@ RenderTarget* WinDX11Renderer::CreateRenderTarget(int width, int height, RenderT
 
     outRTidx = (int)m_renderTargets.size() - 1;
     return textureRendTarg;
+}
+
+void WinDX11Renderer::ExecuteComputeShader(std::string name, UINT x, UINT y, UINT z)
+{
+    auto CS = m_computeShaders.find(name)->second;
+    m_deviceContext->CSSetSamplers(0, 1, &m_samplerState);
+    m_deviceContext->CSSetShader(CS, nullptr, 0);
+    m_deviceContext->Dispatch(x, y, z);
 }
     
 }

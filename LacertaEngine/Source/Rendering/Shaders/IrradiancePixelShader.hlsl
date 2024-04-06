@@ -4,8 +4,6 @@ static const float PI = 3.1415926;
 
 float4 main(SkyboxVertexOutput input) : SV_Target
 {
-    return float4(1.0f, 1.0f, 1.0f, 1.0f);
-    
     float3 normal = normalize(input.texcoord);
 
     float3 irradiance = float3(0.0f, 0.0f, 0.0f);

@@ -15,10 +15,12 @@ public:
     void CreateResource(const wchar_t* filePath, Renderer* renderer) override;
     void Bind(Renderer* renderer) override;
     void SetSRV(ID3D11ShaderResourceView* srv);
+    void SetUAV(ID3D11UnorderedAccessView* uav);
     void* GetTextureSRV() override;
 
 private:
     ID3D11ShaderResourceView* m_resourceView;
+    ID3D11UnorderedAccessView* m_unorderedAccessView;
 };
 
 }
