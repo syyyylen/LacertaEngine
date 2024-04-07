@@ -214,6 +214,7 @@
     <AdditionalFiles Include="Source\Rendering\Shaders\IrradiancePixelShader.hlsl" />
     <AdditionalFiles Include="Source\Rendering\Shaders\ShadowMapShader.hlsl" />
     <AdditionalFiles Include="Source\Rendering\Shaders\ShadowMapPixelShader.hlsl" />
+    <AdditionalFiles Include="Source\Rendering\Shaders\IrradianceComputeShader.hlsl" />
     <ClCompile Include="Source\Rendering\Texture.cpp" />
     <ClCompile Include="Source\Rendering\WinDX11\WinDX11Mesh.cpp" />
     <ClCompile Include="Source\Rendering\WinDX11\WinDX11Renderer.cpp" />

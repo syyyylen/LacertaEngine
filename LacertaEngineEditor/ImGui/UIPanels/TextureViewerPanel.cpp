@@ -26,23 +26,13 @@ void TextureViewerPanel::Update()
     { 
         ImGui::Begin("Texture Viewer");
         
-        ImGui::Text("Scene depth : ");
+        ImGui::Text("Tex : ");
 
-        auto ShadowMapRenderTarget = RHI::Get()->GetRenderTarget(editor->m_shadowMapRTidx);
-        if(ShadowMapRenderTarget != nullptr)
+        if(editor->m_irradianceTex)
         {
-            if(ShadowMapRenderTarget->RenderToTexture())
-            {
-                ImVec2 viewportSize = ImGui::GetContentRegionAvail();
-                ImGui::Image(ShadowMapRenderTarget->GetDepthSRV(), viewportSize);
-            }
+            ImVec2 viewportSize = ImGui::GetContentRegionAvail();
+            ImGui::Image(editor->m_irradianceTex->GetTextureSRV(), viewportSize);
         }
-        
-        // if(editor->m_irradianceTex)
-        // {
-        //     ImVec2 viewportSize = ImGui::GetContentRegionAvail();
-        //     ImGui::Image(editor->m_irradianceTex->GetTextureSRV(), viewportSize);
-        // }
 
         ImGui::End();
     }

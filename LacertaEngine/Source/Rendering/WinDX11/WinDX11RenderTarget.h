@@ -29,6 +29,7 @@ public:
 
 private:
     ID3D11ShaderResourceView* m_targetTextureShaderResView;
+    ID3D11UnorderedAccessView* m_targetTextureUAV;
     ID3D11ShaderResourceView* m_depthShaderResView;
     ID3D11RenderTargetView** m_renderTargets;
     ID3D11DepthStencilView** m_depthStencils;

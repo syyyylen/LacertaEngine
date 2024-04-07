@@ -79,117 +79,10 @@ void WinDX11Renderer::Initialize(int* context, int width, int height, int target
         throw std::exception("Failed SwapChain creation");
     }
 
-    {
-        ID3D11Buffer* b0;
-        SceneConstantBuffer cb;
-    
-        D3D11_BUFFER_DESC bufferDesc = {};
-        bufferDesc.Usage = D3D11_USAGE_DEFAULT;
-        bufferDesc.ByteWidth = sizeof(SceneConstantBuffer);
-        bufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-        bufferDesc.CPUAccessFlags = 0;
-        bufferDesc.MiscFlags = 0;
-    
-        D3D11_SUBRESOURCE_DATA initData = {};
-        initData.pSysMem = &cb;
-    
-        if(FAILED(m_device->CreateBuffer(&bufferDesc, &initData, &b0)))
-        {
-            std::string errorMsg = std::system_category().message(hr);
-            LOG(Error, errorMsg);
-            LOG(Error, "Create Constant Buffer failed");
-            throw std::exception("Create Constant Buffer failed");
-        }
-    
-        WinDX11Cbuf sceneCbuf;
-        sceneCbuf.Buffer = b0;
-        sceneCbuf.Slot = 0;
-        m_constantBuffers.emplace(ConstantBufferType::SceneCbuf, sceneCbuf);
-    }
-
-    {
-        ID3D11Buffer* b1;
-        SceneMeshConstantBuffer meshCb;
-    
-        D3D11_BUFFER_DESC meshBufferDesc = {};
-        meshBufferDesc.Usage = D3D11_USAGE_DEFAULT;
-        meshBufferDesc.ByteWidth = sizeof(SceneMeshConstantBuffer);
-        meshBufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-        meshBufferDesc.CPUAccessFlags = 0;
-        meshBufferDesc.MiscFlags = 0;
-    
-        D3D11_SUBRESOURCE_DATA meshInitData = {};
-        meshInitData.pSysMem = &meshCb;
-    
-        if(FAILED(m_device->CreateBuffer(&meshBufferDesc, &meshInitData, &b1)))
-        {
-            std::string errorMsg = std::system_category().message(hr);
-            LOG(Error, errorMsg);
-            LOG(Error, "Create Mesh Constant Buffer failed");
-            throw std::exception("Create Mesh Constant Buffer failed");
-        }
-    
-        WinDX11Cbuf meshCbuf;
-        meshCbuf.Buffer = b1;
-        meshCbuf.Slot = 1;
-        m_constantBuffers.emplace(ConstantBufferType::MeshCbuf, meshCbuf);
-    }
-    
-    {
-        ID3D11Buffer* b2;
-        SkyBoxConstantBuffer skyboxCb;
-    
-        D3D11_BUFFER_DESC skyboxBufferDesc = {};
-        skyboxBufferDesc.Usage = D3D11_USAGE_DEFAULT;
-        skyboxBufferDesc.ByteWidth = sizeof(SkyBoxConstantBuffer);
-        skyboxBufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-        skyboxBufferDesc.CPUAccessFlags = 0;
-        skyboxBufferDesc.MiscFlags = 0;
-
-        D3D11_SUBRESOURCE_DATA skyboxInitData = {};
-        skyboxInitData.pSysMem = &skyboxCb;
-
-        if(FAILED(m_device->CreateBuffer(&skyboxBufferDesc, &skyboxInitData, &b2)))
-        {
-            std::string errorMsg = std::system_category().message(hr);
-            LOG(Error, errorMsg);
-            LOG(Error, "Create Skybox Constant Buffer failed");
-            throw std::exception("Create Skybox Constant Buffer failed");
-        }
-    
-        WinDX11Cbuf skyboxCbuf;
-        skyboxCbuf.Buffer = b2;
-        skyboxCbuf.Slot = 2;
-        m_constantBuffers.emplace(ConstantBufferType::SkyBoxCbuf, skyboxCbuf);
-    }
-
-    {
-        ID3D11Buffer* b2;
-        ShadowMapLightConstantBuffer smlightCb;
-    
-        D3D11_BUFFER_DESC smlightCbDesc = {};
-        smlightCbDesc.Usage = D3D11_USAGE_DEFAULT;
-        smlightCbDesc.ByteWidth = sizeof(ShadowMapLightConstantBuffer);
-        smlightCbDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-        smlightCbDesc.CPUAccessFlags = 0;
-        smlightCbDesc.MiscFlags = 0;
-
-        D3D11_SUBRESOURCE_DATA smlightInitData = {};
-        smlightInitData.pSysMem = &smlightCb;
-
-        if(FAILED(m_device->CreateBuffer(&smlightCbDesc, &smlightInitData, &b2)))
-        {
-            std::string errorMsg = std::system_category().message(hr);
-            LOG(Error, errorMsg);
-            LOG(Error, "Create Shadow Map Light Constant Buffer failed");
-            throw std::exception("Create Shadow Map Light Constant Buffer failed");
-        }
-    
-        WinDX11Cbuf smlightCbuf;
-        smlightCbuf.Buffer = b2;
-        smlightCbuf.Slot = 3;
-        m_constantBuffers.emplace(ConstantBufferType::SMLightCubf, smlightCbuf);
-    }
+    m_constantBuffers.emplace(ConstantBufferType::SceneCbuf, CreateConstantBuffer(0, sizeof(SceneConstantBuffer)));
+    m_constantBuffers.emplace(ConstantBufferType::MeshCbuf, CreateConstantBuffer(1, sizeof(SceneMeshConstantBuffer)));
+    m_constantBuffers.emplace(ConstantBufferType::SkyBoxCbuf, CreateConstantBuffer(2, sizeof(SkyBoxConstantBuffer)));
+    m_constantBuffers.emplace(ConstantBufferType::SMLightCubf, CreateConstantBuffer(3, sizeof(ShadowMapLightConstantBuffer)));
 
     // Changing rasterizer properties & state 
     D3D11_RASTERIZER_DESC rasterizerDesc;
@@ -274,8 +167,11 @@ void WinDX11Renderer::LoadShaders()
 
     m_shaders.emplace("MeshPBRShader", CompileShader(L"../LacertaEngine/Source/Rendering/Shaders/MeshVertex.hlsl", L"../LacertaEngine/Source/Rendering/Shaders/MeshPBRPixelShader.hlsl"));
     m_shaders.emplace("SkyboxShader", CompileShader(L"../LacertaEngine/Source/Rendering/Shaders/SkyBoxVertexShader.hlsl", L"../LacertaEngine/Source/Rendering/Shaders/SkyBoxPixelShader.hlsl"));
-    m_shaders.emplace("IrradianceShader", CompileShader(L"../LacertaEngine/Source/Rendering/Shaders/SkyBoxVertexShader.hlsl", L"../LacertaEngine/Source/Rendering/Shaders/IrradiancePixelShader.hlsl"));
+    // m_shaders.emplace("IrradianceShader", CompileShader(L"../LacertaEngine/Source/Rendering/Shaders/SkyBoxVertexShader.hlsl", L"../LacertaEngine/Source/Rendering/Shaders/IrradiancePixelShader.hlsl"));
     m_shaders.emplace("ShadowMapShader", CompileShader(L"../LacertaEngine/Source/Rendering/Shaders/ShadowMapShader.hlsl", L"../LacertaEngine/Source/Rendering/Shaders/ShadowMapPixelShader.hlsl"));
+
+    m_computeShaders.clear();
+    m_computeShaders.emplace("IrradianceCS", CompileComputeShader(L"../LacertaEngine/Source/Rendering/Shaders/IrradianceComputeShader.hlsl"));
 }
 
 ID3D11Buffer* WinDX11Renderer::CreateVBO(std::vector<SceneVertexMesh> vertices)
@@ -406,6 +302,38 @@ WinDX11Shader* WinDX11Renderer::CompileShader(LPCWSTR VSFilePath, LPCWSTR PSFile
     return Shader;
 }
 
+ID3D11ComputeShader* WinDX11Renderer::CompileComputeShader(LPCWSTR CSFilePath)
+{
+    ID3DBlob* csErrorBlob = nullptr;
+    ID3DBlob* csBlob;
+
+    HRESULT hr = D3DCompileFromFile(CSFilePath, nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, "main", "cs_5_0", 0, 0, &csBlob, &csErrorBlob);
+    if(FAILED(hr))
+    {
+        LOG(Error, "WinDX11Shader : Failed compute shader compilation !");
+        std::string errorMsg = std::system_category().message(hr);
+        LOG(Error, errorMsg);
+
+        if (csErrorBlob) 
+        {
+            std::string errorMessage(static_cast<const char*>(csErrorBlob->GetBufferPointer()), csErrorBlob->GetBufferSize());
+            LOG(Error, errorMessage);
+            csErrorBlob->Release();
+        }
+    }
+
+    ID3D11ComputeShader* cs;
+    hr = m_device->CreateComputeShader(csBlob->GetBufferPointer(), csBlob->GetBufferSize(), nullptr, &cs);
+    if(FAILED(hr))
+    {
+        LOG(Error, "WinDX11Shader : Failed compute shader creation !");
+        std::string errorMsg = std::system_category().message(hr);
+        LOG(Error, errorMsg);
+    }
+    
+    return cs;
+}
+
 void WinDX11Renderer::SetBackbufferRenderTargetActive()
 {
     // setting back the backbuffer render target
@@ -454,6 +382,38 @@ RenderTarget* WinDX11Renderer::CreateRenderTarget(int width, int height, RenderT
 
     outRTidx = (int)m_renderTargets.size() - 1;
     return textureRendTarg;
+}
+
+void WinDX11Renderer::ExecuteComputeShader(std::string name, UINT x, UINT y, UINT z)
+{
+    auto CS = m_computeShaders.find(name)->second;
+    m_deviceContext->CSSetSamplers(0, 1, &m_samplerState);
+    m_deviceContext->CSSetShader(CS, nullptr, 0);
+    m_deviceContext->Dispatch(x, y, z);
+}
+
+WinDX11Cbuf WinDX11Renderer::CreateConstantBuffer(UINT slot, UINT size)
+{
+    ID3D11Buffer* b0;
+    
+    D3D11_BUFFER_DESC bufferDesc{};
+    bufferDesc.Usage = D3D11_USAGE_DEFAULT;
+    bufferDesc.ByteWidth = size;
+    bufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+    bufferDesc.CPUAccessFlags = 0;
+    bufferDesc.MiscFlags = 0;
+    
+    if(FAILED(m_device->CreateBuffer(&bufferDesc, NULL, &b0)))
+    {
+        LOG(Error, "Create Constant Buffer failed");
+        throw std::exception("Create Constant Buffer failed");
+    }
+
+    WinDX11Cbuf cbuf;
+    cbuf.Buffer = b0;
+    cbuf.Slot = slot;
+
+    return cbuf;
 }
     
 }
