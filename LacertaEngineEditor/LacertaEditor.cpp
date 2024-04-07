@@ -87,16 +87,16 @@ void LacertaEditor::Start()
     skyBoxMeshComp.GetMaterial()->SetShader("SkyboxShader");
     
     // -------------------------- IBL Irradiance Pass -----------------------
-
-    /* 
+    
     RHI::Get()->CreateRenderTarget(128, 128, RenderTargetType::TextureCube, m_irradianceRTidx, 6);
     auto RT = RHI::Get()->GetRenderTarget(m_irradianceRTidx);
     m_irradianceTex = RT->CreateTextureFromRT(6);
     auto renderer = RHI::Get()->GetRenderer();
+    m_irradianceTex->AllowReadWrite(renderer, true);
     m_irradianceTex->Bind(renderer);
     m_skyBoxTex->Bind(renderer);
     renderer->ExecuteComputeShader("IrradianceCS", 128 / 32, 128 / 32, 6);
-    */
+    m_irradianceTex->AllowReadWrite(renderer, false);
 
     // ----------------------------- Debug GO Creation -----------------------
 
@@ -367,9 +367,9 @@ void LacertaEditor::Update()
     ConstantBuffer sceneCbuf = ConstantBuffer(cc, ConstantBufferType::SceneCbuf);
     scenePass->AddGlobalBindable(&sceneCbuf);
 
-    auto irradianceTex = RHI::Get()->CreateTexture(L"Assets/Textures/skybox1IR.dds", 6);
+    // auto irradianceTex = RHI::Get()->CreateTexture(L"Assets/Textures/skybox1IR.dds", 6);
     auto BRDFLut = RHI::Get()->CreateTexture(L"Assets/Textures/ibl_brdf_lut.png", 7);
-    scenePass->AddGlobalBindable(irradianceTex);
+    scenePass->AddGlobalBindable(m_irradianceTex);
     scenePass->AddGlobalBindable(BRDFLut);
     scenePass->AddGlobalBindable(m_skyBoxTex);
     auto shadowMapRT = RHI::Get()->GetRenderTarget(m_shadowMapRTidx);

@@ -114,17 +114,41 @@ void WinDX11Texture::CreateResource(const wchar_t* filePath, Renderer* renderer)
     m_resourceView = Srv;
 }
 
+void WinDX11Texture::OnReadWriteAccessChanged(Renderer* renderer)
+{
+    WinDX11Renderer* driver = (WinDX11Renderer*)renderer;
+    auto ctx = driver->GetImmediateContext();
+    
+    if(m_allowReadWrite)
+    {
+        ID3D11ShaderResourceView* const srv[1] = { NULL };
+        ctx->VSSetShaderResources(m_idx, 1, srv);
+        ctx->PSSetShaderResources(m_idx, 1, srv);
+        ctx->CSSetShaderResources(m_idx, 1, srv);
+    }
+    else
+    {
+        ID3D11UnorderedAccessView *const uav[1] = { NULL };
+        ctx->CSSetUnorderedAccessViews(0, 1, uav, NULL);
+    }
+}
+
 void WinDX11Texture::Bind(Renderer* renderer)
 {
     WinDX11Renderer* driver = (WinDX11Renderer*)renderer;
     auto ctx = driver->GetImmediateContext();
 
+    if(m_allowReadWrite)
+    {
+        if(m_unorderedAccessView) // TODO refactor this, slot is always 0...
+            ctx->CSSetUnorderedAccessViews(0, 1, &m_unorderedAccessView, NULL);
+
+        return;
+    }
+
     ctx->VSSetShaderResources(m_idx, 1, &m_resourceView);
     ctx->PSSetShaderResources(m_idx, 1, &m_resourceView);
     ctx->CSSetShaderResources(m_idx, 1, &m_resourceView);
-
-    if(m_unorderedAccessView) // TODO refactor this, slot is always 0...
-        ctx->CSSetUnorderedAccessViews(0, 1, &m_unorderedAccessView, NULL);
 }
 
 void WinDX11Texture::SetSRV(ID3D11ShaderResourceView* srv)
