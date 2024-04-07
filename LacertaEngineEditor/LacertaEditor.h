@@ -80,11 +80,13 @@ public:
     Vector4 m_defaultColor = Vector4(1.0f, 1.0f, 1.0f, 1.0f);
     Vector2 m_shadowMapResolution = Vector2(2048.0f, 2048.0f);
 
-    Texture* m_irradianceTex; // TODO clean this
-    Texture* m_skyBoxTex; // TODO clean this
+    Texture* m_irradianceTex;
+    Texture* m_prefilteredEnvMapTex;
+    Texture* m_skyBoxTex;
 
     int m_sceneRTidx;
     int m_irradianceRTidx;
+    int m_prefilterRTidx;
     int m_shadowMapRTidx;
 
 private:

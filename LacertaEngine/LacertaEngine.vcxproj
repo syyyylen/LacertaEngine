@@ -211,10 +211,10 @@
     <AdditionalFiles Include="Source\Rendering\Shaders\MeshPixelShader.hlsl" />
     <AdditionalFiles Include="Source\Rendering\Shaders\MeshPBRPixelShader.hlsl" />
     <Content Include="Source\Rendering\Shaders\SkyBoxVertexShader.hlsl" />
-    <AdditionalFiles Include="Source\Rendering\Shaders\IrradiancePixelShader.hlsl" />
     <AdditionalFiles Include="Source\Rendering\Shaders\ShadowMapShader.hlsl" />
     <AdditionalFiles Include="Source\Rendering\Shaders\ShadowMapPixelShader.hlsl" />
     <AdditionalFiles Include="Source\Rendering\Shaders\IrradianceComputeShader.hlsl" />
+    <AdditionalFiles Include="Source\Rendering\Shaders\PreFilterEnvMapComputeShader.hlsl" />
     <ClCompile Include="Source\Rendering\Texture.cpp" />
     <ClCompile Include="Source\Rendering\WinDX11\WinDX11Mesh.cpp" />
     <ClCompile Include="Source\Rendering\WinDX11\WinDX11Renderer.cpp" />

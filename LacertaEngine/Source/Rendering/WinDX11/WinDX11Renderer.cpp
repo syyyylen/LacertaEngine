@@ -82,7 +82,8 @@ void WinDX11Renderer::Initialize(int* context, int width, int height, int target
     m_constantBuffers.emplace(ConstantBufferType::SceneCbuf, CreateConstantBuffer(0, sizeof(SceneConstantBuffer)));
     m_constantBuffers.emplace(ConstantBufferType::MeshCbuf, CreateConstantBuffer(1, sizeof(SceneMeshConstantBuffer)));
     m_constantBuffers.emplace(ConstantBufferType::SkyBoxCbuf, CreateConstantBuffer(2, sizeof(SkyBoxConstantBuffer)));
-    m_constantBuffers.emplace(ConstantBufferType::SMLightCubf, CreateConstantBuffer(3, sizeof(ShadowMapLightConstantBuffer)));
+    m_constantBuffers.emplace(ConstantBufferType::SMLightCbuf, CreateConstantBuffer(3, sizeof(ShadowMapLightConstantBuffer)));
+    m_constantBuffers.emplace(ConstantBufferType::PrefilterCbuf, CreateConstantBuffer(4, sizeof(PrefilterMapConstantBuffer)));
 
     // Changing rasterizer properties & state 
     D3D11_RASTERIZER_DESC rasterizerDesc;
@@ -121,10 +122,10 @@ void WinDX11Renderer::Initialize(int* context, int width, int height, int target
 
     D3D11_SAMPLER_DESC samplerDesc;
     ZeroMemory(&samplerDesc, sizeof(D3D11_SAMPLER_DESC));
-    samplerDesc.Filter = D3D11_FILTER_ANISOTROPIC;
+    samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
     samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
     samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
-    samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;
+    samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
     samplerDesc.MipLODBias = 0.0f;
     samplerDesc.MaxAnisotropy = 1;
     samplerDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
@@ -167,11 +168,11 @@ void WinDX11Renderer::LoadShaders()
 
     m_shaders.emplace("MeshPBRShader", CompileShader(L"../LacertaEngine/Source/Rendering/Shaders/MeshVertex.hlsl", L"../LacertaEngine/Source/Rendering/Shaders/MeshPBRPixelShader.hlsl"));
     m_shaders.emplace("SkyboxShader", CompileShader(L"../LacertaEngine/Source/Rendering/Shaders/SkyBoxVertexShader.hlsl", L"../LacertaEngine/Source/Rendering/Shaders/SkyBoxPixelShader.hlsl"));
-    // m_shaders.emplace("IrradianceShader", CompileShader(L"../LacertaEngine/Source/Rendering/Shaders/SkyBoxVertexShader.hlsl", L"../LacertaEngine/Source/Rendering/Shaders/IrradiancePixelShader.hlsl"));
     m_shaders.emplace("ShadowMapShader", CompileShader(L"../LacertaEngine/Source/Rendering/Shaders/ShadowMapShader.hlsl", L"../LacertaEngine/Source/Rendering/Shaders/ShadowMapPixelShader.hlsl"));
 
     m_computeShaders.clear();
     m_computeShaders.emplace("IrradianceCS", CompileComputeShader(L"../LacertaEngine/Source/Rendering/Shaders/IrradianceComputeShader.hlsl"));
+    m_computeShaders.emplace("PrefilterCS", CompileComputeShader(L"../LacertaEngine/Source/Rendering/Shaders/PreFilterEnvMapComputeShader.hlsl"));
 }
 
 ID3D11Buffer* WinDX11Renderer::CreateVBO(std::vector<SceneVertexMesh> vertices)
@@ -360,6 +361,7 @@ void WinDX11Renderer::UpdateConstantBuffer(void* buffer, ConstantBufferType cbuf
     m_deviceContext->UpdateSubresource(winDX11cbuf.Buffer, NULL, NULL, buffer, NULL, NULL);
     m_deviceContext->VSSetConstantBuffers(winDX11cbuf.Slot, 1, &winDX11cbuf.Buffer);
     m_deviceContext->PSSetConstantBuffers(winDX11cbuf.Slot, 1, &winDX11cbuf.Buffer);
+    m_deviceContext->CSSetConstantBuffers(winDX11cbuf.Slot, 1, &winDX11cbuf.Buffer);
 }
 
 void WinDX11Renderer::SetRasterizerCullState(bool cullFront)

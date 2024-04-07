@@ -51,8 +51,10 @@ void WinDX11Texture::CreateResource(const wchar_t* filePath, Renderer* renderer)
             D3D11_SHADER_RESOURCE_VIEW_DESC desc = {};
             desc.Format = imageData.GetMetadata().format;
             desc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURECUBE;
-            desc.Texture2D.MipLevels = imageData.GetMetadata().mipLevels;
-            desc.Texture2D.MostDetailedMip = 0;
+            desc.Texture2DArray.MipLevels = imageData.GetMetadata().mipLevels;
+            desc.Texture2DArray.MostDetailedMip = 0;
+            desc.Texture2DArray.FirstArraySlice = 0;
+            desc.Texture2DArray.ArraySize = 6;
 
             res = Device->CreateShaderResourceView(Tex, &desc, &Srv);
 

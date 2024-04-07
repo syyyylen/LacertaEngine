@@ -12,4 +12,9 @@ struct SkyBoxConstantBuffer
     float Padding[3];
 };
 
+struct PrefilterMapConstantBuffer
+{
+    Vector4 Roughness;
+};
+
 }

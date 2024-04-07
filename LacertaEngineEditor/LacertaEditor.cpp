@@ -86,17 +86,44 @@ void LacertaEditor::Start()
     skyBoxMeshComp.GetMaterial()->SetTexture(0, m_skyBoxTex);
     skyBoxMeshComp.GetMaterial()->SetShader("SkyboxShader");
     
-    // -------------------------- IBL Irradiance Pass -----------------------
-    
-    RHI::Get()->CreateRenderTarget(128, 128, RenderTargetType::TextureCube, m_irradianceRTidx, 6);
-    auto RT = RHI::Get()->GetRenderTarget(m_irradianceRTidx);
-    m_irradianceTex = RT->CreateTextureFromRT(6);
+    // -------------------------- IBL Compute Shaders -----------------------
+
     auto renderer = RHI::Get()->GetRenderer();
+
+    // Diffuse Irradiance
+    RHI::Get()->CreateRenderTarget(128, 128, RenderTargetType::TextureCube, m_irradianceRTidx, 6);
+    auto irrRT = RHI::Get()->GetRenderTarget(m_irradianceRTidx);
+    m_irradianceTex = irrRT->CreateTextureFromRT(6);
     m_irradianceTex->AllowReadWrite(renderer, true);
     m_irradianceTex->Bind(renderer);
     m_skyBoxTex->Bind(renderer);
     renderer->ExecuteComputeShader("IrradianceCS", 128 / 32, 128 / 32, 6);
     m_irradianceTex->AllowReadWrite(renderer, false);
+
+    // Pre filter Env map
+    RHI::Get()->CreateRenderTarget(512, 512, RenderTargetType::TextureCube, m_prefilterRTidx, 6);
+    auto preRT = RHI::Get()->GetRenderTarget(m_prefilterRTidx);
+    m_prefilteredEnvMapTex = preRT->CreateTextureFromRT(7);
+    m_prefilteredEnvMapTex->AllowReadWrite(renderer, true);
+    m_prefilteredEnvMapTex->Bind(renderer);
+    m_skyBoxTex->Bind(renderer);
+
+    for(int i = 0; i < 5; i++)
+    {
+        UINT32 mipWidth = (UINT32)(512.0f * pow(0.5f, i));
+        UINT32 mipHeigth = (UINT32)(512.0f * pow(0.5f, i));
+        float roughness = (float)i/(float)(5 - 1);
+
+        PrefilterMapConstantBuffer cbuf;
+        cbuf.Roughness = Vector4(roughness, 0.0f, 0.0f, 0.0f);
+        ConstantBuffer Cb;
+        Cb.SetData(&cbuf, ConstantBufferType::PrefilterCbuf);
+        Cb.Bind(renderer);
+
+        renderer->ExecuteComputeShader("PrefilterCS", mipWidth / 32, mipHeigth / 32, 6);
+    }
+
+    m_prefilteredEnvMapTex->AllowReadWrite(renderer, false);
 
     // ----------------------------- Debug GO Creation -----------------------
 
@@ -266,7 +293,7 @@ void LacertaEditor::Update()
         shadowMapCC->ViewMatrix[i] = shadowMapView;
         shadowMapCC->ProjectionMatrix[i].SetOrthoLH(size, size, -200.0f, 200.0f);
 
-        ConstantBuffer shadowMapCbuf = ConstantBuffer(smCC, ConstantBufferType::SMLightCubf);
+        ConstantBuffer shadowMapCbuf = ConstantBuffer(smCC, ConstantBufferType::SMLightCbuf);
         shadowMapPass->AddGlobalBindable(&shadowMapCbuf);
 
         shadowMapPass->SetRenderTargetSubresourceIdx(i);
@@ -367,14 +394,13 @@ void LacertaEditor::Update()
     ConstantBuffer sceneCbuf = ConstantBuffer(cc, ConstantBufferType::SceneCbuf);
     scenePass->AddGlobalBindable(&sceneCbuf);
 
-    auto BRDFLut = RHI::Get()->CreateTexture(L"Assets/Textures/ibl_brdf_lut.png", 7);
     scenePass->AddGlobalBindable(m_irradianceTex);
-    scenePass->AddGlobalBindable(BRDFLut);
+    scenePass->AddGlobalBindable(m_prefilteredEnvMapTex);
     scenePass->AddGlobalBindable(m_skyBoxTex);
     auto shadowMapRT = RHI::Get()->GetRenderTarget(m_shadowMapRTidx);
     auto shadowMap = shadowMapRT->CreateTextureFromDepth(8);
     scenePass->AddGlobalBindable(shadowMap);
-    ConstantBuffer shadowMapCbuf = ConstantBuffer(shadowMapCC, ConstantBufferType::SMLightCubf);
+    ConstantBuffer shadowMapCbuf = ConstantBuffer(shadowMapCC, ConstantBufferType::SMLightCbuf);
     scenePass->AddGlobalBindable(&shadowMapCbuf);
 
     ConstantBuffer skyboxCbuf = ConstantBuffer(skyboxCC, ConstantBufferType::SkyBoxCbuf);
