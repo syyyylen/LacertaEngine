@@ -32,6 +32,7 @@ public:
     RenderTarget* CreateRenderTarget(int width, int height, RenderTargetType renderTargetType, int& outRTidx, int numRt) override;
     void ExecuteComputeShader(std::string name, UINT x, UINT y, UINT z) override; 
 
+    WinDX11Cbuf CreateConstantBuffer(UINT slot, UINT size);
     ID3D11Buffer* CreateVBO(std::vector<SceneVertexMesh> vertices);
     ID3D11Buffer* CreateIBO(std::vector<unsigned> indices);
     

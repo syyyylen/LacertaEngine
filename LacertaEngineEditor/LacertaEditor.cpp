@@ -82,7 +82,7 @@ void LacertaEditor::Start()
     auto& skyboxTf = m_skyBoxGo->GetComponent<TransformComponent>();
     skyboxTf.SetScale(Vector3(1.0f, 1.0f, 1.0f));
     auto& skyBoxMeshComp = m_skyBoxGo->GetComponent<MeshComponent>();
-    m_skyBoxTex = RHI::Get()->CreateTexture(L"Assets/Textures/skybox1.dds", 5);
+    m_skyBoxTex = RHI::Get()->CreateTexture(L"Assets/Textures/skybox2.dds", 5);
     skyBoxMeshComp.GetMaterial()->SetTexture(0, m_skyBoxTex);
     skyBoxMeshComp.GetMaterial()->SetShader("SkyboxShader");
     
@@ -367,7 +367,6 @@ void LacertaEditor::Update()
     ConstantBuffer sceneCbuf = ConstantBuffer(cc, ConstantBufferType::SceneCbuf);
     scenePass->AddGlobalBindable(&sceneCbuf);
 
-    // auto irradianceTex = RHI::Get()->CreateTexture(L"Assets/Textures/skybox1IR.dds", 6);
     auto BRDFLut = RHI::Get()->CreateTexture(L"Assets/Textures/ibl_brdf_lut.png", 7);
     scenePass->AddGlobalBindable(m_irradianceTex);
     scenePass->AddGlobalBindable(BRDFLut);
