@@ -125,6 +125,6 @@ void main(uint3 ThreadID : SV_DispatchThreadID)
 	}
 	color /= weight;
 
-	// color = lerp(float3(1, 1, 1), float3(0, 0, 0), roughness.x);
+	color = lerp(float3(1, 1, 1), float3(0, 0, 0), roughness.x);
 	PrefilterMap[ThreadID] = float4(color, 1.0);
 }

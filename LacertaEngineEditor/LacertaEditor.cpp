@@ -470,8 +470,6 @@ void LacertaEditor::Update()
     RHI::Get()->ExecuteRenderPass("scene", m_viewportCachedSize, true);
     RHI::Get()->ExecuteRenderPass("skybox", m_viewportCachedSize, false);
 
-    delete shadowMap;
-
     // We get the backbuffer back to render UI in it
     RHI::Get()->SetBackbufferRenderTargetActive();
 

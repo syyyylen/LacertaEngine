@@ -23,6 +23,9 @@ void WinDX11RenderTarget::Initialize(Renderer* renderer, int width, int height, 
     m_renderTargetType = renderTargetType;
     if(numRt > 1)
         m_numRt = numRt;    
+
+    m_width = width;
+    m_length = height;
     
     ReloadBuffers(renderer, width, height);
     SetViewportSize(renderer, width, height);
@@ -173,7 +176,7 @@ void WinDX11RenderTarget::ReloadBuffers(Renderer* renderer, unsigned width, unsi
             D3D11_UNORDERED_ACCESS_VIEW_DESC uavDesc;
             uavDesc.Format = textureCubeDesc.Format;
             uavDesc.ViewDimension = D3D11_UAV_DIMENSION_TEXTURE2DARRAY;
-            uavDesc.Texture2DArray.MipSlice = 0;
+            uavDesc.Texture2DArray.MipSlice = 0; // TODO try to create 1 uav per mip level ?
             uavDesc.Texture2DArray.ArraySize = 6;
             uavDesc.Texture2DArray.FirstArraySlice = 0;
 
@@ -185,7 +188,7 @@ void WinDX11RenderTarget::ReloadBuffers(Renderer* renderer, unsigned width, unsi
                 LOG(Error, "Failed texture creation");
                 throw std::exception("Failed texture creation");
             }
-
+                
             hr = device->CreateShaderResourceView(buffer, &srvDesc, &m_targetTextureShaderResView);
             if(FAILED(hr))
             {
@@ -377,6 +380,9 @@ void* WinDX11RenderTarget::GetDepthSRV()
 
 Texture* WinDX11RenderTarget::CreateTextureFromRT(int texBindIdx)
 {
+    // m_targetTexture->SetTextureIdx(texBindIdx); // TODO set the texture bind idx in the editor for god sake
+    // return m_targetTexture;
+    
     auto tex = new WinDX11Texture();
     tex->SetSRV(GetTextureShaderResView());
     tex->SetTextureIdx(texBindIdx);

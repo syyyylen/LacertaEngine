@@ -13,3 +13,8 @@ void LacertaEngine::Texture::AllowReadWrite(Renderer* renderer, bool allow)
     m_allowReadWrite = allow;
     OnReadWriteAccessChanged(renderer);
 }
+
+bool LacertaEngine::Texture::HasTextureFlag(int val, TextureBindFlags flag)
+{
+    return val & flag;
+}

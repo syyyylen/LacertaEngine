@@ -28,6 +28,8 @@ public:
     ID3D11ShaderResourceView* GetTextureShaderResView() const { return m_targetTextureShaderResView; }
 
 private:
+    Texture* m_targetTexture;
+    
     ID3D11ShaderResourceView* m_targetTextureShaderResView;
     ID3D11UnorderedAccessView* m_targetTextureUAV;
     ID3D11ShaderResourceView* m_depthShaderResView;
