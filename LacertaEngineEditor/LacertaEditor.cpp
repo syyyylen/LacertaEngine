@@ -123,6 +123,15 @@ void LacertaEditor::Start()
 
     m_prefilteredEnvMapTex->AllowReadWrite(renderer, false, 0);
 
+    // BRDF
+    m_BRDFTex = RHI::Get()->CreateTexture(512, 512, TextureType::Tex2D, 1, 1, TextureBindFlags::SRV | TextureBindFlags::UAV);
+    m_BRDFTex->SetTextureIdx(9);
+    m_BRDFTex->AllowReadWrite(renderer, true, 0);
+    m_BRDFTex->Bind(renderer);
+    m_skyBoxTex->Bind(renderer);
+    renderer->ExecuteComputeShader("BRDFCS", 512 / 32, 512 / 32, 1);
+    m_BRDFTex->AllowReadWrite(renderer, false, 0);
+
     // ----------------------------- Debug GO Creation -----------------------
 
     Vector3 spawnLocation = Vector3(0.0f, 0.0f, 0.0f);
@@ -395,6 +404,7 @@ void LacertaEditor::Update()
     scenePass->AddGlobalBindable(m_irradianceTex);
     scenePass->AddGlobalBindable(m_prefilteredEnvMapTex);
     scenePass->AddGlobalBindable(m_skyBoxTex);
+    scenePass->AddGlobalBindable(m_BRDFTex);
     auto shadowMapRT = RHI::Get()->GetRenderTarget(m_shadowMapRTidx);
     auto shadowMap = shadowMapRT->CreateTextureFromDepth();
     shadowMap->SetTextureIdx(8);

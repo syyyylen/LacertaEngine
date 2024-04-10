@@ -82,6 +82,7 @@ public:
 
     Texture* m_irradianceTex;
     Texture* m_prefilteredEnvMapTex;
+    Texture* m_BRDFTex;
     Texture* m_skyBoxTex;
 
     int m_sceneRTidx;

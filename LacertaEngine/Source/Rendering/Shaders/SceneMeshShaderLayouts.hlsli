@@ -8,6 +8,7 @@ TextureCube SkyBox: register(t5);
 TextureCube IrradianceMap: register(t6);
 TextureCube PrefilteredMap: register(t7);
 Texture2DArray ShadowMap: register(t8);
+Texture2D BRDF: register(t9);
 
 sampler TextureSampler: register(s0);
 SamplerComparisonState ComparisonSampler: register(s1);
