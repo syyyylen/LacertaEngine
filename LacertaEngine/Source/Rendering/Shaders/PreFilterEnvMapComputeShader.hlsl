@@ -2,7 +2,7 @@ static const float PI = 3.141592;
 static const float TwoPI = 2 * PI;
 static const float Epsilon = 0.00001;
 
-static const uint NumSamples = 1;
+static const uint NumSamples = 1024;
 static const float InvNumSamples = 1.0 / float(NumSamples);
 
 cbuffer PrefilterMapFilterSettings : register(b4)
@@ -108,23 +108,27 @@ void main(uint3 ThreadID : SV_DispatchThreadID)
 	float3 color = 0;
 	float weight = 0;
 
-	float2 u = sampleHammersley(0, NumSamples);
-	float3 Lh = tangentToWorld(sampleGGX(u.x, u.y, roughness.x), N, S, T);
+	for(int i = 0; i < NumSamples; i++)
+	{
+		float2 u = sampleHammersley(i, NumSamples);
+		float3 Lh = tangentToWorld(sampleGGX(u.x, u.y, roughness.x), N, S, T);
 
-	float3 Li = 2.0 * dot(Lo, Lh) * Lh - Lo;
+		float3 Li = 2.0 * dot(Lo, Lh) * Lh - Lo;
 
-	float cosLi = dot(N, Li);
-	if(cosLi > 0.0) {
-		float cosLh = max(dot(N, Lh), 0.0);
-		float pdf = ndfGGX(cosLh, roughness.x) * 0.25;
-		float ws = 1.0 / (NumSamples * pdf);
-		float mipLevel = max(0.5 * log2(ws / wt) + 1.0, 0.0);
+		float cosLi = dot(N, Li);
+		if(cosLi > 0.0)
+		{
+			float cosLh = max(dot(N, Lh), 0.0);
+			float pdf = ndfGGX(cosLh, roughness.x) * 0.25;
+			float ws = 1.0 / (NumSamples * pdf);
+			float mipLevel = max(0.5 * log2(ws / wt) + 1.0, 0.0);
 
-		color  += EnvironmentMap.SampleLevel(CubeSampler, Li, mipLevel).rgb * cosLi;
-		weight += cosLi;
+			color  += EnvironmentMap.SampleLevel(CubeSampler, Li, mipLevel).rgb * cosLi;
+			weight += cosLi;
+		}
 	}
 	color /= weight;
-
+	
 	// color = lerp(float3(1, 1, 1), float3(0, 0, 0), roughness.x);
 	PrefilterMap[ThreadID] = float4(color, 1.0);
 }
