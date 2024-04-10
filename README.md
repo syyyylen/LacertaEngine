@@ -16,13 +16,13 @@ Features :
 * Shadow Mapping
 * IBL (wip)
 
-![alt text](https://github.com/syyyylen/LacertaEngine/blob/main/LacertaEngineEditor/Assets/Screenshots/1.png?raw=true)
+![alt text](https://github.com/syyyylen/LacertaEngine/blob/main/LacertaEngineEditor/Assets/Screenshots/scene.png?raw=true)
 
-![alt text](https://github.com/syyyylen/LacertaEngine/blob/main/LacertaEngineEditor/Assets/Screenshots/2.png?raw=true)
+![alt text](https://github.com/syyyylen/LacertaEngine/blob/main/LacertaEngineEditor/Assets/Screenshots/lights.png?raw=true)
 
-![alt text](https://github.com/syyyylen/LacertaEngine/blob/main/LacertaEngineEditor/Assets/Screenshots/3.png?raw=true)
+![alt text](https://github.com/syyyylen/LacertaEngine/blob/main/LacertaEngineEditor/Assets/Screenshots/pbr.png?raw=true)
 
-![alt text](https://github.com/syyyylen/LacertaEngine/blob/main/LacertaEngineEditor/Assets/Screenshots/4.png?raw=true)
+![alt text](https://github.com/syyyylen/LacertaEngine/blob/main/LacertaEngineEditor/Assets/Screenshots/shadows.png?raw=true)
 
 Things I want to add :
 * Diffuse irradiance convolution for IBL
