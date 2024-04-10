@@ -19,6 +19,7 @@ class Bindable;
 class RenderPass;
 enum ConstantBufferType;
 enum RenderTargetType;
+enum TextureType;
 
 class LACERTAENGINE_API Renderer
 {
@@ -43,6 +44,7 @@ public:
     
     virtual Mesh* CreateMesh(const wchar_t* filePath) = 0;
     virtual Texture* CreateTexture(const wchar_t* filePath, int idx) = 0;
+    virtual Texture* CreateTexture(int width, int height, TextureType type, int num, int mipNum, int bindFlags) = 0;
 
     virtual int* GetDriver() = 0;
 

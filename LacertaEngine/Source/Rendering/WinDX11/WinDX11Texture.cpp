@@ -117,7 +117,7 @@ void WinDX11Texture::CreateResource(const wchar_t* filePath, Renderer* renderer)
     m_resourceView = Srv;
 }
 
-void WinDX11Texture::Create(Renderer* renderer, int width, int height, TextureType type, int num, int mipNum, int bindFlags)
+void* WinDX11Texture::Create(Renderer* renderer, int width, int height, TextureType type, int num, int mipNum, int bindFlags)
 {
     m_numTex = type == TextureType::TexCube ? 6 : num;
     m_mipMapsLevels = mipNum;
@@ -157,7 +157,7 @@ void WinDX11Texture::Create(Renderer* renderer, int width, int height, TextureTy
 
     D3D11_SHADER_RESOURCE_VIEW_DESC shaderResourceViewDesc;
     shaderResourceViewDesc.Format = textureDesc.Format;
-    shaderResourceViewDesc.ViewDimension = m_numTex > 1 ? (type == TextureType::TexCube ? D3D11_SRV_DIMENSION_TEXTURE2DARRAY : D3D11_SRV_DIMENSION_TEXTURECUBE) : D3D11_SRV_DIMENSION_TEXTURE2D;
+    shaderResourceViewDesc.ViewDimension = m_numTex > 1 ? (type == TextureType::TexCube ? D3D11_SRV_DIMENSION_TEXTURECUBE : D3D11_SRV_DIMENSION_TEXTURE2DARRAY) : D3D11_SRV_DIMENSION_TEXTURE2D;
     if(m_numTex > 1)
     {
         if(type == TextureType::TexCube)
@@ -189,28 +189,31 @@ void WinDX11Texture::Create(Renderer* renderer, int width, int height, TextureTy
         throw std::exception("Failed Scene texture Shader Res View creation");
     }
 
-    m_unorderedAccessViews = new ID3D11UnorderedAccessView*[m_mipMapsLevels];
-
-    for(int i = 0; i < m_mipMapsLevels; i++)
+    if(HasTextureFlag(bindFlags, UAV))
     {
-        D3D11_UNORDERED_ACCESS_VIEW_DESC uavDesc;
-        uavDesc.Format = textureDesc.Format;
-        uavDesc.ViewDimension = m_numTex > 1 ?  D3D11_UAV_DIMENSION_TEXTURE2DARRAY : D3D11_UAV_DIMENSION_TEXTURE2D;
-        uavDesc.Texture2DArray.MipSlice = i;
-        uavDesc.Texture2DArray.ArraySize = m_numTex;
-        uavDesc.Texture2DArray.FirstArraySlice = 0;
+        m_unorderedAccessViews = new ID3D11UnorderedAccessView*[m_mipMapsLevels];
 
-        hr = device->CreateUnorderedAccessView(buffer, &uavDesc, &m_unorderedAccessViews[i]);
-        if(FAILED(hr))
+        for(int i = 0; i < m_mipMapsLevels; i++)
         {
-            std::string errorMsg = std::system_category().message(hr);
-            LOG(Error, errorMsg);
-            LOG(Error, "Failed texture UAV creation");
-            throw std::exception("Failed texture UAV creation");
+            D3D11_UNORDERED_ACCESS_VIEW_DESC uavDesc;
+            uavDesc.Format = textureDesc.Format;
+            uavDesc.ViewDimension = m_numTex > 1 ?  D3D11_UAV_DIMENSION_TEXTURE2DARRAY : D3D11_UAV_DIMENSION_TEXTURE2D;
+            uavDesc.Texture2DArray.MipSlice = i;
+            uavDesc.Texture2DArray.ArraySize = m_numTex;
+            uavDesc.Texture2DArray.FirstArraySlice = 0;
+
+            hr = device->CreateUnorderedAccessView(buffer, &uavDesc, &m_unorderedAccessViews[i]);
+            if(FAILED(hr))
+            {
+                std::string errorMsg = std::system_category().message(hr);
+                LOG(Error, errorMsg);
+                LOG(Error, "Failed texture UAV creation");
+                throw std::exception("Failed texture UAV creation");
+            }
         }
     }
-
-    buffer->Release();
+    
+    return (void*)buffer;
 }
 
 void WinDX11Texture::OnReadWriteAccessChanged(Renderer* renderer)

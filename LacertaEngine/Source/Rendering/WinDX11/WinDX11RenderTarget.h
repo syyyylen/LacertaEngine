@@ -20,18 +20,10 @@ public:
     void Clear(Renderer* renderer, Vector4 color) override;
     void Clear(Renderer* renderer, Vector4 color, int idx) override;
     void SetViewportSize(Renderer* renderer, UINT width, UINT height) override;
-    void* GetSRV() override;
-    void* GetDepthSRV() override;
-    Texture* CreateTextureFromRT(int texBindIdx) override;
-    Texture* CreateTextureFromDepth(int texBindIdx) override;
-
-    ID3D11ShaderResourceView* GetTextureShaderResView() const { return m_targetTextureShaderResView; }
+    Texture* GetTargetTexture() override; // TODO this can be implemented in the base class
+    Texture* CreateTextureFromDepth() override;
 
 private:
-    Texture* m_targetTexture;
-    
-    ID3D11ShaderResourceView* m_targetTextureShaderResView;
-    ID3D11UnorderedAccessView* m_targetTextureUAV;
     ID3D11ShaderResourceView* m_depthShaderResView;
     ID3D11RenderTargetView** m_renderTargets;
     ID3D11DepthStencilView** m_depthStencils;

@@ -7,6 +7,7 @@
 #include "UIPanels/SceneHierarchyPanel.h"
 #include "imgui_src/ImGuizmo.h"
 #include "Rendering/RenderTarget.h"
+#include "Rendering/Texture.h"
 #include "Rendering/WinDX11/WinDX11Renderer.h"
 #include "UIPanels/TextureViewerPanel.h"
 
@@ -172,7 +173,7 @@ void UIRenderer::Update()
 
                 ImVec2 viewportSize = ImGui::GetContentRegionAvail();
                 m_editor->SetViewportCachedSize(Vector2(viewportSize.x, viewportSize.y));
-                ImGui::Image(SceneTextureRenderTarget->GetSRV(), viewportSize);
+                ImGui::Image(SceneTextureRenderTarget->GetTargetTexture()->GetTextureSRV(), viewportSize);
 
                 // Gizmos
                 if(m_editor->HasSelectedGo())

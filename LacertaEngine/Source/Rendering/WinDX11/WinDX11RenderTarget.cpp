@@ -76,52 +76,10 @@ void WinDX11RenderTarget::ReloadBuffers(Renderer* renderer, unsigned width, unsi
         case RenderTargetType::Texture2D:
         {
             m_renderTargets = new ID3D11RenderTargetView*[m_numRt];
-                
-            D3D11_TEXTURE2D_DESC textureDesc = {};
-            textureDesc.Width = width;
-            textureDesc.Height = height;
-            textureDesc.MipLevels = 1;
-            textureDesc.ArraySize = m_numRt;
-            textureDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-            textureDesc.SampleDesc.Count = 1;
-            textureDesc.Usage = D3D11_USAGE_DEFAULT;
-            textureDesc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
-            textureDesc.CPUAccessFlags = 0;
-            textureDesc.MiscFlags = 0;
-            
-            hr = device->CreateTexture2D(&textureDesc, NULL, &buffer);
-            if(FAILED(hr))
-            {
-                std::string errorMsg = std::system_category().message(hr);
-                LOG(Error, errorMsg);
-                LOG(Error, "Failed scene texture creation");
-                throw std::exception("Failed scene texture creation");
-            }
-
-            D3D11_SHADER_RESOURCE_VIEW_DESC shaderResourceViewDesc;
-            shaderResourceViewDesc.Format = textureDesc.Format;
-            shaderResourceViewDesc.ViewDimension = m_numRt > 1 ? D3D11_SRV_DIMENSION_TEXTURE2DARRAY : D3D11_SRV_DIMENSION_TEXTURE2D;
-            if(m_numRt > 1)
-            {
-                shaderResourceViewDesc.Texture2DArray.ArraySize = m_numRt;
-                shaderResourceViewDesc.Texture2DArray.MostDetailedMip = 0;
-                shaderResourceViewDesc.Texture2DArray.MipLevels = 1;
-                shaderResourceViewDesc.Texture2DArray.FirstArraySlice = 0;
-            }
-            else
-            {
-                shaderResourceViewDesc.Texture2D.MostDetailedMip = 0;
-                shaderResourceViewDesc.Texture2D.MipLevels = 1;
-            }
-                
-            hr = device->CreateShaderResourceView(buffer, &shaderResourceViewDesc, &m_targetTextureShaderResView);
-            if(FAILED(hr))
-            {
-                std::string errorMsg = std::system_category().message(hr);
-                LOG(Error, errorMsg);
-                LOG(Error, "Failed Scene texture Shader Res View creation");
-                throw std::exception("Failed Scene texture Shader Res View creation");
-            }
+            m_targetTexture = new WinDX11Texture();
+            int bindFlags = SRV | RTV;
+            TextureType type = m_numRt > 1 ? TextureType::Tex2DArray : TextureType::Tex2D;
+            buffer = (ID3D11Texture2D*)m_targetTexture->Create(renderer, (int)width, (int)height, type, m_numRt, 1, bindFlags);
 
             for(int i = 0; i < m_numRt; i++)
             {
@@ -152,61 +110,12 @@ void WinDX11RenderTarget::ReloadBuffers(Renderer* renderer, unsigned width, unsi
         case RenderTargetType::TextureCube:
         {
             m_numRt = 6;
-                
-            D3D11_TEXTURE2D_DESC textureCubeDesc;
-            textureCubeDesc.Width = width;
-            textureCubeDesc.Height = height;
-            textureCubeDesc.MipLevels = 1;
-            textureCubeDesc.ArraySize = 6;
-            textureCubeDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-            textureCubeDesc.Usage = D3D11_USAGE_DEFAULT;
-            textureCubeDesc.BindFlags =  D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_UNORDERED_ACCESS;
-            textureCubeDesc.CPUAccessFlags = 0;
-            textureCubeDesc.MiscFlags = D3D11_RESOURCE_MISC_TEXTURECUBE;
-            textureCubeDesc.SampleDesc.Count = 1;
-            textureCubeDesc.SampleDesc.Quality = 0;
+            m_targetTexture = new WinDX11Texture();
+            int bindFlags = SRV | RTV | UAV;
+            buffer = (ID3D11Texture2D*)m_targetTexture->Create(renderer, (int)width, (int)height, TextureType::TexCube, m_numRt, 1, bindFlags);
+
+            // TODO create render targets
             
-            D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc;
-            ZeroMemory(&srvDesc, sizeof(srvDesc));
-            srvDesc.Format = textureCubeDesc.Format;
-            srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURECUBE;
-            srvDesc.TextureCube.MostDetailedMip = 0;
-            srvDesc.TextureCube.MipLevels = 1;
-
-            D3D11_UNORDERED_ACCESS_VIEW_DESC uavDesc;
-            uavDesc.Format = textureCubeDesc.Format;
-            uavDesc.ViewDimension = D3D11_UAV_DIMENSION_TEXTURE2DARRAY;
-            uavDesc.Texture2DArray.MipSlice = 0; // TODO try to create 1 uav per mip level ?
-            uavDesc.Texture2DArray.ArraySize = 6;
-            uavDesc.Texture2DArray.FirstArraySlice = 0;
-
-            hr = device->CreateTexture2D(&textureCubeDesc, NULL, &buffer);
-            if(FAILED(hr))
-            {
-                std::string errorMsg = std::system_category().message(hr);
-                LOG(Error, errorMsg);
-                LOG(Error, "Failed texture creation");
-                throw std::exception("Failed texture creation");
-            }
-                
-            hr = device->CreateShaderResourceView(buffer, &srvDesc, &m_targetTextureShaderResView);
-            if(FAILED(hr))
-            {
-                std::string errorMsg = std::system_category().message(hr);
-                LOG(Error, errorMsg);
-                LOG(Error, "Failed texture Shader Res View creation");
-                throw std::exception("Failed texture Shader Res View creation");
-            }
-
-            hr = device->CreateUnorderedAccessView(buffer, &uavDesc, &m_targetTextureUAV);
-            if(FAILED(hr))
-            {
-                std::string errorMsg = std::system_category().message(hr);
-                LOG(Error, errorMsg);
-                LOG(Error, "Failed texture UAV creation");
-                throw std::exception("Failed texture UAV creation");
-            }
-
             break;
         }
     }
@@ -325,8 +234,7 @@ void WinDX11RenderTarget::Resize(Renderer* renderer, unsigned width, unsigned he
         m_depthStencils[i]->Release();
     }
     
-    if(m_targetTextureShaderResView)
-        m_targetTextureShaderResView->Release();
+    delete m_targetTexture;
 
     if(m_depthShaderResView)
         m_depthShaderResView->Release();
@@ -368,21 +276,11 @@ void WinDX11RenderTarget::SetViewportSize(Renderer* renderer, UINT width, UINT h
     localRenderer->GetImmediateContext()->RSSetViewports(1, &vp);
 }
 
-void* WinDX11RenderTarget::GetSRV()
+Texture* WinDX11RenderTarget::GetTargetTexture()
 {
-    return (void*)GetTextureShaderResView();
-}
+    return m_targetTexture;
 
-void* WinDX11RenderTarget::GetDepthSRV()
-{
-    return (void*)m_depthShaderResView;
-}
-
-Texture* WinDX11RenderTarget::CreateTextureFromRT(int texBindIdx)
-{
-    // m_targetTexture->SetTextureIdx(texBindIdx); // TODO set the texture bind idx in the editor for god sake
-    // return m_targetTexture;
-    
+    /*
     auto tex = new WinDX11Texture();
     tex->SetSRV(GetTextureShaderResView());
     tex->SetTextureIdx(texBindIdx);
@@ -390,13 +288,13 @@ Texture* WinDX11RenderTarget::CreateTextureFromRT(int texBindIdx)
     if(m_targetTextureUAV)
         tex->SetUAV(m_targetTextureUAV);
     return tex;
+    */
 }
 
-Texture* WinDX11RenderTarget::CreateTextureFromDepth(int texBindIdx)
+Texture* WinDX11RenderTarget::CreateTextureFromDepth()
 {
     auto tex = new WinDX11Texture();
     tex->SetSRV(m_depthShaderResView);
-    tex->SetTextureIdx(texBindIdx);
     tex->SetNumTexs(m_numRt);
     return tex;
 }

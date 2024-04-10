@@ -256,6 +256,13 @@ Texture* WinDX11Renderer::CreateTexture(const wchar_t* filePath, int idx)
     return tex;
 }
 
+Texture* WinDX11Renderer::CreateTexture(int width, int height, TextureType type, int num, int mipNum, int bindFlags)
+{
+    Texture* tex = new WinDX11Texture();
+    tex->Create(this, width, height, type, num, mipNum, bindFlags);
+    return tex;
+}
+
 WinDX11Shader* WinDX11Renderer::CompileShader(LPCWSTR VSFilePath, LPCWSTR PSFilePath)
 {
     auto Shader = new WinDX11Shader();

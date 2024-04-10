@@ -91,9 +91,8 @@ void LacertaEditor::Start()
     auto renderer = RHI::Get()->GetRenderer();
 
     // Diffuse Irradiance
-    RHI::Get()->CreateRenderTarget(128, 128, RenderTargetType::TextureCube, m_irradianceRTidx, 6);
-    auto irrRT = RHI::Get()->GetRenderTarget(m_irradianceRTidx);
-    m_irradianceTex = irrRT->CreateTextureFromRT(6);
+    m_irradianceTex = RHI::Get()->CreateTexture(128, 128, TextureType::TexCube, 6, 1, TextureBindFlags::SRV | TextureBindFlags::UAV);
+    m_irradianceTex->SetTextureIdx(6);
     m_irradianceTex->AllowReadWrite(renderer, true);
     m_irradianceTex->Bind(renderer);
     m_skyBoxTex->Bind(renderer);
@@ -101,9 +100,8 @@ void LacertaEditor::Start()
     m_irradianceTex->AllowReadWrite(renderer, false);
 
     // Pre filter Env map
-    RHI::Get()->CreateRenderTarget(512, 512, RenderTargetType::TextureCube, m_prefilterRTidx, 6);
-    auto preRT = RHI::Get()->GetRenderTarget(m_prefilterRTidx);
-    m_prefilteredEnvMapTex = preRT->CreateTextureFromRT(7);
+    m_prefilteredEnvMapTex = RHI::Get()->CreateTexture(512, 512, TextureType::TexCube, 6, 1, TextureBindFlags::SRV | TextureBindFlags::UAV);
+    m_prefilteredEnvMapTex->SetTextureIdx(7);
     m_prefilteredEnvMapTex->AllowReadWrite(renderer, true);
     m_prefilteredEnvMapTex->Bind(renderer);
     m_skyBoxTex->Bind(renderer);
@@ -398,7 +396,8 @@ void LacertaEditor::Update()
     scenePass->AddGlobalBindable(m_prefilteredEnvMapTex);
     scenePass->AddGlobalBindable(m_skyBoxTex);
     auto shadowMapRT = RHI::Get()->GetRenderTarget(m_shadowMapRTidx);
-    auto shadowMap = shadowMapRT->CreateTextureFromDepth(8);
+    auto shadowMap = shadowMapRT->CreateTextureFromDepth();
+    shadowMap->SetTextureIdx(8);
     scenePass->AddGlobalBindable(shadowMap);
     ConstantBuffer shadowMapCbuf = ConstantBuffer(shadowMapCC, ConstantBufferType::SMLightCbuf);
     scenePass->AddGlobalBindable(&shadowMapCbuf);

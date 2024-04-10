@@ -26,7 +26,7 @@ public:
     ~Texture();
 
     virtual void CreateResource(const wchar_t* filePath, Renderer* renderer) = 0;
-    virtual void Create(Renderer* renderer, int width, int height, TextureType type, int num, int mipNum, int bindFlags) = 0;
+    virtual void* Create(Renderer* renderer, int width, int height, TextureType type, int num, int mipNum, int bindFlags) = 0;
     virtual void Bind(Renderer* renderer) = 0;
     virtual void* GetTextureSRV() = 0;
     virtual void OnReadWriteAccessChanged(Renderer* renderer) = 0;
