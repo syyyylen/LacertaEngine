@@ -10,11 +10,11 @@ Features :
 * Multiples meshes
 * Normal mapping
 * PBR Shading (albedo, normal, metallic, ao for now)
-* Cube maps skyboxes
+* Cube Maps Skyboxes
 * ECS with entt
 * 2D UI with imgui
 * Shadow Mapping
-* IBL (wip)
+* IBL
 
 ![alt text](https://github.com/syyyylen/LacertaEngine/blob/main/LacertaEngineEditor/Assets/Screenshots/scene.png?raw=true)
 
@@ -25,8 +25,7 @@ Features :
 ![alt text](https://github.com/syyyylen/LacertaEngine/blob/main/LacertaEngineEditor/Assets/Screenshots/shadows.png?raw=true)
 
 Things I want to add :
-* Diffuse irradiance convolution for IBL
-* Better Shadow maps
+* Better Cascaded Shadow maps
 * Deferred rendering
 * DX12 support
 * Render thread
