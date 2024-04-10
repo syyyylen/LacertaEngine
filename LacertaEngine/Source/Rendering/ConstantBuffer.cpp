@@ -33,7 +33,7 @@ ConstantBuffer::~ConstantBuffer()
         delete static_cast<SkyBoxConstantBuffer*>(m_data);
         break;
 
-    case ConstantBufferType::SMLightCubf:
+    case ConstantBufferType::SMLightCbuf:
         delete static_cast<ShadowMapLightConstantBuffer*>(m_data);
         break;
     }

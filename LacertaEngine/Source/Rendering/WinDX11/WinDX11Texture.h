@@ -13,6 +13,7 @@ public:
     ~WinDX11Texture();
 
     void CreateResource(const wchar_t* filePath, Renderer* renderer) override;
+    void* Create(Renderer* renderer, int width, int height, TextureType type, int num, int mipNum, int bindFlags) override;
     void OnReadWriteAccessChanged(Renderer* renderer) override;
     void Bind(Renderer* renderer) override;
     void SetSRV(ID3D11ShaderResourceView* srv);
@@ -21,7 +22,7 @@ public:
 
 private:
     ID3D11ShaderResourceView* m_resourceView;
-    ID3D11UnorderedAccessView* m_unorderedAccessView;
+    ID3D11UnorderedAccessView** m_unorderedAccessViews;
 };
 
 }

@@ -38,6 +38,7 @@ public:
     
     Mesh* CreateMesh(const wchar_t* filePath) override;
     Texture* CreateTexture(const wchar_t* filePath, int idx) override;
+    Texture* CreateTexture(int width, int height, TextureType type, int num, int mipNum, int bindFlags) override;
     
     int* GetDriver() override { return (int*)m_device; }
 

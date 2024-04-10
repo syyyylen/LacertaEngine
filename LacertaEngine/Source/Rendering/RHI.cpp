@@ -4,6 +4,7 @@
 #include "WinDX11/WinDX11Renderer.h"
 #include "Drawcall.h"
 #include "RenderTarget.h"
+#include "Texture.h"
 
 namespace LacertaEngine
 {
@@ -131,6 +132,14 @@ Texture* RHI::CreateTexture(const wchar_t* filePath, int idx)
 {
     if(m_renderer)
         return m_renderer->CreateTexture(filePath, idx);
+
+    return nullptr;
+}
+
+Texture* RHI::CreateTexture(int width, int height, TextureType type, int num, int mipNum, int bindFlags)
+{
+    if(m_renderer)
+        return m_renderer->CreateTexture(width, height, type, num, mipNum, bindFlags);
 
     return nullptr;
 }

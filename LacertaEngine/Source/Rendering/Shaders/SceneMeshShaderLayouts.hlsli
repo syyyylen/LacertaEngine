@@ -6,7 +6,7 @@ Texture2D MetallicMap: register(t3);
 Texture2D AmbiantOcclusionMap: register(t4);
 TextureCube SkyBox: register(t5); 
 TextureCube IrradianceMap: register(t6);
-Texture2D BRDFLut: register(t7);
+TextureCube PrefilteredMap: register(t7);
 Texture2DArray ShadowMap: register(t8);
 
 sampler TextureSampler: register(s0);

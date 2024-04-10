@@ -44,6 +44,7 @@ public:
     
     Mesh* CreateMesh(const wchar_t* filePath);
     Texture* CreateTexture(const wchar_t* filePath, int idx);
+    Texture* CreateTexture(int width, int height, TextureType type, int num, int mipNum, int bindFlags);
 
 private:
     RendererType m_rendererType;

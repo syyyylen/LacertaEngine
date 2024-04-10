@@ -86,17 +86,42 @@ void LacertaEditor::Start()
     skyBoxMeshComp.GetMaterial()->SetTexture(0, m_skyBoxTex);
     skyBoxMeshComp.GetMaterial()->SetShader("SkyboxShader");
     
-    // -------------------------- IBL Irradiance Pass -----------------------
-    
-    RHI::Get()->CreateRenderTarget(128, 128, RenderTargetType::TextureCube, m_irradianceRTidx, 6);
-    auto RT = RHI::Get()->GetRenderTarget(m_irradianceRTidx);
-    m_irradianceTex = RT->CreateTextureFromRT(6);
+    // -------------------------- IBL Compute Shaders -----------------------
+
     auto renderer = RHI::Get()->GetRenderer();
-    m_irradianceTex->AllowReadWrite(renderer, true);
+
+    // Diffuse Irradiance
+    m_irradianceTex = RHI::Get()->CreateTexture(128, 128, TextureType::TexCube, 6, 1, TextureBindFlags::SRV | TextureBindFlags::UAV);
+    m_irradianceTex->SetTextureIdx(6);
+    m_irradianceTex->AllowReadWrite(renderer, true, 0);
     m_irradianceTex->Bind(renderer);
     m_skyBoxTex->Bind(renderer);
     renderer->ExecuteComputeShader("IrradianceCS", 128 / 32, 128 / 32, 6);
-    m_irradianceTex->AllowReadWrite(renderer, false);
+    m_irradianceTex->AllowReadWrite(renderer, false, 0);
+
+    // Pre filter Env map
+    m_prefilteredEnvMapTex = RHI::Get()->CreateTexture(512, 512, TextureType::TexCube, 6, 5, TextureBindFlags::SRV | TextureBindFlags::UAV);
+    m_prefilteredEnvMapTex->SetTextureIdx(7);
+    m_skyBoxTex->Bind(renderer);
+
+    for(int i = 0; i < 5; i++)
+    {
+        UINT32 mipWidth = (UINT32)(512.0f * pow(0.5f, i));
+        UINT32 mipHeigth = (UINT32)(512.0f * pow(0.5f, i));
+        float roughness = (float)i/(float)(5 - 1);
+
+        PrefilterMapConstantBuffer cbuf;
+        cbuf.Roughness = Vector4(roughness, 0.0f, 0.0f, 0.0f);
+        ConstantBuffer Cb;
+        Cb.SetData(&cbuf, ConstantBufferType::PrefilterCbuf);
+        Cb.Bind(renderer);
+
+        m_prefilteredEnvMapTex->AllowReadWrite(renderer, true, i); // We allow rw for the mip idx
+        m_prefilteredEnvMapTex->Bind(renderer);
+        renderer->ExecuteComputeShader("PrefilterCS", mipWidth / 32, mipHeigth / 32, 6);
+    }
+
+    m_prefilteredEnvMapTex->AllowReadWrite(renderer, false, 0);
 
     // ----------------------------- Debug GO Creation -----------------------
 
@@ -266,7 +291,7 @@ void LacertaEditor::Update()
         shadowMapCC->ViewMatrix[i] = shadowMapView;
         shadowMapCC->ProjectionMatrix[i].SetOrthoLH(size, size, -200.0f, 200.0f);
 
-        ConstantBuffer shadowMapCbuf = ConstantBuffer(smCC, ConstantBufferType::SMLightCubf);
+        ConstantBuffer shadowMapCbuf = ConstantBuffer(smCC, ConstantBufferType::SMLightCbuf);
         shadowMapPass->AddGlobalBindable(&shadowMapCbuf);
 
         shadowMapPass->SetRenderTargetSubresourceIdx(i);
@@ -367,14 +392,14 @@ void LacertaEditor::Update()
     ConstantBuffer sceneCbuf = ConstantBuffer(cc, ConstantBufferType::SceneCbuf);
     scenePass->AddGlobalBindable(&sceneCbuf);
 
-    auto BRDFLut = RHI::Get()->CreateTexture(L"Assets/Textures/ibl_brdf_lut.png", 7);
     scenePass->AddGlobalBindable(m_irradianceTex);
-    scenePass->AddGlobalBindable(BRDFLut);
+    scenePass->AddGlobalBindable(m_prefilteredEnvMapTex);
     scenePass->AddGlobalBindable(m_skyBoxTex);
     auto shadowMapRT = RHI::Get()->GetRenderTarget(m_shadowMapRTidx);
-    auto shadowMap = shadowMapRT->CreateTextureFromDepth(8);
+    auto shadowMap = shadowMapRT->CreateTextureFromDepth();
+    shadowMap->SetTextureIdx(8);
     scenePass->AddGlobalBindable(shadowMap);
-    ConstantBuffer shadowMapCbuf = ConstantBuffer(shadowMapCC, ConstantBufferType::SMLightCubf);
+    ConstantBuffer shadowMapCbuf = ConstantBuffer(shadowMapCC, ConstantBufferType::SMLightCbuf);
     scenePass->AddGlobalBindable(&shadowMapCbuf);
 
     ConstantBuffer skyboxCbuf = ConstantBuffer(skyboxCC, ConstantBufferType::SkyBoxCbuf);
@@ -443,8 +468,6 @@ void LacertaEditor::Update()
 
     RHI::Get()->ExecuteRenderPass("scene", m_viewportCachedSize, true);
     RHI::Get()->ExecuteRenderPass("skybox", m_viewportCachedSize, false);
-
-    delete shadowMap;
 
     // We get the backbuffer back to render UI in it
     RHI::Get()->SetBackbufferRenderTargetActive();
