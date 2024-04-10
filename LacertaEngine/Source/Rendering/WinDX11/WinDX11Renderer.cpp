@@ -173,6 +173,7 @@ void WinDX11Renderer::LoadShaders()
     m_computeShaders.clear();
     m_computeShaders.emplace("IrradianceCS", CompileComputeShader(L"../LacertaEngine/Source/Rendering/Shaders/IrradianceComputeShader.hlsl"));
     m_computeShaders.emplace("PrefilterCS", CompileComputeShader(L"../LacertaEngine/Source/Rendering/Shaders/PreFilterEnvMapComputeShader.hlsl"));
+    m_computeShaders.emplace("BRDFCS", CompileComputeShader(L"../LacertaEngine/Source/Rendering/Shaders/BRDFComputeShader.hlsl"));
 }
 
 ID3D11Buffer* WinDX11Renderer::CreateVBO(std::vector<SceneVertexMesh> vertices)

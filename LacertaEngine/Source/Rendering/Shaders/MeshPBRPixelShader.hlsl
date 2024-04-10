@@ -174,10 +174,8 @@ float4 main(VertexOutput input) : SV_Target
     float prefilterLOD = roughness * 4;
     float3 prefiltered = PrefilteredMap.SampleLevel(TextureSampler, r, prefilterLOD).rgb;
 
-    // return float4(prefiltered, 1);
-    
-    // float2 envBRDF = BRDFLut.Sample(TextureSampler, float2(max(dot(normal, v), 0.0), roughness)).rg;
-    float3 specular = prefiltered * (Ks /* * envBRDF.x + envBRDF.y */);
+    float2 envBRDF = BRDF.Sample(TextureSampler, float2(max(dot(normal, v), 0.0), roughness)).rg;
+    float3 specular = prefiltered * (Ks * envBRDF.x + envBRDF.y);
     
     float3 ambiantLight = (Kd * diffuse + specular) * ao;
     
