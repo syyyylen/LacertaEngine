@@ -93,17 +93,15 @@ void LacertaEditor::Start()
     // Diffuse Irradiance
     m_irradianceTex = RHI::Get()->CreateTexture(128, 128, TextureType::TexCube, 6, 1, TextureBindFlags::SRV | TextureBindFlags::UAV);
     m_irradianceTex->SetTextureIdx(6);
-    m_irradianceTex->AllowReadWrite(renderer, true);
+    m_irradianceTex->AllowReadWrite(renderer, true, 0);
     m_irradianceTex->Bind(renderer);
     m_skyBoxTex->Bind(renderer);
     renderer->ExecuteComputeShader("IrradianceCS", 128 / 32, 128 / 32, 6);
-    m_irradianceTex->AllowReadWrite(renderer, false);
+    m_irradianceTex->AllowReadWrite(renderer, false, 0);
 
     // Pre filter Env map
-    m_prefilteredEnvMapTex = RHI::Get()->CreateTexture(512, 512, TextureType::TexCube, 6, 1, TextureBindFlags::SRV | TextureBindFlags::UAV);
+    m_prefilteredEnvMapTex = RHI::Get()->CreateTexture(512, 512, TextureType::TexCube, 6, 5, TextureBindFlags::SRV | TextureBindFlags::UAV);
     m_prefilteredEnvMapTex->SetTextureIdx(7);
-    m_prefilteredEnvMapTex->AllowReadWrite(renderer, true);
-    m_prefilteredEnvMapTex->Bind(renderer);
     m_skyBoxTex->Bind(renderer);
 
     for(int i = 0; i < 5; i++)
@@ -118,10 +116,12 @@ void LacertaEditor::Start()
         Cb.SetData(&cbuf, ConstantBufferType::PrefilterCbuf);
         Cb.Bind(renderer);
 
+        m_prefilteredEnvMapTex->AllowReadWrite(renderer, true, i); // We allow rw for the mip idx
+        m_prefilteredEnvMapTex->Bind(renderer);
         renderer->ExecuteComputeShader("PrefilterCS", mipWidth / 32, mipHeigth / 32, 6);
     }
 
-    m_prefilteredEnvMapTex->AllowReadWrite(renderer, false);
+    m_prefilteredEnvMapTex->AllowReadWrite(renderer, false, 0);
 
     // ----------------------------- Debug GO Creation -----------------------
 

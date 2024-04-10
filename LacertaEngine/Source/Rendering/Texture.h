@@ -33,14 +33,14 @@ public:
 
     void SetTextureIdx(int idx) { m_bindIdx = idx; }
     void SetNumTexs(int numTex) { m_numTex = numTex; }
-    void AllowReadWrite(Renderer* renderer, bool allow);
-
+    void AllowReadWrite(Renderer* renderer, bool allow, int rwIdx);
     bool HasTextureFlag(int val, TextureBindFlags flag);
 
 protected:
     int m_bindIdx;
     int m_numTex = 1;
     int m_mipMapsLevels = 1;
+    int m_rwIdx = 0;
     bool m_allowReadWrite;
 };
     

@@ -242,8 +242,8 @@ void WinDX11Texture::Bind(Renderer* renderer)
 
     if(m_allowReadWrite)
     {
-        if(m_unorderedAccessViews[0]) // TODO refactor this, slot is always 0...
-            ctx->CSSetUnorderedAccessViews(0, 1, &m_unorderedAccessViews[0], NULL);
+        if(m_unorderedAccessViews[m_rwIdx])
+            ctx->CSSetUnorderedAccessViews(0, 1, &m_unorderedAccessViews[m_rwIdx], NULL);
 
         return;
     }
