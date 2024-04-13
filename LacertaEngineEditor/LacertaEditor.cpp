@@ -155,11 +155,16 @@ void LacertaEditor::Start()
 
     spawnLocation = Vector3(spawnLocation.X + 25.0f, spawnLocation.Y, spawnLocation.Z);
 
-     GameObject& helmetGo = ImportMeshToScene("DamagedHelmet", "Assets/Meshes/SciFiHelmet.gltf", spawnLocation);
-     TransformComponent& helmetTfComp = helmetGo.GetComponent<TransformComponent>();
-     helmetTfComp.SetScale(Vector3(8.0f, 8.0f, 8.0f));
+    GameObject& helmetGo = ImportMeshToScene("DamagedHelmet", "Assets/Meshes/SciFiHelmet.gltf", spawnLocation);
+    TransformComponent& helmetTfComp = helmetGo.GetComponent<TransformComponent>();
+    helmetTfComp.SetScale(Vector3(8.0f, 8.0f, 8.0f));
+    Texture* damagedHelmetBaseColor = RHI::Get()->CreateTexture(L"Assets/Meshes/SciFiHelmet_BaseColor.png", 0);
+    Texture* damagedHelmetNormalMap = RHI::Get()->CreateTexture(L"Assets/Meshes/SciFiHelmet_Normal.png", 1);
+    auto& mc = helmetGo.GetComponent<MeshComponent>();
+    mc.GetMaterial()->SetTexture(0, damagedHelmetBaseColor);
+    mc.GetMaterial()->SetTexture(1, damagedHelmetNormalMap);
 
-     spawnLocation = Vector3(spawnLocation.X + 25.0f, spawnLocation.Y, spawnLocation.Z);
+    spawnLocation = Vector3(spawnLocation.X + 25.0f, spawnLocation.Y, spawnLocation.Z);
 
     GameObject& statueGo = AddMeshToScene("Statue", L"Assets/Meshes/statue.obj", spawnLocation);
     TransformComponent& statueTfComp = statueGo.GetComponent<TransformComponent>();
