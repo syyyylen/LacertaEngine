@@ -43,6 +43,7 @@ public:
     void ExecuteRenderPass(std::string name, Vector2 renderTargetSize, bool clear);
     
     virtual Mesh* CreateMesh(const wchar_t* filePath) = 0;
+    virtual Mesh* ImportMesh(std::string filePath) = 0;
     virtual Texture* CreateTexture(const wchar_t* filePath, int idx) = 0;
     virtual Texture* CreateTexture(int width, int height, TextureType type, int num, int mipNum, int bindFlags) = 0;
 

@@ -241,6 +241,13 @@ Mesh* WinDX11Renderer::CreateMesh(const wchar_t* filePath)
     return mesh;
 }
 
+Mesh* WinDX11Renderer::ImportMesh(std::string filePath)
+{
+    Mesh* mesh = new WinDX11Mesh();
+    mesh->ImportMesh(filePath, this);
+    return mesh;
+}
+
 Texture* WinDX11Renderer::CreateTexture(const wchar_t* filePath, int idx)
 {
     for(auto resource : m_graphicsResources)

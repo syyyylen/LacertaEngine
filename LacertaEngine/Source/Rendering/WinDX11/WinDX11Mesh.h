@@ -5,6 +5,11 @@
 #include "../../Maths/Maths.h"
 #include "../Mesh.h"
 
+#include <assimp/Importer.hpp>
+#include <assimp/scene.h>
+#include <assimp/postprocess.h>
+#include <assimp/pbrmaterial.h>
+
 namespace LacertaEngine
 {
 
@@ -33,11 +38,15 @@ public:
     ~WinDX11Mesh() override;
 
     void CreateResource(const wchar_t* filePath, Renderer* renderer) override;
+    void ImportMesh(std::string filePath, Renderer* renderer) override;
 
 private:
     void ComputeTangents(const Vector3& v0, const Vector3& v1, const Vector3& v2,
         const Vector2 t0, const Vector2 t1, const Vector2 t2,
         Vector3& tangent, Vector3& binormal);
+
+    void ProcessPrimitive(Renderer* renderer, aiMesh *mesh, const aiScene *scene);
+    void ProcessNode(Renderer* renderer, aiNode *node, const aiScene *scene);
 };
 
 }
