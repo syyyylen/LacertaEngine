@@ -37,6 +37,7 @@ public:
     void SetCastShadow(bool cast) { m_castShadow = cast; }
 
     bool m_castShadow = true;
+    bool hasMR = false; // TODO remove this
     
 private:
     MatLightProperties m_lightProperties;

@@ -158,11 +158,14 @@ void LacertaEditor::Start()
     GameObject& helmetGo = ImportMeshToScene("DamagedHelmet", "Assets/Meshes/SciFiHelmet.gltf", spawnLocation);
     TransformComponent& helmetTfComp = helmetGo.GetComponent<TransformComponent>();
     helmetTfComp.SetScale(Vector3(8.0f, 8.0f, 8.0f));
-    Texture* damagedHelmetBaseColor = RHI::Get()->CreateTexture(L"Assets/Meshes/SciFiHelmet_BaseColor.png", 0);
-    Texture* damagedHelmetNormalMap = RHI::Get()->CreateTexture(L"Assets/Meshes/SciFiHelmet_Normal.png", 1);
+    auto damagedHelmetBaseColor = RHI::Get()->CreateTexture(L"Assets/Meshes/SciFiHelmet_BaseColor.png", 0);
+    auto damagedHelmetNormalMap = RHI::Get()->CreateTexture(L"Assets/Meshes/SciFiHelmet_Normal.png", 1);
+    auto damagedHelmetMR = RHI::Get()->CreateTexture(L"Assets/Meshes/SciFiHelmet_MetallicRoughness.png", 2);
     auto& mc = helmetGo.GetComponent<MeshComponent>();
     mc.GetMaterial()->SetTexture(0, damagedHelmetBaseColor);
     mc.GetMaterial()->SetTexture(1, damagedHelmetNormalMap);
+    mc.GetMaterial()->SetTexture(2, damagedHelmetMR);
+    mc.GetMaterial()->hasMR = true;
 
     spawnLocation = Vector3(spawnLocation.X + 25.0f, spawnLocation.Y, spawnLocation.Z);
 
@@ -454,6 +457,7 @@ void LacertaEditor::Update()
             meshCb->HasNormalMap = texLength > 1;
             meshCb->HasRoughness = texLength > 2;
             meshCb->HasMetallic = texLength > 3;
+            meshCb->HasMetallicRoughness = mat->hasMR;
             
             meshCb->LightProperties = mat->GetMatLightProperties();
             meshCb->LocalMatrix = transform.GetTransformMatrix();

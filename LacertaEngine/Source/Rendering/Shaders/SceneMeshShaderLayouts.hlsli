@@ -58,6 +58,7 @@ cbuffer MeshCBuffer : register(b1)
     bool HasRoughness;
     bool HasMetallic;
     bool HasAmbiant;
+    bool HasMetallicRougness; // tells us if they are both in the same texture, bad but temporary
 };
 
 
