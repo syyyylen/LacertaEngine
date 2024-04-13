@@ -1,5 +1,9 @@
 #pragma once
 
+#ifndef NOMINMAX
+	#define NOMINMAX
+#endif
+
 #ifdef LE_BUILD_DLL
 	#define LACERTAENGINE_API __declspec(dllexport)
 #else

@@ -155,11 +155,11 @@ void LacertaEditor::Start()
 
     spawnLocation = Vector3(spawnLocation.X + 25.0f, spawnLocation.Y, spawnLocation.Z);
 
-    GameObject& helmetGo = AddMeshToScene("DamagedHelmet", L"Assets/DamagedHelmet/DamagedHelmet.obj", spawnLocation);
-    TransformComponent& helmetTfComp = helmetGo.GetComponent<TransformComponent>();
-    helmetTfComp.SetScale(Vector3(8.0f, 8.0f, 8.0f));
+     GameObject& helmetGo = ImportMeshToScene("DamagedHelmet", "Assets/Meshes/SciFiHelmet.gltf", spawnLocation);
+     TransformComponent& helmetTfComp = helmetGo.GetComponent<TransformComponent>();
+     helmetTfComp.SetScale(Vector3(8.0f, 8.0f, 8.0f));
 
-    spawnLocation = Vector3(spawnLocation.X + 25.0f, spawnLocation.Y, spawnLocation.Z);
+     spawnLocation = Vector3(spawnLocation.X + 25.0f, spawnLocation.Y, spawnLocation.Z);
 
     GameObject& statueGo = AddMeshToScene("Statue", L"Assets/Meshes/statue.obj", spawnLocation);
     TransformComponent& statueTfComp = statueGo.GetComponent<TransformComponent>();
@@ -563,6 +563,27 @@ void LacertaEditor::DestroyGo(GameObject* goToDestroy)
 GameObject& LacertaEditor::AddMeshToScene(std::string name, const wchar_t* meshPath, Vector3 position, std::string shader)
 {
     Mesh* mesh = RHI::Get()->CreateMesh(meshPath);
+
+    name += "_";
+    name += std::to_string(m_activeScene->m_gameObjects.size());
+    GameObject* go = m_activeScene->CreateGameObject(name, position);
+    
+    MeshComponent& meshComp = go->AddComponent<MeshComponent>();
+    meshComp.SetMesh(mesh);
+    
+    Material* newMat = new Material();
+    MatLightProperties properties;
+    properties.Shininess = 0.0f; // TODO shininess is 10 by default, find why
+    newMat->InitializeProperties(properties, shader);
+    meshComp.SetMaterial(newMat);
+
+    return *go;
+}
+
+GameObject& LacertaEditor::ImportMeshToScene(std::string name, std::string meshPathStr, Vector3 position, std::string shader)
+{
+    auto Renderer = RHI::Get()->GetRenderer();
+    auto mesh = Renderer->ImportMesh(meshPathStr);
 
     name += "_";
     name += std::to_string(m_activeScene->m_gameObjects.size());
