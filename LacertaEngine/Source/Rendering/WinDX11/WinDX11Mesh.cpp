@@ -5,7 +5,13 @@
 #include "../../../Libs/TinyObjLoader/include/tiny_obj_loader.h"
 #include <locale>
 
+// #include <assimp/Importer.hpp>
+// #include <assimp/scene.h>
+// #include <assimp/postprocess.h>
+// #include <assimp/pbrmaterial.h>
+
 #include "WinDX11Renderer.h"
+#include "../../Logger/Logger.h"
 
 namespace LacertaEngine
 {
@@ -45,6 +51,13 @@ WinDX11Mesh::~WinDX11Mesh()
 
 void WinDX11Mesh::CreateResource(const wchar_t* filePath, Renderer* renderer)
 {
+    // Assimp::Importer importer;
+    // std::string str = "Assets/Meshes/SciFiHelmet.gltf";
+    // const aiScene* scene = importer.ReadFile(str, aiProcess_FlipWindingOrder | aiProcess_CalcTangentSpace | aiProcess_PreTransformVertices);
+    // if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) {
+    //     LOG(Error, "FAILED ASSIMP");
+    // }
+    
     SetFilePath(filePath);
 
     int utf8StrLen = WideCharToMultiByte(CP_UTF8, 0, filePath, -1, nullptr, 0, nullptr, nullptr);
