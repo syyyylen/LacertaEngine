@@ -120,14 +120,6 @@ void RHI::ExecuteRenderPass(std::string name, Vector2 renderTargetSize, bool cle
     m_renderer->ExecuteRenderPass(name, renderTargetSize, clear);
 }
 
-Mesh* RHI::CreateMesh(const wchar_t* filePath)
-{
-    if(m_renderer)
-        return m_renderer->CreateMesh(filePath);
-
-    return nullptr;
-}
-
 Texture* RHI::CreateTexture(const wchar_t* filePath, int idx)
 {
     if(m_renderer)

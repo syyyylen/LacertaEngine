@@ -16,13 +16,12 @@ public:
     virtual unsigned long GetIndicesSize() = 0;
 };
 
-class LACERTAENGINE_API Mesh : public GraphicsResource
+class LACERTAENGINE_API Mesh
 {
 public:
     Mesh();
     virtual ~Mesh();
 
-    virtual void CreateResource(const wchar_t* filePath, Renderer* renderer) = 0;
     virtual void ImportMesh(std::string filePath, Renderer* renderer) = 0;
     virtual const std::vector<Shape*> GetShapesData() { return m_shapesData; }
 
