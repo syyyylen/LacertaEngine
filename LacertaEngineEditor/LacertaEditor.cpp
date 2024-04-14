@@ -155,6 +155,7 @@ void LacertaEditor::Start()
         L"Assets/Meshes/DamagedHelmet_metalRoughness.jpg",
         nullptr,
         L"Assets/Meshes/DamagedHelmet_AO.jpg",
+        L"Assets/Meshes/DamagedHelmet_emissive.jpg",
         true);
     
     spawnLocation = Vector3(spawnLocation.X + 25.0f, spawnLocation.Y, spawnLocation.Z);
@@ -167,6 +168,7 @@ void LacertaEditor::Start()
         L"Assets/Meshes/SciFiHelmet_MetallicRoughness.png",
         nullptr,
         L"Assets/Meshes/SciFiHelmet_AmbientOcclusion.png",
+        nullptr,
         true);
     
     spawnLocation = Vector3(spawnLocation.X + 25.0f, spawnLocation.Y, spawnLocation.Z);
@@ -179,6 +181,7 @@ void LacertaEditor::Start()
         L"Assets/Meshes/Cerberus_MetallicRoughness.png",
         nullptr,
         L"Assets/Meshes/Cerberus_AO.png",
+        nullptr,
         true);
 
     spawnLocation = Vector3(spawnLocation.X + 25.0f, spawnLocation.Y, spawnLocation.Z);
@@ -221,8 +224,7 @@ L"Assets/Textures/PBR/limestone5_Metallic.png",
     L"Assets/Textures/PBR/gold-scuffed_basecolor-boosted.png",
     L"Assets/Textures/PBR/gold-scuffed_normal.png",
     L"Assets/Textures/PBR/gold-scuffed_roughness.png",
-    L"Assets/Textures/PBR/gold-scuffed_metallic.png",
-    nullptr);
+    L"Assets/Textures/PBR/gold-scuffed_metallic.png");
 
     spawnLocation = Vector3(spawnLocation.X + 30.0f, spawnLocation.Y, spawnLocation.Z);
 
@@ -471,11 +473,13 @@ void LacertaEditor::Update()
 
             SceneMeshConstantBuffer* meshCb = new SceneMeshConstantBuffer(); // this is deleted by CBuf
 
-            int texLength = (int)texs.size(); // TODO fix all this
-            meshCb->HasAlbedo = texLength > 0;
-            meshCb->HasNormalMap = texLength > 1;
-            meshCb->HasRoughness = texLength > 2;
-            meshCb->HasMetallic = texLength > 3;
+            // TODO clean all this mess
+            meshCb->HasAlbedo = mat->hasAlbedo;
+            meshCb->HasNormalMap = mat->HasNormal;
+            meshCb->HasRoughness = mat->HasRoughness;
+            meshCb->HasMetallic = mat->HasMetallic;
+            meshCb->HasAmbiant = mat->HasAmbiant;
+            meshCb->HasEmissive = mat->HasEmissive;
             meshCb->HasMetallicRoughness = mat->hasMR;
             
             meshCb->LightProperties = mat->GetMatLightProperties();
@@ -614,7 +618,8 @@ void LacertaEditor::SetGameObjectPBRTextures(GameObject& go,
     const wchar_t* normal,
     const wchar_t* roughness,
     const wchar_t* metallic,
-    const wchar_t* ao, bool mr)
+    const wchar_t* ao,
+    const wchar_t* emissive, bool mr)
 {
     auto& meshComp = go.GetComponent<MeshComponent>();
     auto mat = meshComp.GetMaterial();
@@ -622,11 +627,13 @@ void LacertaEditor::SetGameObjectPBRTextures(GameObject& go,
     {
         auto tex = RHI::Get()->CreateTexture(albedo, 0);
         mat->SetTexture(0, tex);
+        mat->hasAlbedo = true;
     }
     if(normal)
     {
         auto norm = RHI::Get()->CreateTexture(normal, 1);
         mat->SetTexture(1, norm);
+        mat->HasNormal = true;
     }
     if(mr)
     {
@@ -640,17 +647,26 @@ void LacertaEditor::SetGameObjectPBRTextures(GameObject& go,
         {
             auto rough = RHI::Get()->CreateTexture(roughness, 2);
             mat->SetTexture(2, rough);
+            mat->HasRoughness = true;
         }
         if(metallic)
         {
             auto met = RHI::Get()->CreateTexture(metallic, 3);
             mat->SetTexture(3, met);
+            mat->HasMetallic = true;
         }
     }
     if(ao)
     {
         auto amb = RHI::Get()->CreateTexture(ao, 4);
         mat->SetTexture(4, amb);
+        mat->HasAmbiant = true;
+    }
+    if(emissive)
+    {
+        auto em = RHI::Get()->CreateTexture(emissive, 10);
+        mat->SetTexture(5, em);
+        mat->HasEmissive = true;
     }
 }
 
@@ -665,36 +681,6 @@ GameObject& LacertaEditor::AddPointLightToScene(Vector3 position, Vector4 color)
 
     return *go;
 }
-
-// GameObject& LacertaEditor::AddPBRSphereToScene(std::string name,
-//     Vector3 position,
-//     const wchar_t* albedo,
-//     const wchar_t* normal,
-//     const wchar_t* roughness,
-//     const wchar_t* metallic,
-//     const wchar_t* ao)
-// {
-//     GameObject& sphere = AddMeshToScene(name, L"Assets/Meshes/sphere_hq.obj", position);
-//     
-//     auto& sphereTf = sphere.GetComponent<TransformComponent>();
-//     sphereTf.SetScale(Vector3(12.0f, 12.0f, 12.0f));
-//     auto tex = RHI::Get()->CreateTexture(albedo, 0);
-//     auto norm = RHI::Get()->CreateTexture(normal, 1);
-//     auto rough = RHI::Get()->CreateTexture(roughness, 2);
-//     auto met = RHI::Get()->CreateTexture(metallic, 3);
-//     auto& sphereMesh = sphere.GetComponent<MeshComponent>();
-//     sphereMesh.GetMaterial()->SetTexture(0, tex);
-//     sphereMesh.GetMaterial()->SetTexture(1, norm);
-//     sphereMesh.GetMaterial()->SetTexture(2, rough);
-//     sphereMesh.GetMaterial()->SetTexture(3, met);
-//     if(ao != nullptr)
-//     {
-//         auto amb = RHI::Get()->CreateTexture(ao, 4);
-//         sphereMesh.GetMaterial()->SetTexture(4, amb);
-//     }
-//
-//     return sphere;
-// }
 
 void LacertaEditor::OnKeyDown(int key)
 {

@@ -143,6 +143,12 @@ float4 main(VertexOutput input) : SV_Target
         metallic = RoughnessMap.Sample(TextureSampler, uv).b;
     }
 
+    if(HasEmissive)
+    {
+        float4 em = Emissive.Sample(TextureSampler, uv);
+        albedo.xyz += em;
+    }
+
     // Fresnel reflectance at normal incidence (for metals use albedo color).
     float3 F0 = lerp(Fdielectric, albedo, metallic);
     

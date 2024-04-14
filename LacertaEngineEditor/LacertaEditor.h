@@ -48,7 +48,9 @@ public:
                                 const wchar_t* normal = nullptr,
                                 const wchar_t* roughness = nullptr,
                                 const wchar_t* metallic = nullptr,
-                                const wchar_t* ao = nullptr, bool mr = false);
+                                const wchar_t* ao = nullptr,
+                                const wchar_t* emissive = nullptr,
+                                bool mr = false);
     GameObject& AddPointLightToScene(Vector3 position = Vector3(0.0f, 0.0f, 0.0f), Vector4 color = Vector4(1.0f, 1.0f, 1.0f, 1.0f));
     // end Scene Utilities
 
