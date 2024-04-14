@@ -78,7 +78,7 @@ void LacertaEditor::Start()
 
     // -------------------------- Skybox Sphere Creation -----------------------
 
-    m_skyBoxGo = &AddMeshToScene("Skybox", L"Assets/Meshes/cube.obj", Vector3(0.0f, 0.0f, 0.0f));
+    m_skyBoxGo = &ImportMeshToScene("Skybox", "Assets/Meshes/cube.obj", Vector3(0.0f, 0.0f, 0.0f));
     auto& skyboxTf = m_skyBoxGo->GetComponent<TransformComponent>();
     skyboxTf.SetScale(Vector3(1.0f, 1.0f, 1.0f));
     auto& skyBoxMeshComp = m_skyBoxGo->GetComponent<MeshComponent>();
@@ -136,86 +136,110 @@ void LacertaEditor::Start()
 
     Vector3 spawnLocation = Vector3(0.0f, 0.0f, 0.0f);
 
-    GameObject& sphereGo = AddMeshToScene("GregSphere", L"Assets/Meshes/spheregreg.obj", spawnLocation, "MeshPBRShader");
-    TransformComponent& sphereTfComp = sphereGo.GetComponent<TransformComponent>();
-    sphereTfComp.SetScale(Vector3(2.0f, 2.0f, 2.0f));
-    Texture* tex = RHI::Get()->CreateTexture(L"Assets/Textures/gregcolor.png", 0);
-    Texture* normalMap = RHI::Get()->CreateTexture(L"Assets/Textures/gregnormal.png", 1);
-    Texture* roughnessMap = RHI::Get()->CreateTexture(L"Assets/Textures/gregroughness.png", 2);
-    MeshComponent& meshComp = sphereGo.GetComponent<MeshComponent>();
-    meshComp.GetMaterial()->SetTexture(0, tex);
-    meshComp.GetMaterial()->SetTexture(1, normalMap);
-    meshComp.GetMaterial()->SetTexture(2, roughnessMap);
+    GameObject& sphereGo = ImportMeshToScene("GregSphere", "Assets/Meshes/spheregreg.obj", spawnLocation, "MeshPBRShader");
+    sphereGo.GetComponent<TransformComponent>().SetScale(Vector3(2.0f, 2.0f, 2.0f));
+    SetGameObjectPBRTextures(sphereGo, L"Assets/Textures/gregcolor.png", L"Assets/Textures/gregnormal.png", L"Assets/Textures/gregroughness.png");
     
     spawnLocation = Vector3(spawnLocation.X + 25.0f, spawnLocation.Y, spawnLocation.Z);
     
-    GameObject& dragonGo = AddMeshToScene("Dragon", L"Assets/Meshes/dragon.obj", spawnLocation);
-    TransformComponent& dragonTfComp = dragonGo.GetComponent<TransformComponent>();
-    dragonTfComp.SetScale(Vector3(1.5f, 1.5f, 1.5f));
+    GameObject& dragonGo = ImportMeshToScene("Dragon", "Assets/Meshes/dragon.obj", spawnLocation);
+    dragonGo.GetComponent<TransformComponent>().SetScale(Vector3(1.5f, 1.5f, 1.5f));
 
     spawnLocation = Vector3(spawnLocation.X + 25.0f, spawnLocation.Y, spawnLocation.Z);
 
-    GameObject& helmetGo = ImportMeshToScene("DamagedHelmet", "Assets/Meshes/SciFiHelmet.gltf", spawnLocation);
-    TransformComponent& helmetTfComp = helmetGo.GetComponent<TransformComponent>();
-    helmetTfComp.SetScale(Vector3(8.0f, 8.0f, 8.0f));
-    Texture* damagedHelmetBaseColor = RHI::Get()->CreateTexture(L"Assets/Meshes/SciFiHelmet_BaseColor.png", 0);
-    Texture* damagedHelmetNormalMap = RHI::Get()->CreateTexture(L"Assets/Meshes/SciFiHelmet_Normal.png", 1);
-    auto& mc = helmetGo.GetComponent<MeshComponent>();
-    mc.GetMaterial()->SetTexture(0, damagedHelmetBaseColor);
-    mc.GetMaterial()->SetTexture(1, damagedHelmetNormalMap);
-
-    spawnLocation = Vector3(spawnLocation.X + 25.0f, spawnLocation.Y, spawnLocation.Z);
-
-    GameObject& statueGo = AddMeshToScene("Statue", L"Assets/Meshes/statue.obj", spawnLocation);
-    TransformComponent& statueTfComp = statueGo.GetComponent<TransformComponent>();
-    statueTfComp.SetScale(Vector3(30.0f, 30.0f, 30.0f));
-
-    spawnLocation = Vector3(spawnLocation.X + 25.0f, spawnLocation.Y, spawnLocation.Z);
-
-    GameObject& sphere2Go = AddMeshToScene("Sphere", L"Assets/Meshes/spheregreg.obj", spawnLocation);
-    TransformComponent& sphere2TfComp = sphere2Go.GetComponent<TransformComponent>();
-    sphere2TfComp.SetScale(Vector3(2.0f, 2.0f, 2.0f));
-
-    spawnLocation = Vector3(spawnLocation.X + 30.0f, spawnLocation.Y, spawnLocation.Z);
-
-    AddPBRSphereToScene("SpherePBR1", spawnLocation,
-        L"Assets/Textures/PBR/limestone5_albedo.png",
-        L"Assets/Textures/PBR/limestone5_Normal-ogl.png",
-        L"Assets/Textures/PBR/limestone5_Roughness.png",
-        L"Assets/Textures/PBR/limestone5_Metallic.png",
-        L"Assets/Textures/PBR/limestone5_ao.png");
-    spawnLocation = Vector3(spawnLocation.X + 30.0f, spawnLocation.Y, spawnLocation.Z);
-    AddPBRSphereToScene("SpherePBR2", spawnLocation,
-        L"Assets/Textures/PBR/worn-factory-siding_albedo.png",
-        L"Assets/Textures/PBR/worn-factory-siding_normal-ogl.png",
-        L"Assets/Textures/PBR/worn-factory-siding_roughness.png",
-        L"Assets/Textures/PBR/worn-factory-siding_metallic.png",
-        L"Assets/Textures/PBR/worn-factory-siding_ao.png");
-    spawnLocation = Vector3(spawnLocation.X + 30.0f, spawnLocation.Y, spawnLocation.Z);
-    AddPBRSphereToScene("SpherePBR3", spawnLocation,
-        L"Assets/Textures/PBR/gold-scuffed_basecolor-boosted.png",
-        L"Assets/Textures/PBR/gold-scuffed_normal.png",
-        L"Assets/Textures/PBR/gold-scuffed_roughness.png",
-        L"Assets/Textures/PBR/gold-scuffed_metallic.png",
-        nullptr);
-    spawnLocation = Vector3(spawnLocation.X + 30.0f, spawnLocation.Y, spawnLocation.Z);
-    AddPBRSphereToScene("SpherePBR4", spawnLocation,
-        L"Assets/Textures/PBR/black-leather_albedo.png",
-        L"Assets/Textures/PBR/black-leather_normal-ogl.png",
-        L"Assets/Textures/PBR/black-leather_roughness.png",
-        L"Assets/Textures/PBR/black-leather_metallic.png",
-         L"Assets/Textures/PBR/black-leather_ao.png");
-    spawnLocation = Vector3(spawnLocation.X + 30.0f, spawnLocation.Y, spawnLocation.Z);
-    AddPBRSphereToScene("SpherePBR4", spawnLocation,
-        L"Assets/Textures/PBR/worn-shiny-metal-albedo.png",
-        L"Assets/Textures/PBR/worn-shiny-metal-Normal-ogl.png",
-        L"Assets/Textures/PBR/worn-shiny-metal-Roughness.png",
-        L"Assets/Textures/PBR/worn-shiny-metal-Metallic.png",
-         L"Assets/Textures/PBR/worn-shiny-metal-ao.png");
+    GameObject& helmetGo = ImportMeshToScene("DamagedHelmet", "Assets/Meshes/DamagedHelmet.gltf", spawnLocation);
+    helmetGo.GetComponent<TransformComponent>().SetScale(Vector3(8.0f, 8.0f, 8.0f));
+    SetGameObjectPBRTextures(helmetGo,
+        L"Assets/Meshes/DamagedHelmet_albedo.jpg",
+        L"Assets/Meshes/DamagedHelmet_normal.jpg",
+        L"Assets/Meshes/DamagedHelmet_metalRoughness.jpg",
+        nullptr,
+        L"Assets/Meshes/DamagedHelmet_AO.jpg",
+        L"Assets/Meshes/DamagedHelmet_emissive.jpg",
+        true);
     
-    GameObject& groundGo = AddMeshToScene("Ground", L"Assets/Meshes/cube.obj", Vector3(130.0f, -16.0f, 9.0f));
+    spawnLocation = Vector3(spawnLocation.X + 25.0f, spawnLocation.Y, spawnLocation.Z);
+
+    GameObject& sciFiHelmetGo = ImportMeshToScene("SciFiHelmet", "Assets/Meshes/SciFiHelmet.gltf", spawnLocation);
+    sciFiHelmetGo.GetComponent<TransformComponent>().SetScale(Vector3(8.0f, 8.0f, 8.0f));
+    SetGameObjectPBRTextures(sciFiHelmetGo,
+        L"Assets/Meshes/SciFiHelmet_BaseColor.png",
+        L"Assets/Meshes/SciFiHelmet_Normal.png",
+        L"Assets/Meshes/SciFiHelmet_MetallicRoughness.png",
+        nullptr,
+        L"Assets/Meshes/SciFiHelmet_AmbientOcclusion.png",
+        nullptr,
+        true);
+    
+    spawnLocation = Vector3(spawnLocation.X + 25.0f, spawnLocation.Y, spawnLocation.Z);
+
+    GameObject& cerberus = ImportMeshToScene("Cerberus", "Assets/Meshes/Cerberus.gltf", spawnLocation);
+    cerberus.GetComponent<TransformComponent>().SetScale(Vector3(15.0f, 15.0f, 15.0f));
+    SetGameObjectPBRTextures(cerberus,
+        L"Assets/Meshes/Cerberus_Albedo.png",
+        L"Assets/Meshes/Cerberus_Normal.png",
+        L"Assets/Meshes/Cerberus_MetallicRoughness.png",
+        nullptr,
+        L"Assets/Meshes/Cerberus_AO.png",
+        nullptr,
+        true);
+
+    spawnLocation = Vector3(spawnLocation.X + 25.0f, spawnLocation.Y, spawnLocation.Z);
+
+    GameObject& statueGo = ImportMeshToScene("Statue", "Assets/Meshes/statue.obj", spawnLocation + Vector3(0.0f, -4.5f, 0.0f));
+    statueGo.GetComponent<TransformComponent>().SetScale(Vector3(40.0f, 40.0f, 40.0f));
+    
+    spawnLocation = Vector3(spawnLocation.X + 25.0f, spawnLocation.Y, spawnLocation.Z);
+
+    GameObject& sphere2Go = ImportMeshToScene("Sphere", "Assets/Meshes/sphere.gltf", spawnLocation);
+    sphere2Go.GetComponent<TransformComponent>().SetScale(Vector3(12.0f, 12.0f, 12.0f));
+    
+    spawnLocation = Vector3(spawnLocation.X + 30.0f, spawnLocation.Y, spawnLocation.Z);
+
+    GameObject& spherePBR1Go = ImportMeshToScene("Sphere", "Assets/Meshes/sphere.gltf", spawnLocation);
+    spherePBR1Go.GetComponent<TransformComponent>().SetScale(Vector3(12.0f, 12.0f, 12.0f));
+    SetGameObjectPBRTextures(spherePBR1Go,
+L"Assets/Textures/PBR/limestone5_albedo.png",
+L"Assets/Textures/PBR/limestone5_Normal-ogl.png",
+L"Assets/Textures/PBR/limestone5_Roughness.png",
+L"Assets/Textures/PBR/limestone5_Metallic.png",
+    L"Assets/Textures/PBR/limestone5_ao.png");
+
+    spawnLocation = Vector3(spawnLocation.X + 30.0f, spawnLocation.Y, spawnLocation.Z);
+
+    GameObject& spherePBR2Go = ImportMeshToScene("Sphere", "Assets/Meshes/sphere.gltf", spawnLocation);
+    spherePBR2Go.GetComponent<TransformComponent>().SetScale(Vector3(12.0f, 12.0f, 12.0f));
+    SetGameObjectPBRTextures(spherePBR2Go,
+    L"Assets/Textures/PBR/worn-factory-siding_albedo.png",
+    L"Assets/Textures/PBR/worn-factory-siding_normal-ogl.png",
+    L"Assets/Textures/PBR/worn-factory-siding_roughness.png",
+    L"Assets/Textures/PBR/worn-factory-siding_metallic.png",
+    L"Assets/Textures/PBR/worn-factory-siding_ao.png");
+
+    spawnLocation = Vector3(spawnLocation.X + 30.0f, spawnLocation.Y, spawnLocation.Z);
+
+    GameObject& spherePBR3Go = ImportMeshToScene("Sphere", "Assets/Meshes/sphere.gltf", spawnLocation);
+    spherePBR3Go.GetComponent<TransformComponent>().SetScale(Vector3(12.0f, 12.0f, 12.0f));
+    SetGameObjectPBRTextures(spherePBR3Go,
+    L"Assets/Textures/PBR/gold-scuffed_basecolor-boosted.png",
+    L"Assets/Textures/PBR/gold-scuffed_normal.png",
+    L"Assets/Textures/PBR/gold-scuffed_roughness.png",
+    L"Assets/Textures/PBR/gold-scuffed_metallic.png");
+
+    spawnLocation = Vector3(spawnLocation.X + 30.0f, spawnLocation.Y, spawnLocation.Z);
+
+    GameObject& spherePBR4Go = ImportMeshToScene("Sphere", "Assets/Meshes/sphere.gltf", spawnLocation);
+    spherePBR4Go.GetComponent<TransformComponent>().SetScale(Vector3(12.0f, 12.0f, 12.0f));
+    SetGameObjectPBRTextures(spherePBR4Go,
+    L"Assets/Textures/PBR/worn-shiny-metal-albedo.png",
+    L"Assets/Textures/PBR/worn-shiny-metal-Normal-ogl.png",
+    L"Assets/Textures/PBR/worn-shiny-metal-Roughness.png",
+    L"Assets/Textures/PBR/worn-shiny-metal-Metallic.png",
+     L"Assets/Textures/PBR/worn-shiny-metal-ao.png");
+
+    GameObject& groundGo = ImportMeshToScene("Ground", "Assets/Meshes/cube.obj", Vector3(150.0f, -16.0f, 9.0f));
     TransformComponent& groundGoTf = groundGo.GetComponent<TransformComponent>();
-    groundGoTf.SetScale(Vector3(160.0f, 1.5f, 100.0f));
+    groundGoTf.SetScale(Vector3(200.0f, 1.5f, 100.0f));
     auto cubeMeshComp = groundGo.GetComponent<MeshComponent>();
     cubeMeshComp.GetMaterial()->SetCastShadow(false);
 
@@ -449,11 +473,14 @@ void LacertaEditor::Update()
 
             SceneMeshConstantBuffer* meshCb = new SceneMeshConstantBuffer(); // this is deleted by CBuf
 
-            int texLength = (int)texs.size(); // TODO fix all this
-            meshCb->HasAlbedo = texLength > 0;
-            meshCb->HasNormalMap = texLength > 1;
-            meshCb->HasRoughness = texLength > 2;
-            meshCb->HasMetallic = texLength > 3;
+            // TODO clean all this mess
+            meshCb->HasAlbedo = mat->hasAlbedo;
+            meshCb->HasNormalMap = mat->HasNormal;
+            meshCb->HasRoughness = mat->HasRoughness;
+            meshCb->HasMetallic = mat->HasMetallic;
+            meshCb->HasAmbiant = mat->HasAmbiant;
+            meshCb->HasEmissive = mat->HasEmissive;
+            meshCb->HasMetallicRoughness = mat->hasMR;
             
             meshCb->LightProperties = mat->GetMatLightProperties();
             meshCb->LocalMatrix = transform.GetTransformMatrix();
@@ -565,26 +592,6 @@ void LacertaEditor::DestroyGo(GameObject* goToDestroy)
     m_activeScene->RemoveGameObject(goToDestroy);
 }
 
-GameObject& LacertaEditor::AddMeshToScene(std::string name, const wchar_t* meshPath, Vector3 position, std::string shader)
-{
-    Mesh* mesh = RHI::Get()->CreateMesh(meshPath);
-
-    name += "_";
-    name += std::to_string(m_activeScene->m_gameObjects.size());
-    GameObject* go = m_activeScene->CreateGameObject(name, position);
-    
-    MeshComponent& meshComp = go->AddComponent<MeshComponent>();
-    meshComp.SetMesh(mesh);
-    
-    Material* newMat = new Material();
-    MatLightProperties properties;
-    properties.Shininess = 0.0f; // TODO shininess is 10 by default, find why
-    newMat->InitializeProperties(properties, shader);
-    meshComp.SetMaterial(newMat);
-
-    return *go;
-}
-
 GameObject& LacertaEditor::ImportMeshToScene(std::string name, std::string meshPathStr, Vector3 position, std::string shader)
 {
     auto Renderer = RHI::Get()->GetRenderer();
@@ -606,6 +613,63 @@ GameObject& LacertaEditor::ImportMeshToScene(std::string name, std::string meshP
     return *go;
 }
 
+void LacertaEditor::SetGameObjectPBRTextures(GameObject& go,
+    const wchar_t* albedo,
+    const wchar_t* normal,
+    const wchar_t* roughness,
+    const wchar_t* metallic,
+    const wchar_t* ao,
+    const wchar_t* emissive, bool mr)
+{
+    auto& meshComp = go.GetComponent<MeshComponent>();
+    auto mat = meshComp.GetMaterial();
+    if(albedo)
+    {
+        auto tex = RHI::Get()->CreateTexture(albedo, 0);
+        mat->SetTexture(0, tex);
+        mat->hasAlbedo = true;
+    }
+    if(normal)
+    {
+        auto norm = RHI::Get()->CreateTexture(normal, 1);
+        mat->SetTexture(1, norm);
+        mat->HasNormal = true;
+    }
+    if(mr)
+    {
+        auto mrTex = RHI::Get()->CreateTexture(roughness, 2);
+        mat->SetTexture(2, mrTex);
+        mat->hasMR = true;
+    }
+    else
+    {
+        if(roughness)
+        {
+            auto rough = RHI::Get()->CreateTexture(roughness, 2);
+            mat->SetTexture(2, rough);
+            mat->HasRoughness = true;
+        }
+        if(metallic)
+        {
+            auto met = RHI::Get()->CreateTexture(metallic, 3);
+            mat->SetTexture(3, met);
+            mat->HasMetallic = true;
+        }
+    }
+    if(ao)
+    {
+        auto amb = RHI::Get()->CreateTexture(ao, 4);
+        mat->SetTexture(4, amb);
+        mat->HasAmbiant = true;
+    }
+    if(emissive)
+    {
+        auto em = RHI::Get()->CreateTexture(emissive, 10);
+        mat->SetTexture(5, em);
+        mat->HasEmissive = true;
+    }
+}
+
 GameObject& LacertaEditor::AddPointLightToScene(Vector3 position, Vector4 color)
 {
     std::string name = "PointLight_";
@@ -616,36 +680,6 @@ GameObject& LacertaEditor::AddPointLightToScene(Vector3 position, Vector4 color)
     lightComp.SetColor(color);
 
     return *go;
-}
-
-GameObject& LacertaEditor::AddPBRSphereToScene(std::string name,
-    Vector3 position,
-    const wchar_t* albedo,
-    const wchar_t* normal,
-    const wchar_t* roughness,
-    const wchar_t* metallic,
-    const wchar_t* ao)
-{
-    GameObject& sphere = AddMeshToScene(name, L"Assets/Meshes/sphere_hq.obj", position);
-    
-    auto& sphereTf = sphere.GetComponent<TransformComponent>();
-    sphereTf.SetScale(Vector3(12.0f, 12.0f, 12.0f));
-    auto tex = RHI::Get()->CreateTexture(albedo, 0);
-    auto norm = RHI::Get()->CreateTexture(normal, 1);
-    auto rough = RHI::Get()->CreateTexture(roughness, 2);
-    auto met = RHI::Get()->CreateTexture(metallic, 3);
-    auto& sphereMesh = sphere.GetComponent<MeshComponent>();
-    sphereMesh.GetMaterial()->SetTexture(0, tex);
-    sphereMesh.GetMaterial()->SetTexture(1, norm);
-    sphereMesh.GetMaterial()->SetTexture(2, rough);
-    sphereMesh.GetMaterial()->SetTexture(3, met);
-    if(ao != nullptr)
-    {
-        auto amb = RHI::Get()->CreateTexture(ao, 4);
-        sphereMesh.GetMaterial()->SetTexture(4, amb);
-    }
-
-    return sphere;
 }
 
 void LacertaEditor::OnKeyDown(int key)

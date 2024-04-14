@@ -36,7 +36,6 @@ public:
     ID3D11Buffer* CreateVBO(std::vector<SceneVertexMesh> vertices);
     ID3D11Buffer* CreateIBO(std::vector<unsigned> indices);
     
-    Mesh* CreateMesh(const wchar_t* filePath) override;
     Mesh* ImportMesh(std::string filePath) override;
     Texture* CreateTexture(const wchar_t* filePath, int idx) override;
     Texture* CreateTexture(int width, int height, TextureType type, int num, int mipNum, int bindFlags) override;

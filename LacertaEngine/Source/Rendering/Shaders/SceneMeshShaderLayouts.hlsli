@@ -9,6 +9,7 @@ TextureCube IrradianceMap: register(t6);
 TextureCube PrefilteredMap: register(t7);
 Texture2DArray ShadowMap: register(t8);
 Texture2D BRDF: register(t9);
+Texture2D Emissive: register(t10);
 
 sampler TextureSampler: register(s0);
 SamplerComparisonState ComparisonSampler: register(s1);
@@ -58,6 +59,8 @@ cbuffer MeshCBuffer : register(b1)
     bool HasRoughness;
     bool HasMetallic;
     bool HasAmbiant;
+    bool HasMetallicRougness; // tells us if they are both in the same texture, bad but temporary
+    bool HasEmissive; // tells us if they are both in the same texture, bad but temporary
 };
 
 

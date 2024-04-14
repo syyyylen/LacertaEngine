@@ -37,7 +37,6 @@ public:
     WinDX11Mesh();
     ~WinDX11Mesh() override;
 
-    void CreateResource(const wchar_t* filePath, Renderer* renderer) override;
     void ImportMesh(std::string filePath, Renderer* renderer) override;
 
 private:

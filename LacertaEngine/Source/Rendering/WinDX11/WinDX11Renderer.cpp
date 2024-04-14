@@ -41,6 +41,7 @@ void WinDX11Renderer::Initialize(int* context, int width, int height, int target
     };
 
     UINT deviceFlags = D3D11_CREATE_DEVICE_BGRA_SUPPORT;
+    // deviceFlags |= D3D11_CREATE_DEVICE_DEBUG;
 
     DXGI_SWAP_CHAIN_DESC desc;
     ZeroMemory(&desc, sizeof(DXGI_SWAP_CHAIN_DESC));
@@ -52,8 +53,9 @@ void WinDX11Renderer::Initialize(int* context, int width, int height, int target
     desc.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
     desc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
     desc.SampleDesc.Count = 1;      
-    desc.SampleDesc.Quality = 0; 
+    desc.SampleDesc.Quality = 0; // TODO find why MSAA crashes
     desc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_SEQUENTIAL;
+    // desc.SwapEffect = DXGI_SWAP_EFFECT_SEQUENTIAL ; // enable back for MSAA
     desc.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
     desc.OutputWindow = wnd;
     desc.Windowed = TRUE;
@@ -76,8 +78,13 @@ void WinDX11Renderer::Initialize(int* context, int width, int height, int target
     if(FAILED(hr))
     {
         LOG(Error, "Failed Device & SwapChain creation");
+        std::string errorMsg = std::system_category().message(hr);
+        LOG(Error, errorMsg);
         throw std::exception("Failed SwapChain creation");
     }
+
+    // UINT quality = 0;
+    // hr = m_device->CheckMultisampleQualityLevels(desc.BufferDesc.Format, 2, &quality);
 
     m_constantBuffers.emplace(ConstantBufferType::SceneCbuf, CreateConstantBuffer(0, sizeof(SceneConstantBuffer)));
     m_constantBuffers.emplace(ConstantBufferType::MeshCbuf, CreateConstantBuffer(1, sizeof(SceneMeshConstantBuffer)));
@@ -96,8 +103,8 @@ void WinDX11Renderer::Initialize(int* context, int width, int height, int target
     rasterizerDesc.DepthBiasClamp = 0.0f;
     rasterizerDesc.DepthClipEnable = true;
     rasterizerDesc.ScissorEnable = false;
-    rasterizerDesc.MultisampleEnable = false;
-    rasterizerDesc.AntialiasedLineEnable = false;
+    rasterizerDesc.MultisampleEnable = true;
+    rasterizerDesc.AntialiasedLineEnable = true;
 
     m_device->CreateRasterizerState(&rasterizerDesc, &m_rasterizerCullBackState);
 
@@ -226,21 +233,6 @@ ID3D11Buffer* WinDX11Renderer::CreateIBO(std::vector<unsigned> indices)
     return ibo;
 }
 
-Mesh* WinDX11Renderer::CreateMesh(const wchar_t* filePath)
-{
-    for(auto resource : m_graphicsResources)
-    {
-        if(filePath == resource->GetFilePath())
-            return dynamic_cast<Mesh*>(resource);
-    }
-    
-    Mesh* mesh = new WinDX11Mesh();
-    mesh->CreateResource(filePath, this);
-    m_graphicsResources.push_back(mesh);
-    
-    return mesh;
-}
-
 Mesh* WinDX11Renderer::ImportMesh(std::string filePath)
 {
     Mesh* mesh = new WinDX11Mesh();
@@ -250,6 +242,9 @@ Mesh* WinDX11Renderer::ImportMesh(std::string filePath)
 
 Texture* WinDX11Renderer::CreateTexture(const wchar_t* filePath, int idx)
 {
+    if(filePath == nullptr)
+        return nullptr;
+    
     for(auto resource : m_graphicsResources)
     {
         if(filePath == resource->GetFilePath())

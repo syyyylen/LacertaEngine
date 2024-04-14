@@ -36,7 +36,15 @@ public:
     bool CastShadow() { return m_castShadow; }
     void SetCastShadow(bool cast) { m_castShadow = cast; }
 
-    bool m_castShadow = true;
+    // TODO remove/clean all this
+    bool m_castShadow = true; 
+    bool hasAlbedo = false; 
+    bool HasNormal = false; 
+    bool HasRoughness = false; 
+    bool HasMetallic = false; 
+    bool HasAmbiant = false;
+    bool HasEmissive = false;
+    bool hasMR = false;
     
 private:
     MatLightProperties m_lightProperties;
