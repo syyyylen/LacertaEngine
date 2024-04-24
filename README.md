@@ -26,7 +26,7 @@ Features :
 
 | Point Lights | PBR | Shadow Maps |
 |---|---|---|
-| ![](LacertaEngineEditor/Assets/Screenshots/scene.png) | ![](LacertaEngineEditor/Assets/Screenshots/pbr.png) | ![](LacertaEngineEditor/Assets/Screenshots/shadows.png) |
+| ![](LacertaEngineEditor/Assets/Screenshots/lights.png) | ![](LacertaEngineEditor/Assets/Screenshots/pbr.png) | ![](LacertaEngineEditor/Assets/Screenshots/shadows.png) |
 
 Things I want to add :
 * Better Cascaded Shadow maps
