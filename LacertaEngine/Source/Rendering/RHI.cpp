@@ -5,6 +5,7 @@
 #include "Drawcall.h"
 #include "RenderTarget.h"
 #include "Texture.h"
+#include "WinDX12/WinDX12Renderer.h"
 
 namespace LacertaEngine
 {
@@ -44,6 +45,10 @@ void RHI::InitializeRenderer(int* context, RendererType type, int width, int hei
     {
         case RENDERER_WIN_DX11:
             m_renderer = new WinDX11Renderer();
+            break;
+
+    case RENDERER_WIN_DX12:
+            m_renderer = new WinDX12Renderer();
             break;
     }
 
