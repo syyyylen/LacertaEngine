@@ -11,7 +11,8 @@ struct SceneVertexMesh;
     
 enum RendererType
 {
-    RENDERER_WIN_DX11
+    RENDERER_WIN_DX11,
+    RENDERER_WIN_DX12
 };
 
 class LACERTAENGINE_API RHI

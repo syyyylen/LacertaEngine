@@ -10,6 +10,8 @@
 	#define LACERTAENGINE_API __declspec(dllimport)
 #endif
 
+#define USE_D3D12_RHI 1
+
 #include <string>
 #include <iostream>
 #include <vector>

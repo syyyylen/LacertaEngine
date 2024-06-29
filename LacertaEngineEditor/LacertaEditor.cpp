@@ -51,9 +51,17 @@ void LacertaEditor::Start()
     InputSystem::Get()->SetCursorPosition(Vector2((float)width/2.0f, (float)height/2.0f));
 
     // ----------------------- Graphics Engine Creation & Renderer Initialization  ------------------------
-        
-    RHI::Create();
+
     HWND hwnd = m_editorWindow->GetHWND();
+    RHI::Create();
+
+#if USE_D3D12_RHI
+
+    // TODO temp simplifed init of D3D12
+    RHI::Get()->InitializeRenderer((int*)hwnd, RendererType::RENDERER_WIN_DX12, width, height, 60);
+
+#else // D3D11 path
+    
     RHI::Get()->InitializeRenderer((int*)hwnd, RendererType::RENDERER_WIN_DX11, width, height, 60);
     RHI::Get()->CreateRenderTarget(width, height, RenderTargetType::Texture2D, m_sceneRTidx);
 
@@ -199,10 +207,10 @@ void LacertaEditor::Start()
     GameObject& spherePBR1Go = ImportMeshToScene("Sphere", "Assets/Meshes/sphere.gltf", spawnLocation);
     spherePBR1Go.GetComponent<TransformComponent>().SetScale(Vector3(12.0f, 12.0f, 12.0f));
     SetGameObjectPBRTextures(spherePBR1Go,
-L"Assets/Textures/PBR/limestone5_albedo.png",
-L"Assets/Textures/PBR/limestone5_Normal-ogl.png",
-L"Assets/Textures/PBR/limestone5_Roughness.png",
-L"Assets/Textures/PBR/limestone5_Metallic.png",
+    L"Assets/Textures/PBR/limestone5_albedo.png",
+    L"Assets/Textures/PBR/limestone5_Normal-ogl.png",
+    L"Assets/Textures/PBR/limestone5_Roughness.png",
+    L"Assets/Textures/PBR/limestone5_Metallic.png",
     L"Assets/Textures/PBR/limestone5_ao.png");
 
     spawnLocation = Vector3(spawnLocation.X + 30.0f, spawnLocation.Y, spawnLocation.Z);
@@ -257,6 +265,8 @@ L"Assets/Textures/PBR/limestone5_Metallic.png",
     UIRenderer::Create();
     UIRenderer::Get()->InitializeUI(hwnd, this);
 
+#endif
+
     m_editorWindow->Maximize();
 }
 
@@ -270,6 +280,12 @@ void LacertaEditor::Update()
     m_deltaTime = oldDeltaTime ? (m_previousTickCount - oldDeltaTime) / 1000.0f : 0;
 
     // ----------------------------- Rendering Update  --------------------------
+
+#if USE_D3D12_RHI
+
+    // TODO temp simplifed update of D3D12
+
+#else // D3D11 path
 
     // Directional light shadow map pass ---------------------------------------------------------------------------
     auto shadowMapPass = RHI::Get()->GetRenderPass("shadowMap");
@@ -523,6 +539,8 @@ void LacertaEditor::Update()
 
     UIRenderer::Get()->Update();
 
+#endif // D3D11 path
+
     // ------------------------ UI & DrawCalls done, present Swap Chain now ----------------
     
     RHI::Get()->PresentSwapChain();
@@ -530,7 +548,10 @@ void LacertaEditor::Update()
 
 void LacertaEditor::Quit()
 {
+    
+#if !USE_D3D12_RHI
     UIRenderer::Shutdown();
+#endif
     
     if(m_editorWindow)
         m_editorWindow->Destroy();

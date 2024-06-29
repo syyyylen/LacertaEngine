@@ -78,7 +78,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>d3d11.lib;d3dcompiler.lib;DirectXTexD.lib;assimp-vc143-mt.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>d3d12.lib;dxgi.lib;d3d11.lib;d3dcompiler.lib;DirectXTexD.lib;assimp-vc143-mt.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>xcopy /Y /D "$(TargetPath)" "$(SolutionDir)bin\$(Configuration)\LacertaEngineEditor\"</Command>
@@ -102,7 +102,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>d3d11.lib;d3dcompiler.lib;DirectXTexD.lib;assimp-vc143-mt.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>d3d12.lib;dxgi.lib;d3d11.lib;d3dcompiler.lib;DirectXTexD.lib;assimp-vc143-mt.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>xcopy /Y /D "$(TargetPath)" "$(SolutionDir)bin\$(Configuration)\LacertaEngineEditor\"</Command>
@@ -222,6 +222,8 @@
     <ClCompile Include="Source\Rendering\WinDX11\WinDX11RenderTarget.cpp" />
     <ClCompile Include="Source\Rendering\WinDX11\WinDX11Shader.cpp" />
     <ClCompile Include="Source\Rendering\WinDX11\WinDX11Texture.cpp" />
+    <ClCompile Include="Source\Rendering\WinDX12\WinDX12CommandQueue.cpp" />
+    <ClCompile Include="Source\Rendering\WinDX12\WinDX12Renderer.cpp" />
     <ClCompile Include="Source\Window\Window.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -271,6 +273,8 @@
     <ClInclude Include="Source\Rendering\WinDX11\WinDX11RenderTarget.h" />
     <ClInclude Include="Source\Rendering\WinDX11\WinDX11Shader.h" />
     <ClInclude Include="Source\Rendering\WinDX11\WinDX11Texture.h" />
+    <ClInclude Include="Source\Rendering\WinDX12\WinDX12CommandQueue.h" />
+    <ClInclude Include="Source\Rendering\WinDX12\WinDX12Renderer.h" />
     <ClInclude Include="Source\Utilities.h" />
     <ClInclude Include="Source\Window\Window.h" />
   </ItemGroup>
