@@ -38,6 +38,8 @@ private:
     ID3D12DebugDevice* m_debugDevice;
     IDXGIFactory3* m_factory;
     IDXGIAdapter1* m_adapter;
+
+    UINT m_msaaQualityLevel;
 };
     
 }

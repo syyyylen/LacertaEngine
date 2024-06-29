@@ -106,6 +106,21 @@ void LacertaEngine::WinDX12Renderer::Initialize(int* context, int width, int hei
     std::wstring WideName = Desc.Description;
     std::string DeviceName = std::string(WideName.begin(), WideName.end());
     LOG(Debug, "Device : Using GPU : " + DeviceName);
+
+    D3D12_FEATURE_DATA_MULTISAMPLE_QUALITY_LEVELS msQualityLevels;
+    msQualityLevels.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+    msQualityLevels.SampleCount = 4;
+    msQualityLevels.Flags = D3D12_MULTISAMPLE_QUALITY_LEVELS_FLAG_NONE;
+    msQualityLevels.NumQualityLevels = 0;
+    hr = m_device->CheckFeatureSupport(D3D12_FEATURE_MULTISAMPLE_QUALITY_LEVELS, &msQualityLevels, sizeof(msQualityLevels));
+    if(FAILED(hr))
+    {
+        LOG(Error, "Device : failed to check MSAA support !");
+        std::string errorMsg = std::system_category().message(hr);
+        LOG(Error, errorMsg);
+    }
+
+    m_msaaQualityLevel = msQualityLevels.NumQualityLevels;
 }
 
 void LacertaEngine::WinDX12Renderer::LoadShaders()
