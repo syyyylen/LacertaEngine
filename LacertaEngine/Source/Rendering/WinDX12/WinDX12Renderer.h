@@ -4,6 +4,8 @@
 #include <d3d12.h>
 #include <dxgi1_6.h>
 
+#include "WinDX12CommandQueue.h"
+
 namespace LacertaEngine
 {
     
@@ -28,9 +30,15 @@ public:
     Texture* CreateTexture(int width, int height, TextureType type, int num, int mipNum, int bindFlags) override;
     int* GetDriver() override { return nullptr; }
 
+    void WaitForAllQueuesIdle();
+
     ID3D12Device* GetDevice() { return m_device; }
     IDXGIAdapter1* GetAdapter() { return m_adapter; }
     IDXGIFactory3* GetFactory() { return m_factory; }
+
+    WinDX12CommandQueue* GetGraphicsQueue() { return m_graphicsQueue; }
+    WinDX12CommandQueue* GetComputeQueue() { return m_computeQueue; }
+    WinDX12CommandQueue* GetCopyQueue() { return m_copyQueue; }
 
 private:
     ID3D12Device* m_device;
@@ -38,6 +46,15 @@ private:
     ID3D12DebugDevice* m_debugDevice;
     IDXGIFactory3* m_factory;
     IDXGIAdapter1* m_adapter;
+    IDXGISwapChain* m_swapChain;
+
+    WinDX12CommandQueue* m_graphicsQueue;
+    WinDX12CommandQueue* m_computeQueue;
+    WinDX12CommandQueue* m_copyQueue;
+
+    ID3D12CommandAllocator* m_commandAllocator;
+    ID3D12GraphicsCommandList* m_commandList;
+
 
     bool m_msaaEnabled = false;
     UINT m_msaaQualityLevel;

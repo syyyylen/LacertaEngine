@@ -1,12 +1,17 @@
 ﻿#include "WinDX12Renderer.h"
 #include "../../Logger/Logger.h"
 
-LacertaEngine::WinDX12Renderer::WinDX12Renderer() : m_device(nullptr), m_debug(nullptr), m_debugDevice(nullptr), m_factory(nullptr), m_adapter(nullptr)
+LacertaEngine::WinDX12Renderer::WinDX12Renderer()
+: m_device(nullptr), m_debug(nullptr), m_debugDevice(nullptr), m_factory(nullptr), m_adapter(nullptr),
+m_graphicsQueue(nullptr), m_computeQueue(nullptr), m_copyQueue(nullptr), m_msaaQualityLevel(0)
 {
 }
 
 LacertaEngine::WinDX12Renderer::~WinDX12Renderer()
 {
+    delete m_graphicsQueue;
+    delete m_computeQueue;
+    delete m_copyQueue;
 }
 
 void LacertaEngine::WinDX12Renderer::Initialize(int* context, int width, int height, int targetRefreshRate)
@@ -121,6 +126,61 @@ void LacertaEngine::WinDX12Renderer::Initialize(int* context, int width, int hei
     }
 
     m_msaaQualityLevel = msQualityLevels.NumQualityLevels;
+
+    // Command Queues creation
+    m_graphicsQueue = new WinDX12CommandQueue(m_device, D3D12_COMMAND_LIST_TYPE_DIRECT);
+    m_computeQueue = new WinDX12CommandQueue(m_device, D3D12_COMMAND_LIST_TYPE_COMPUTE);
+    m_copyQueue = new WinDX12CommandQueue(m_device, D3D12_COMMAND_LIST_TYPE_COPY);
+
+    hr = m_device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&m_commandAllocator));
+    if(FAILED(hr))
+    {
+        LOG(Error, "Device : failed to create command allocator !");
+        std::string errorMsg = std::system_category().message(hr);
+        LOG(Error, errorMsg);
+    }
+
+    hr = m_device->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, m_commandAllocator, nullptr, IID_PPV_ARGS(&m_commandList));
+    if(FAILED(hr))
+    {
+        LOG(Error, "Device : failed to create command list !");
+        std::string errorMsg = std::system_category().message(hr);
+        LOG(Error, errorMsg);
+    }
+
+    hr = m_commandList->Close();
+    if(FAILED(hr))
+    {
+        LOG(Error, "Device : failed to close command list !");
+        std::string errorMsg = std::system_category().message(hr);
+        LOG(Error, errorMsg);
+    }
+
+    // Swap Chain creation
+    HWND wnd = (HWND)context;
+    
+    DXGI_SWAP_CHAIN_DESC  sd = {};
+    sd.BufferDesc.Width = width;
+    sd.BufferDesc.Height = height;
+    sd.BufferDesc.RefreshRate.Numerator = 60;
+    sd.BufferDesc.RefreshRate.Denominator = 1;
+    sd.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+    sd.BufferDesc.ScanlineOrdering = DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED;
+    sd.BufferDesc.Scaling = DXGI_MODE_SCALING_UNSPECIFIED;
+    sd.SampleDesc.Count = m_msaaEnabled ? 4 : 1;
+    sd.SampleDesc.Quality = m_msaaEnabled ? (m_msaaQualityLevel - 1) : 0;
+    sd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
+    sd.BufferCount = 2;
+    sd.OutputWindow = wnd;
+    sd.Windowed = true;
+
+    hr = m_factory->CreateSwapChain(m_graphicsQueue->GetCommandQueue(), &sd, &m_swapChain);
+    if(FAILED(hr))
+    {
+        LOG(Error, "SwapChain : failed to create swap chain !");
+        std::string errorMsg = std::system_category().message(hr);
+        LOG(Error, errorMsg);
+    }
 }
 
 void LacertaEngine::WinDX12Renderer::LoadShaders()
@@ -173,4 +233,11 @@ LacertaEngine::Texture* LacertaEngine::WinDX12Renderer::CreateTexture(const wcha
 LacertaEngine::Texture* LacertaEngine::WinDX12Renderer::CreateTexture(int width, int height, TextureType type, int num, int mipNum, int bindFlags)
 {
     return nullptr;
+}
+
+void LacertaEngine::WinDX12Renderer::WaitForAllQueuesIdle()
+{
+    m_graphicsQueue->WaitForIdle();
+    m_computeQueue->WaitForIdle();
+    m_copyQueue->WaitForIdle();
 }

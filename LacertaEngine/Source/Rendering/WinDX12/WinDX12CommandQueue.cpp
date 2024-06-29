@@ -10,8 +10,8 @@ WinDX12CommandQueue::WinDX12CommandQueue(ID3D12Device* device, D3D12_COMMAND_LIS
     m_queueType = commandType;
     m_commandQueue = NULL;
     m_fence = NULL;
-    m_nextFenceValue = ((uint64_t)m_queueType << 56) + 1;
-    m_lastCompletedFenceValue = ((uint64_t)m_queueType << 56);
+    m_nextFenceValue = ((int64_t)m_queueType << 56) + 1;
+    m_lastCompletedFenceValue = ((int64_t)m_queueType << 56);
  
     D3D12_COMMAND_QUEUE_DESC queueDesc = {};
     queueDesc.Type = m_queueType;
