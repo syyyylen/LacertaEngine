@@ -39,6 +39,7 @@ private:
     IDXGIFactory3* m_factory;
     IDXGIAdapter1* m_adapter;
 
+    bool m_msaaEnabled = false;
     UINT m_msaaQualityLevel;
 };
     
