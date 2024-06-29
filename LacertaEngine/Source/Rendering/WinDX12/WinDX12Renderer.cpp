@@ -215,7 +215,68 @@ void LacertaEngine::WinDX12Renderer::SetBackbufferRenderTargetActive()
 
 void LacertaEngine::WinDX12Renderer::PresentSwapChain()
 {
-    // TODO for now placeholder function to debug D3D12 setup 
+    // TODO for now placeholder function to debug D3D12 setup
+
+    m_commandAllocator->Reset();
+    m_commandList->Reset(m_commandAllocator, nullptr);
+
+    auto backBuffer = m_swapChainBuffer[m_currentBackbuffer];
+
+    D3D12_RESOURCE_BARRIER barrier = {};
+    barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
+    barrier.Transition.pResource = backBuffer;
+    barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_PRESENT;
+    barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_RENDER_TARGET;
+    barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
+
+    m_commandList->ResourceBarrier(1, &barrier);
+
+    D3D12_VIEWPORT Viewport = {};
+    Viewport.Width = (float)cachedWidth;
+    Viewport.Height = (float)cachedHeight;
+    Viewport.MinDepth = 0.0f;
+    Viewport.MaxDepth = 1.0f;
+    Viewport.TopLeftX = 0;
+    Viewport.TopLeftY = 0;
+
+    D3D12_RECT Rect;
+    Rect.right = cachedWidth;
+    Rect.bottom = cachedHeight;
+    Rect.top = 0.0f;
+    Rect.left = 0.0f;
+
+    m_commandList->RSSetViewports(1, &Viewport);
+    m_commandList->RSSetScissorRects(1, &Rect);
+
+    D3D12_CPU_DESCRIPTOR_HANDLE backBufferView = m_rtvHeap->GetCPUDescriptorHandleForHeapStart();
+    backBufferView.ptr += m_currentBackbuffer * m_rtvDescriptorSize;
+
+    float clearValues[4] = { 1.0, 8.0, 0.0, 1.0 };
+    m_commandList->ClearRenderTargetView(backBufferView, clearValues, 0, nullptr);
+
+    m_commandList->OMSetRenderTargets(1, &backBufferView, true, nullptr);
+
+    D3D12_RESOURCE_BARRIER barrierOut = {};
+    barrierOut.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
+    barrierOut.Transition.pResource = backBuffer;
+    barrierOut.Transition.StateBefore = D3D12_RESOURCE_STATE_RENDER_TARGET;
+    barrierOut.Transition.StateAfter = D3D12_RESOURCE_STATE_PRESENT;
+    barrierOut.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
+
+    m_commandList->ResourceBarrier(1, &barrierOut);
+
+    m_commandList->Close();
+
+    ID3D12CommandList* cmdsLists[] = { m_commandList };
+    m_graphicsQueue->GetCommandQueue()->ExecuteCommandLists(1, cmdsLists);
+
+    m_swapChain->Present(0, 0);
+
+    // Swap back and front buffer
+    m_currentBackbuffer = (m_currentBackbuffer + 1) % m_swapChainBufferCount;
+
+    // TODO fix inefficent wait, here just for setup
+    m_graphicsQueue->FlushCommandQueue();
 }
 
 void LacertaEngine::WinDX12Renderer::OnResizeWindow(unsigned width, unsigned height)
@@ -229,31 +290,39 @@ void LacertaEngine::WinDX12Renderer::OnResizeWindow(unsigned width, unsigned hei
         LOG(Error, errorMsg);
     }
 
-    for(int i = 0; i < m_swapChainBufferCount; i++)
-        delete m_swapChainBuffer[i];
+    for(int i = 0; i < m_swapChainBufferCount; ++i)
+    {
+        if(m_swapChainBuffer[i])
+            m_swapChainBuffer[i]->Release();
+    }
 
     m_swapChain->ResizeBuffers(m_swapChainBufferCount, width, height, m_swapChainFormat, DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH);
 
-    // D3D12_CPU_DESCRIPTOR_HANDLE rtvHeapHandle = m_rtvHeap->GetCPUDescriptorHandleForHeapStart();
-    // for (UINT i = 0; i < m_swapChainBufferCount; i++)
-    // {
-    //     hr = m_swapChain->GetBuffer(i, IID_PPV_ARGS(&m_swapChainBuffer[i]));
-    //     if(FAILED(hr))
-    //     {
-    //         LOG(Error, "SwapChain : failed to get buffer");
-    //         std::string errorMsg = std::system_category().message(hr);
-    //         LOG(Error, errorMsg);
-    //     }
-    //     
-    //     m_device->CreateRenderTargetView(m_swapChainBuffer[i], nullptr, rtvHeapHandle);
-    //     rtvHeapHandle.ptr += m_rtvDescriptorSize;
-    // }
+    m_currentBackbuffer = 0;
+
+    D3D12_CPU_DESCRIPTOR_HANDLE rtvHeapHandle = m_rtvHeap->GetCPUDescriptorHandleForHeapStart();
+    for (UINT i = 0; i < m_swapChainBufferCount; i++)
+    {
+        hr = m_swapChain->GetBuffer(i, IID_PPV_ARGS(&m_swapChainBuffer[i]));
+        if(FAILED(hr))
+        {
+            LOG(Error, "SwapChain : failed to get buffer");
+            std::string errorMsg = std::system_category().message(hr);
+            LOG(Error, errorMsg);
+        }
+        
+        m_device->CreateRenderTargetView(m_swapChainBuffer[i], nullptr, rtvHeapHandle);
+        rtvHeapHandle.ptr += m_rtvDescriptorSize;
+    }
 
     m_commandList->Close();
     ID3D12CommandList* cmdLists[] = { m_commandList };
     m_graphicsQueue->GetCommandQueue()->ExecuteCommandLists(1, cmdLists);
 
     m_graphicsQueue->FlushCommandQueue();
+    
+    cachedWidth = width;
+    cachedHeight = height;
 }
 
 void LacertaEngine::WinDX12Renderer::UpdateConstantBuffer(void* buffer, ConstantBufferType cbufType)

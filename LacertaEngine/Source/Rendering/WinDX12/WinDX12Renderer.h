@@ -51,6 +51,7 @@ private:
     DXGI_FORMAT m_swapChainFormat = DXGI_FORMAT_R8G8B8A8_UNORM;
     ID3D12Resource* m_swapChainBuffer[m_swapChainBufferCount];
     IDXGISwapChain* m_swapChain;
+    int m_currentBackbuffer = 0;
 
     WinDX12CommandQueue* m_graphicsQueue;
     WinDX12CommandQueue* m_computeQueue;
@@ -65,6 +66,10 @@ private:
 
     bool m_msaaEnabled = false;
     UINT m_msaaQualityLevel;
+
+    // TODO remove them
+    int cachedWidth;
+    int cachedHeight;
 };
     
 }
