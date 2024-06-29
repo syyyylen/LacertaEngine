@@ -2,8 +2,9 @@
 #include "../../Logger/Logger.h"
 
 LacertaEngine::WinDX12Renderer::WinDX12Renderer()
-: m_device(nullptr), m_debug(nullptr), m_debugDevice(nullptr), m_factory(nullptr), m_adapter(nullptr),
-m_graphicsQueue(nullptr), m_computeQueue(nullptr), m_copyQueue(nullptr), m_msaaQualityLevel(0)
+    : m_device(nullptr), m_debug(nullptr), m_debugDevice(nullptr), m_factory(nullptr), m_adapter(nullptr), m_swapChain(nullptr),
+      m_graphicsQueue(nullptr), m_computeQueue(nullptr), m_copyQueue(nullptr), m_commandAllocator(nullptr), m_commandList(nullptr),
+      m_msaaQualityLevel(0)
 {
 }
 
@@ -25,7 +26,7 @@ void LacertaEngine::WinDX12Renderer::Initialize(int* context, int width, int hei
     }
     m_debug->EnableDebugLayer();
 
-    hr = CreateDXGIFactory(IID_PPV_ARGS(&m_factory));
+    hr = CreateDXGIFactory1(IID_PPV_ARGS(&m_factory));
     if(FAILED(hr))
     {
         LOG(Error, "Device : failed to create DXGI factory !");
@@ -113,7 +114,7 @@ void LacertaEngine::WinDX12Renderer::Initialize(int* context, int width, int hei
     LOG(Debug, "Device : Using GPU : " + DeviceName);
 
     D3D12_FEATURE_DATA_MULTISAMPLE_QUALITY_LEVELS msQualityLevels;
-    msQualityLevels.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+    msQualityLevels.Format = m_swapChainFormat;
     msQualityLevels.SampleCount = 4;
     msQualityLevels.Flags = D3D12_MULTISAMPLE_QUALITY_LEVELS_FLAG_NONE;
     msQualityLevels.NumQualityLevels = 0;
@@ -162,17 +163,19 @@ void LacertaEngine::WinDX12Renderer::Initialize(int* context, int width, int hei
     DXGI_SWAP_CHAIN_DESC  sd = {};
     sd.BufferDesc.Width = width;
     sd.BufferDesc.Height = height;
-    sd.BufferDesc.RefreshRate.Numerator = 60;
+    sd.BufferDesc.RefreshRate.Numerator = targetRefreshRate;
     sd.BufferDesc.RefreshRate.Denominator = 1;
-    sd.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+    sd.BufferDesc.Format = m_swapChainFormat;
     sd.BufferDesc.ScanlineOrdering = DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED;
     sd.BufferDesc.Scaling = DXGI_MODE_SCALING_UNSPECIFIED;
     sd.SampleDesc.Count = m_msaaEnabled ? 4 : 1;
     sd.SampleDesc.Quality = m_msaaEnabled ? (m_msaaQualityLevel - 1) : 0;
     sd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
-    sd.BufferCount = 2;
+    sd.BufferCount = m_swapChainBufferCount;
     sd.OutputWindow = wnd;
     sd.Windowed = true;
+    sd.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
+    sd.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
 
     hr = m_factory->CreateSwapChain(m_graphicsQueue->GetCommandQueue(), &sd, &m_swapChain);
     if(FAILED(hr))
@@ -181,6 +184,25 @@ void LacertaEngine::WinDX12Renderer::Initialize(int* context, int width, int hei
         std::string errorMsg = std::system_category().message(hr);
         LOG(Error, errorMsg);
     }
+
+    // TODO temp, relocate this
+    D3D12_DESCRIPTOR_HEAP_DESC rtvHeapDesc;
+    rtvHeapDesc.NumDescriptors = m_swapChainBufferCount;
+    rtvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
+    rtvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
+    rtvHeapDesc.NodeMask = 0;
+    
+    hr = m_device->CreateDescriptorHeap(&rtvHeapDesc, IID_PPV_ARGS(&m_rtvHeap));
+    if(FAILED(hr))
+    {
+        LOG(Error, "SwapChain : failed to create swap chain !");
+        std::string errorMsg = std::system_category().message(hr);
+        LOG(Error, errorMsg);
+    }
+
+    m_rtvDescriptorSize = m_device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
+
+    OnResizeWindow(width, height);
 }
 
 void LacertaEngine::WinDX12Renderer::LoadShaders()
@@ -193,10 +215,45 @@ void LacertaEngine::WinDX12Renderer::SetBackbufferRenderTargetActive()
 
 void LacertaEngine::WinDX12Renderer::PresentSwapChain()
 {
+    // TODO for now placeholder function to debug D3D12 setup 
 }
 
 void LacertaEngine::WinDX12Renderer::OnResizeWindow(unsigned width, unsigned height)
 {
+    m_graphicsQueue->FlushCommandQueue();
+    HRESULT hr = m_commandList->Reset(m_commandAllocator, nullptr);
+    if(FAILED(hr))
+    {
+        LOG(Error, "CommandList : failed to Reset");
+        std::string errorMsg = std::system_category().message(hr);
+        LOG(Error, errorMsg);
+    }
+
+    for(int i = 0; i < m_swapChainBufferCount; i++)
+        delete m_swapChainBuffer[i];
+
+    m_swapChain->ResizeBuffers(m_swapChainBufferCount, width, height, m_swapChainFormat, DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH);
+
+    // D3D12_CPU_DESCRIPTOR_HANDLE rtvHeapHandle = m_rtvHeap->GetCPUDescriptorHandleForHeapStart();
+    // for (UINT i = 0; i < m_swapChainBufferCount; i++)
+    // {
+    //     hr = m_swapChain->GetBuffer(i, IID_PPV_ARGS(&m_swapChainBuffer[i]));
+    //     if(FAILED(hr))
+    //     {
+    //         LOG(Error, "SwapChain : failed to get buffer");
+    //         std::string errorMsg = std::system_category().message(hr);
+    //         LOG(Error, errorMsg);
+    //     }
+    //     
+    //     m_device->CreateRenderTargetView(m_swapChainBuffer[i], nullptr, rtvHeapHandle);
+    //     rtvHeapHandle.ptr += m_rtvDescriptorSize;
+    // }
+
+    m_commandList->Close();
+    ID3D12CommandList* cmdLists[] = { m_commandList };
+    m_graphicsQueue->GetCommandQueue()->ExecuteCommandLists(1, cmdLists);
+
+    m_graphicsQueue->FlushCommandQueue();
 }
 
 void LacertaEngine::WinDX12Renderer::UpdateConstantBuffer(void* buffer, ConstantBufferType cbufType)
@@ -237,7 +294,7 @@ LacertaEngine::Texture* LacertaEngine::WinDX12Renderer::CreateTexture(int width,
 
 void LacertaEngine::WinDX12Renderer::WaitForAllQueuesIdle()
 {
-    m_graphicsQueue->WaitForIdle();
-    m_computeQueue->WaitForIdle();
-    m_copyQueue->WaitForIdle();
+    m_graphicsQueue->FlushCommandQueue();
+    m_computeQueue->FlushCommandQueue();
+    m_copyQueue->FlushCommandQueue();
 }

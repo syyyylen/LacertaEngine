@@ -8,10 +8,6 @@ namespace LacertaEngine
 WinDX12CommandQueue::WinDX12CommandQueue(ID3D12Device* device, D3D12_COMMAND_LIST_TYPE commandType)
 {
     m_queueType = commandType;
-    m_commandQueue = NULL;
-    m_fence = NULL;
-    m_nextFenceValue = ((int64_t)m_queueType << 56) + 1;
-    m_lastCompletedFenceValue = ((int64_t)m_queueType << 56);
  
     D3D12_COMMAND_QUEUE_DESC queueDesc = {};
     queueDesc.Type = m_queueType;
@@ -31,18 +27,10 @@ WinDX12CommandQueue::WinDX12CommandQueue(ID3D12Device* device, D3D12_COMMAND_LIS
         std::string errorMsg = std::system_category().message(hr);
         LOG(Error, errorMsg);
     }
- 
-    m_fence->Signal(m_lastCompletedFenceValue);
- 
-    m_fenceEventHandle = CreateEvent(nullptr, false, false, nullptr);
-    if(m_fenceEventHandle == INVALID_HANDLE_VALUE)
-        LOG(Error, "Invalid Fence Event");
 }
 
 WinDX12CommandQueue::~WinDX12CommandQueue()
 {
-    CloseHandle(m_fenceEventHandle);
- 
     m_fence->Release();
     m_fence = NULL;
  
@@ -50,66 +38,40 @@ WinDX12CommandQueue::~WinDX12CommandQueue()
     m_commandQueue = NULL;
 }
 
-bool WinDX12CommandQueue::IsFenceComplete(int64_t fenceValue)
+void WinDX12CommandQueue::FlushCommandQueue()
 {
-    if(fenceValue > m_lastCompletedFenceValue)
-        PollCurrentFenceValue();
- 
-    return fenceValue <= m_lastCompletedFenceValue;
-}
+    // Advance the fence value to mark commands up to this fence point.
+    m_fenceValue++;
 
-void WinDX12CommandQueue::InsertWait(int64_t fenceValue)
-{
-    m_commandQueue->Wait(m_fence, fenceValue);
-}
-
-void WinDX12CommandQueue::InsertWaitForQueueFence(WinDX12CommandQueue* otherQueue, int64_t fenceValue)
-{
-    m_commandQueue->Wait(otherQueue->GetFence(), fenceValue);
-}
-
-void WinDX12CommandQueue::InsertWaitForQueue(WinDX12CommandQueue* otherQueue)
-{
-    m_commandQueue->Wait(otherQueue->GetFence(), otherQueue->GetNextFenceValue() - 1);
-}
-
-void WinDX12CommandQueue::WaitForFenceCPUBlocking(int64_t fenceValue)
-{
-    if (IsFenceComplete(fenceValue))
-        return;
- 
-    {
-        std::lock_guard<std::mutex> lockGuard(m_eventMutex);
- 
-        m_fence->SetEventOnCompletion(fenceValue, m_fenceEventHandle);
-        WaitForSingleObjectEx(m_fenceEventHandle, INFINITE, false);
-        m_lastCompletedFenceValue = fenceValue;
-    }
-}
-
-int64_t WinDX12CommandQueue::PollCurrentFenceValue()
-{
-    m_lastCompletedFenceValue = std::max(m_lastCompletedFenceValue, (int64_t)m_fence->GetCompletedValue());
-    return m_lastCompletedFenceValue;
-}
-
-int64_t WinDX12CommandQueue::ExecuteCommandList(ID3D12CommandList* commandList)
-{
-    HRESULT hr = ((ID3D12GraphicsCommandList*)commandList)->Close();
+    // Add an instruction to the command queue to set a new fence point.  Because we 
+    // are on the GPU timeline, the new fence point won't be set until the GPU finishes
+    // processing all the commands prior to this Signal().
+    HRESULT hr = m_commandQueue->Signal(m_fence, m_fenceValue);
     if(FAILED(hr))
     {
-        LOG(Error, "Command Queue : failed to execute command list !");
+        LOG(Error, "Command Queue : failed to signal !");
         std::string errorMsg = std::system_category().message(hr);
         LOG(Error, errorMsg);
     }
-    
-    m_commandQueue->ExecuteCommandLists(1, &commandList);
- 
-    std::lock_guard<std::mutex> lockGuard(m_fenceMutex);
-    
-    m_commandQueue->Signal(m_fence, m_nextFenceValue);
- 
-    return m_nextFenceValue++;
+
+    // Wait until the GPU has completed commands up to this fence point.
+    if(m_fence->GetCompletedValue() < m_fenceValue)
+    {
+        HANDLE eventHandle = CreateEvent(nullptr, false, false, nullptr);
+
+        // Fire event when GPU hits current fence.  
+        hr = m_fence->SetEventOnCompletion(m_fenceValue, eventHandle);
+        if(FAILED(hr))
+        {
+            LOG(Error, "Command Queue : failed to set event on completion !");
+            std::string errorMsg = std::system_category().message(hr);
+            LOG(Error, errorMsg);
+        }
+
+        // Wait until the GPU hits current fence event is fired.
+        WaitForSingleObject(eventHandle, INFINITE);
+        CloseHandle(eventHandle);
+    }
 }
-    
+
 }

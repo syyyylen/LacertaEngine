@@ -34,7 +34,7 @@ public:
 
     ID3D12Device* GetDevice() { return m_device; }
     IDXGIAdapter1* GetAdapter() { return m_adapter; }
-    IDXGIFactory3* GetFactory() { return m_factory; }
+    IDXGIFactory4* GetFactory() { return m_factory; }
 
     WinDX12CommandQueue* GetGraphicsQueue() { return m_graphicsQueue; }
     WinDX12CommandQueue* GetComputeQueue() { return m_computeQueue; }
@@ -44,8 +44,12 @@ private:
     ID3D12Device* m_device;
     ID3D12Debug* m_debug;
     ID3D12DebugDevice* m_debugDevice;
-    IDXGIFactory3* m_factory;
+    IDXGIFactory4* m_factory;
     IDXGIAdapter1* m_adapter;
+
+    static const UINT m_swapChainBufferCount = 2;
+    DXGI_FORMAT m_swapChainFormat = DXGI_FORMAT_R8G8B8A8_UNORM;
+    ID3D12Resource* m_swapChainBuffer[m_swapChainBufferCount];
     IDXGISwapChain* m_swapChain;
 
     WinDX12CommandQueue* m_graphicsQueue;
@@ -55,6 +59,9 @@ private:
     ID3D12CommandAllocator* m_commandAllocator;
     ID3D12GraphicsCommandList* m_commandList;
 
+    // TODO create a Descriptor Heap class
+    UINT m_rtvDescriptorSize = 0;
+    ID3D12DescriptorHeap* m_rtvHeap;
 
     bool m_msaaEnabled = false;
     UINT m_msaaQualityLevel;

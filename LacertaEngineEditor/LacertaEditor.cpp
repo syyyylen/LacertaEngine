@@ -539,12 +539,11 @@ void LacertaEditor::Update()
 
     UIRenderer::Get()->Update();
 
+#endif // D3D11 path
+
     // ------------------------ UI & DrawCalls done, present Swap Chain now ----------------
     
     RHI::Get()->PresentSwapChain();
-
-#endif // D3D11 path
-
 }
 
 void LacertaEditor::Quit()
