@@ -1,5 +1,6 @@
 ﻿#include "WinDX12Renderer.h"
 #include "../../Logger/Logger.h"
+#include "../WinDXUtilities.h"
 
 LacertaEngine::WinDX12Renderer::WinDX12Renderer()
     : m_device(nullptr), m_debug(nullptr), m_debugDevice(nullptr), m_factory(nullptr), m_adapter(nullptr), m_swapChain(nullptr),
@@ -191,6 +192,11 @@ void LacertaEngine::WinDX12Renderer::Initialize(int* context, int width, int hei
     m_srvHeap = new WinDX12DescriptorHeap(this, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, 2048);
 
     OnResizeWindow(width, height);
+
+    // TODO remove this, D3D12 setup
+    ShaderBlobs blobs;
+    WinDXUtilities::CompileShader(L"../LacertaEngine/Source/Rendering/Shaders/SimpleVertex.hlsl",
+                                            L"../LacertaEngine/Source/Rendering/Shaders/SimplePixel.hlsl", blobs);
 }
 
 void LacertaEngine::WinDX12Renderer::LoadShaders()

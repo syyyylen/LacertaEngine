@@ -10,6 +10,7 @@
 #include "../SkyBoxPassLayouts.h"
 #include "../ShadowMapPassLayouts.h"
 #include "../../Logger/Logger.h"
+#include "../WinDXUtilities.h"
 
 namespace LacertaEngine
 {
@@ -270,45 +271,11 @@ WinDX11Shader* WinDX11Renderer::CompileShader(LPCWSTR VSFilePath, LPCWSTR PSFile
 {
     auto Shader = new WinDX11Shader();
 
-    ID3DBlob* vertexErrorBlob = nullptr;
-    ID3DBlob* vertexBlob;
+    ShaderBlobs blobs;
+    WinDXUtilities::CompileShader(VSFilePath, PSFilePath, blobs);
 
-    HRESULT hr = D3DCompileFromFile(VSFilePath, nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, "main", "vs_5_0", 0, 0, &vertexBlob, &vertexErrorBlob);
-    if(FAILED(hr))
-    {
-        LOG(Error, "WinDX11Shader : Failed vertex shader compilation !");
-        std::string errorMsg = std::system_category().message(hr);
-        LOG(Error, errorMsg);
-
-        if (vertexErrorBlob) 
-        {
-            std::string errorMessage(static_cast<const char*>(vertexErrorBlob->GetBufferPointer()), vertexErrorBlob->GetBufferSize());
-            LOG(Error, errorMessage);
-            vertexErrorBlob->Release();
-        }
-    }
-
-    Shader->SetVSData(vertexBlob->GetBufferPointer(), vertexBlob->GetBufferSize());
-
-    ID3DBlob* pixelErrorBlob = nullptr;
-    ID3DBlob* pixelBlob;
-
-    hr = D3DCompileFromFile(PSFilePath, nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, "main", "ps_5_0", 0, 0, &pixelBlob, &pixelErrorBlob);
-    if(FAILED(hr))
-    {
-        LOG(Error, "WinDX11Shader : Failed pixel shader compilation !");
-        std::string errorMsg = std::system_category().message(hr);
-        LOG(Error, errorMsg);
-
-        if (pixelErrorBlob) 
-        {
-            std::string errorMessage(static_cast<const char*>(pixelErrorBlob->GetBufferPointer()), pixelErrorBlob->GetBufferSize());
-            LOG(Error, errorMessage);
-            pixelErrorBlob->Release();
-        }
-    }
-
-    Shader->SetPSData(pixelBlob->GetBufferPointer(), pixelBlob->GetBufferSize());
+    Shader->SetVSData(blobs.VertexBlob->GetBufferPointer(), blobs.VertexBlob->GetBufferSize());
+    Shader->SetPSData(blobs.PixelBlob->GetBufferPointer(), blobs.PixelBlob->GetBufferSize());
 
     return Shader;
 }

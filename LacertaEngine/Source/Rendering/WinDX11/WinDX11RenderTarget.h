@@ -20,7 +20,6 @@ public:
     void Clear(Renderer* renderer, Vector4 color) override;
     void Clear(Renderer* renderer, Vector4 color, int idx) override;
     void SetViewportSize(Renderer* renderer, UINT width, UINT height) override;
-    Texture* GetTargetTexture() override; // TODO this can be implemented in the base class
     Texture* CreateTextureFromDepth() override;
 
 private:
