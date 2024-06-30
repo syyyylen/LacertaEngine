@@ -7,7 +7,7 @@
 namespace LacertaEngine
 {
     
-class WinDX12CommandQueue
+class LACERTAENGINE_API WinDX12CommandQueue
 {
 public:
     WinDX12CommandQueue(ID3D12Device* device, D3D12_COMMAND_LIST_TYPE commandType);

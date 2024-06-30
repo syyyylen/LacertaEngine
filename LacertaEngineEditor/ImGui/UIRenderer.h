@@ -18,11 +18,12 @@ public:
     static void Create();
     static void Shutdown();
 
-    void InitializeUI(HWND hwnd, LacertaEditor* editor);
+    void InitializeUI(HWND hwnd, LacertaEditor* editor, RendererType rendererType);
     void Update();
     LacertaEditor* GetEditor() { return m_editor; }
 
 private:
+    inline static RendererType m_rendererType;
     std::vector<UIPanel*> m_panels;
     static UIRenderer* s_UIRenderer;
     LacertaEditor* m_editor;

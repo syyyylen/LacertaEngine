@@ -223,6 +223,7 @@
     <ClCompile Include="Source\Rendering\WinDX11\WinDX11Shader.cpp" />
     <ClCompile Include="Source\Rendering\WinDX11\WinDX11Texture.cpp" />
     <ClCompile Include="Source\Rendering\WinDX12\WinDX12CommandQueue.cpp" />
+    <ClCompile Include="Source\Rendering\WinDX12\WinDX12DescriptorHeap.cpp" />
     <ClCompile Include="Source\Rendering\WinDX12\WinDX12Renderer.cpp" />
     <ClCompile Include="Source\Window\Window.cpp" />
   </ItemGroup>
@@ -274,6 +275,7 @@
     <ClInclude Include="Source\Rendering\WinDX11\WinDX11Shader.h" />
     <ClInclude Include="Source\Rendering\WinDX11\WinDX11Texture.h" />
     <ClInclude Include="Source\Rendering\WinDX12\WinDX12CommandQueue.h" />
+    <ClInclude Include="Source\Rendering\WinDX12\WinDX12DescriptorHeap.h" />
     <ClInclude Include="Source\Rendering\WinDX12\WinDX12Renderer.h" />
     <ClInclude Include="Source\Utilities.h" />
     <ClInclude Include="Source\Window\Window.h" />

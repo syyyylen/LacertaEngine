@@ -1,5 +1,6 @@
 ﻿#include "UIRenderer.h"
 #include "imgui_impl_dx11.h"
+#include "imgui_impl_dx12.h"
 #include "imgui_impl_win32.h"
 #include "imgui_src/imgui.h"
 #include "UIPanels/DetailsPanel.h"
@@ -9,6 +10,7 @@
 #include "Rendering/RenderTarget.h"
 #include "Rendering/Texture.h"
 #include "Rendering/WinDX11/WinDX11Renderer.h"
+#include "Rendering/WinDX12/WinDX12Renderer.h"
 #include "UIPanels/TextureViewerPanel.h"
 
 namespace LacertaEngineEditor
@@ -44,16 +46,31 @@ void UIRenderer::Shutdown()
 {
     for(auto panel : s_UIRenderer->m_panels)
         panel->Close();
+
+    switch (m_rendererType)
+    {
+    case RENDERER_WIN_DX11:
+        {
+            ImGui_ImplDX11_Shutdown();
+            break;
+        }
     
-    ImGui_ImplDX11_Shutdown();
+    case RENDERER_WIN_DX12:
+        {
+            ImGui_ImplDX12_Shutdown();
+            break;
+        }
+    }
     ImGui_ImplWin32_Shutdown();
     ImGui::DestroyContext();
     
     delete s_UIRenderer;
 }
 
-void UIRenderer::InitializeUI(HWND hwnd, LacertaEditor* editor)
+void UIRenderer::InitializeUI(HWND hwnd, LacertaEditor* editor, RendererType rendererType)
 {
+    m_rendererType = rendererType;
+    
     // Setup Dear ImGui context
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
@@ -66,11 +83,31 @@ void UIRenderer::InitializeUI(HWND hwnd, LacertaEditor* editor)
     ImGui::StyleColorsDark();
 
     ImGui_ImplWin32_Init(hwnd);
-    WinDX11Renderer* Dx11Renderer = (WinDX11Renderer*)RHI::Get()->GetRenderer(); // TODO switch on renderer type and choose the right implementation
-    ImGui_ImplDX11_Init((ID3D11Device*)Dx11Renderer->GetDriver(), Dx11Renderer->GetImmediateContext());
 
+    switch (m_rendererType)
+    {
+    case RENDERER_WIN_DX11:
+    {
+        WinDX11Renderer* Dx11Renderer = (WinDX11Renderer*)RHI::Get()->GetRenderer();
+        ImGui_ImplDX11_Init((ID3D11Device*)Dx11Renderer->GetDriver(), Dx11Renderer->GetImmediateContext());
+        break;
+    }
+    
+    case RENDERER_WIN_DX12:
+    {
+            WinDX12Renderer* Dx12Renderer = (WinDX12Renderer*)RHI::Get()->GetRenderer();
+            auto srvHeap = Dx12Renderer->GetSrvHeap();
+            auto fontDescriptor = srvHeap->Allocate();
+            ImGui_ImplDX12_Init(Dx12Renderer->GetDevice(), Dx12Renderer->FramesInFlight(), Dx12Renderer->GetSwapChainFormat(),
+                srvHeap->GetHeap(), fontDescriptor.CPU, fontDescriptor.GPU);
+            break;
+    }
+    }
+    
     m_editor = editor;
 
+#if !USE_D3D12_RHI
+    
     //Create and store all the main panels
     m_panels.push_back(new GlobalSettingsPanel());
     m_panels.push_back(new SceneHierarchyPanel());
@@ -79,15 +116,39 @@ void UIRenderer::InitializeUI(HWND hwnd, LacertaEditor* editor)
 
     for(auto panel : m_panels)
         panel->Start();
+
+#endif
 }
 
 void UIRenderer::Update()
 {
     // Start the Dear ImGui frame
-    ImGui_ImplDX11_NewFrame();
+    switch (m_rendererType)
+    {
+    case RENDERER_WIN_DX11:
+        {
+            ImGui_ImplDX11_NewFrame();
+            break;
+        }
+        
+    case RENDERER_WIN_DX12:
+        {
+            ImGui_ImplDX12_NewFrame();
+            break;
+        }
+    }
     ImGui_ImplWin32_NewFrame();
     ImGui::NewFrame();
     ImGuizmo::BeginFrame();
+
+    // Stats 
+    { 
+        ImGui::Begin("FrameRate");                  
+        ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+        ImGui::End();
+    }
+
+#if !USE_D3D12_RHI
 
     // Dockspace wip
     static bool dockspaceOpen = true;
@@ -216,22 +277,35 @@ void UIRenderer::Update()
         }
     }
 
-    // Stats 
-    
-    { 
-        ImGui::Begin("FrameRate");                  
-        ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
-        ImGui::End();
-    }
-
     for(auto panel : m_panels)
         panel->Update();
 
     if(dockspaceOpen)
         ImGui::End(); // End dockspace
 
-    ImGui::Render();
-    ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
+#endif
+
+
+    switch (m_rendererType)
+    {
+    case RENDERER_WIN_DX11:
+        {
+            ImGui::Render();
+            ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
+            break;
+        }
+        
+    case RENDERER_WIN_DX12:
+        {
+            auto winDX12Renderer = (WinDX12Renderer*)RHI::Get()->GetRenderer();
+            auto cmdList = winDX12Renderer->GetCommandList();
+            ID3D12DescriptorHeap* pHeaps[] = { winDX12Renderer->GetSrvHeap()->GetHeap() };
+            cmdList->SetDescriptorHeaps(1, pHeaps);
+            ImGui::Render();
+            ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), cmdList);
+            break;
+        }
+    }
 }
     
 }
