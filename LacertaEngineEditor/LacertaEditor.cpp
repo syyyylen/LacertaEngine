@@ -544,8 +544,10 @@ void LacertaEditor::Update()
 
 #endif // D3D11 path
 
+#if USE_D3D12_RHI
     auto winDX12Renderer = (WinDX12Renderer*)RHI::Get()->GetRenderer();
     winDX12Renderer->FillCommandList();
+#endif
 
     // ----------------------------- UI Update  --------------------------
 
@@ -555,7 +557,9 @@ void LacertaEditor::Update()
     
     RHI::Get()->PresentSwapChain();
 
+#if USE_D3D12_RHI
     winDX12Renderer->ExecuteCommandList();
+#endif
 }
 
 void LacertaEditor::Quit()

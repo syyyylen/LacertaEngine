@@ -276,21 +276,6 @@ void WinDX11RenderTarget::SetViewportSize(Renderer* renderer, UINT width, UINT h
     localRenderer->GetImmediateContext()->RSSetViewports(1, &vp);
 }
 
-Texture* WinDX11RenderTarget::GetTargetTexture()
-{
-    return m_targetTexture;
-
-    /*
-    auto tex = new WinDX11Texture();
-    tex->SetSRV(GetTextureShaderResView());
-    tex->SetTextureIdx(texBindIdx);
-    tex->SetNumTexs(m_numRt);
-    if(m_targetTextureUAV)
-        tex->SetUAV(m_targetTextureUAV);
-    return tex;
-    */
-}
-
 Texture* WinDX11RenderTarget::CreateTextureFromDepth()
 {
     auto tex = new WinDX11Texture();

@@ -1,5 +1,9 @@
 ﻿#include "WinDX12Renderer.h"
+
+#include <d3d12shader.h>
+#include <dxcapi.h>
 #include "../../Logger/Logger.h"
+#include "../WinDXUtilities.h"
 
 LacertaEngine::WinDX12Renderer::WinDX12Renderer()
     : m_device(nullptr), m_debug(nullptr), m_debugDevice(nullptr), m_factory(nullptr), m_adapter(nullptr), m_swapChain(nullptr),
@@ -191,6 +195,33 @@ void LacertaEngine::WinDX12Renderer::Initialize(int* context, int width, int hei
     m_srvHeap = new WinDX12DescriptorHeap(this, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, 2048);
 
     OnResizeWindow(width, height);
+
+    // TODO remove this, D3D12 setup
+    CompiledShader compiledVS;
+    CompiledShader compiledPS;
+
+    WinDXUtilities::CompileShaderWithReflection("../LacertaEngine/Source/Rendering/Shaders/SimpleVertex.hlsl", ShaderType::Vertex, compiledVS);
+    WinDXUtilities::CompileShaderWithReflection("../LacertaEngine/Source/Rendering/Shaders/SimplePixel.hlsl", ShaderType::Pixel, compiledPS);
+
+    IDxcUtils* pUtils;
+    DxcCreateInstance(CLSID_DxcUtils, IID_PPV_ARGS(&pUtils));
+
+    DxcBuffer ShaderBuffer = {};
+    ShaderBuffer.Ptr = compiledVS.Bytecode.data();
+    ShaderBuffer.Size = compiledVS.Bytecode.size() * sizeof(uint32_t);
+
+    ID3D12ShaderReflection* pReflection;
+    hr = pUtils->CreateReflection(&ShaderBuffer, IID_PPV_ARGS(&pReflection));
+    if(FAILED(hr))
+    {
+        LOG(Error, "GraphicsPipeline : failed to create reflection for shader !");
+        std::string errorMsg = std::system_category().message(hr);
+        LOG(Error, errorMsg);
+    }
+
+    D3D12_SHADER_DESC desc;
+    pReflection->GetDesc(&desc);
+    pUtils->Release();
 }
 
 void LacertaEngine::WinDX12Renderer::LoadShaders()

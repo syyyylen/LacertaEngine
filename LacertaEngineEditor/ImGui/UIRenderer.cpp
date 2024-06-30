@@ -285,7 +285,6 @@ void UIRenderer::Update()
 
 #endif
 
-
     switch (m_rendererType)
     {
     case RENDERER_WIN_DX11:

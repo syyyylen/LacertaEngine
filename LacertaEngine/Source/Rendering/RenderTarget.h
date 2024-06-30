@@ -28,12 +28,12 @@ public:
     virtual void Clear(Renderer* renderer, Vector4 color, int idx) = 0;
     virtual void SetViewportSize(Renderer* renderer, UINT width, UINT height) = 0;
     virtual void Resize(Renderer* renderer, unsigned width, unsigned height) = 0;
-    virtual Texture* GetTargetTexture() = 0;
     virtual Texture* CreateTextureFromDepth() = 0;
 
     int GetNumRT() { return m_numRt; }
     bool RenderToTexture() const { return m_renderTargetType == RenderTargetType::Texture2D; }
     RenderTargetType GetRenderTargetType() const { return m_renderTargetType; }
+    virtual Texture* GetTargetTexture() { return m_targetTexture; }
 
 protected:
     Texture* m_targetTexture;
