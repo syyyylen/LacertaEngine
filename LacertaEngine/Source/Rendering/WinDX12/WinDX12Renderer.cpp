@@ -13,6 +13,8 @@ LacertaEngine::WinDX12Renderer::~WinDX12Renderer()
     delete m_graphicsQueue;
     delete m_computeQueue;
     delete m_copyQueue;
+    delete m_rtvHeap;
+    delete m_srvHeap;
 }
 
 void LacertaEngine::WinDX12Renderer::Initialize(int* context, int width, int height, int targetRefreshRate)
@@ -185,22 +187,8 @@ void LacertaEngine::WinDX12Renderer::Initialize(int* context, int width, int hei
         LOG(Error, errorMsg);
     }
 
-    // TODO temp, relocate this
-    D3D12_DESCRIPTOR_HEAP_DESC rtvHeapDesc;
-    rtvHeapDesc.NumDescriptors = m_swapChainBufferCount;
-    rtvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
-    rtvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
-    rtvHeapDesc.NodeMask = 0;
-    
-    hr = m_device->CreateDescriptorHeap(&rtvHeapDesc, IID_PPV_ARGS(&m_rtvHeap));
-    if(FAILED(hr))
-    {
-        LOG(Error, "SwapChain : failed to create swap chain !");
-        std::string errorMsg = std::system_category().message(hr);
-        LOG(Error, errorMsg);
-    }
-
-    m_rtvDescriptorSize = m_device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
+    m_rtvHeap = new WinDX12DescriptorHeap(this, D3D12_DESCRIPTOR_HEAP_TYPE_RTV, 2);
+    m_srvHeap = new WinDX12DescriptorHeap(this, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, 2048);
 
     OnResizeWindow(width, height);
 }
@@ -214,6 +202,10 @@ void LacertaEngine::WinDX12Renderer::SetBackbufferRenderTargetActive()
 }
 
 void LacertaEngine::WinDX12Renderer::PresentSwapChain()
+{
+}
+
+void LacertaEngine::WinDX12Renderer::FillCommandList()
 {
     // TODO for now placeholder function to debug D3D12 setup
 
@@ -248,14 +240,19 @@ void LacertaEngine::WinDX12Renderer::PresentSwapChain()
     m_commandList->RSSetViewports(1, &Viewport);
     m_commandList->RSSetScissorRects(1, &Rect);
 
-    D3D12_CPU_DESCRIPTOR_HANDLE backBufferView = m_rtvHeap->GetCPUDescriptorHandleForHeapStart();
-    backBufferView.ptr += m_currentBackbuffer * m_rtvDescriptorSize;
+    D3D12_CPU_DESCRIPTOR_HANDLE backBufferView = m_backBufferRtvHandles[m_currentBackbuffer].CPU;
 
     float clearValues[4] = { 1.0, 8.0, 0.0, 1.0 };
     m_commandList->ClearRenderTargetView(backBufferView, clearValues, 0, nullptr);
-
     m_commandList->OMSetRenderTargets(1, &backBufferView, true, nullptr);
+}
 
+void LacertaEngine::WinDX12Renderer::ExecuteCommandList()
+{
+    // TODO for now placeholder function to debug D3D12 setup
+    
+    auto backBuffer = m_swapChainBuffer[m_currentBackbuffer];
+    
     D3D12_RESOURCE_BARRIER barrierOut = {};
     barrierOut.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
     barrierOut.Transition.pResource = backBuffer;
@@ -294,13 +291,15 @@ void LacertaEngine::WinDX12Renderer::OnResizeWindow(unsigned width, unsigned hei
     {
         if(m_swapChainBuffer[i])
             m_swapChainBuffer[i]->Release();
+
+        if(m_backBufferRtvHandles[i].IsValid())
+            m_rtvHeap->Free(m_backBufferRtvHandles[i]);
     }
 
     m_swapChain->ResizeBuffers(m_swapChainBufferCount, width, height, m_swapChainFormat, DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH);
 
     m_currentBackbuffer = 0;
 
-    D3D12_CPU_DESCRIPTOR_HANDLE rtvHeapHandle = m_rtvHeap->GetCPUDescriptorHandleForHeapStart();
     for (UINT i = 0; i < m_swapChainBufferCount; i++)
     {
         hr = m_swapChain->GetBuffer(i, IID_PPV_ARGS(&m_swapChainBuffer[i]));
@@ -310,9 +309,9 @@ void LacertaEngine::WinDX12Renderer::OnResizeWindow(unsigned width, unsigned hei
             std::string errorMsg = std::system_category().message(hr);
             LOG(Error, errorMsg);
         }
-        
-        m_device->CreateRenderTargetView(m_swapChainBuffer[i], nullptr, rtvHeapHandle);
-        rtvHeapHandle.ptr += m_rtvDescriptorSize;
+
+        m_backBufferRtvHandles[i] = m_rtvHeap->Allocate();
+        m_device->CreateRenderTargetView(m_swapChainBuffer[i], nullptr, m_backBufferRtvHandles[i].CPU);
     }
 
     m_commandList->Close();

@@ -12,6 +12,9 @@
 #include "Rendering/SkyBoxPassLayouts.h"
 #include "Rendering/Texture.h"
 
+// TODO remove this, D3D12 tests
+#include "Rendering/WinDX12/WinDX12Renderer.h"
+
 #define MAX_MESHES 50
 
 #define SHADOW_CASCADES 3
@@ -260,11 +263,15 @@ void LacertaEditor::Start()
 
     m_sceneCamera.SetTranslation(Vector3(0.0f, 15.0f, -35.0f));
 
+#endif
+
     // ----------------------------- UI Initialization  ------------------------
 
     UIRenderer::Create();
-    UIRenderer::Get()->InitializeUI(hwnd, this);
-
+#if USE_D3D12_RHI
+    UIRenderer::Get()->InitializeUI(hwnd, this, RendererType::RENDERER_WIN_DX12);
+#else
+    UIRenderer::Get()->InitializeUI(hwnd, this, RendererType::RENDERER_WIN_DX11);
 #endif
 
     m_editorWindow->Maximize();
@@ -535,23 +542,26 @@ void LacertaEditor::Update()
     int height = windowRect.bottom - windowRect.top;
     RHI::Get()->SetBackbufferViewportSize(width, height);
 
+#endif // D3D11 path
+
+    auto winDX12Renderer = (WinDX12Renderer*)RHI::Get()->GetRenderer();
+    winDX12Renderer->FillCommandList();
+
     // ----------------------------- UI Update  --------------------------
 
     UIRenderer::Get()->Update();
 
-#endif // D3D11 path
-
     // ------------------------ UI & DrawCalls done, present Swap Chain now ----------------
     
     RHI::Get()->PresentSwapChain();
+
+    winDX12Renderer->ExecuteCommandList();
 }
 
 void LacertaEditor::Quit()
 {
     
-#if !USE_D3D12_RHI
     UIRenderer::Shutdown();
-#endif
     
     if(m_editorWindow)
         m_editorWindow->Destroy();

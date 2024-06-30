@@ -5,11 +5,12 @@
 #include <dxgi1_6.h>
 
 #include "WinDX12CommandQueue.h"
+#include "WinDX12DescriptorHeap.h"
 
 namespace LacertaEngine
 {
     
-class WinDX12Renderer : public Renderer
+class LACERTAENGINE_API WinDX12Renderer : public Renderer
 {
 public:
     WinDX12Renderer();
@@ -40,6 +41,18 @@ public:
     WinDX12CommandQueue* GetComputeQueue() { return m_computeQueue; }
     WinDX12CommandQueue* GetCopyQueue() { return m_copyQueue; }
 
+    UINT FramesInFlight() { return 1; } // TODO fix this
+    DXGI_FORMAT GetSwapChainFormat() { return m_swapChainFormat; }
+
+    WinDX12DescriptorHeap* GetRtvHeap() { return m_rtvHeap; }
+    WinDX12DescriptorHeap* GetSrvHeap() { return m_srvHeap; }
+
+    ID3D12GraphicsCommandList* GetCommandList() { return m_commandList; }
+
+    // TODO remove temp debug D3D12 functions
+    void FillCommandList();
+    void ExecuteCommandList();
+
 private:
     ID3D12Device* m_device;
     ID3D12Debug* m_debug;
@@ -60,9 +73,9 @@ private:
     ID3D12CommandAllocator* m_commandAllocator;
     ID3D12GraphicsCommandList* m_commandList;
 
-    // TODO create a Descriptor Heap class
-    UINT m_rtvDescriptorSize = 0;
-    ID3D12DescriptorHeap* m_rtvHeap;
+    WinDX12DescriptorHeap* m_rtvHeap;
+    WinDX12DescriptorHeap* m_srvHeap;
+    DescriptorHandle m_backBufferRtvHandles[2];
 
     bool m_msaaEnabled = false;
     UINT m_msaaQualityLevel;
