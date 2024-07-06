@@ -196,6 +196,7 @@ void LacertaEngine::WinDX12Renderer::Initialize(int* context, int width, int hei
 
     OnResizeWindow(width, height);
 
+    /*
     // TODO remove this, D3D12 setup
     CompiledShader compiledVS;
     CompiledShader compiledPS;
@@ -222,6 +223,7 @@ void LacertaEngine::WinDX12Renderer::Initialize(int* context, int width, int hei
     D3D12_SHADER_DESC desc;
     pReflection->GetDesc(&desc);
     pUtils->Release();
+    */
 }
 
 void LacertaEngine::WinDX12Renderer::LoadShaders()
@@ -236,7 +238,7 @@ void LacertaEngine::WinDX12Renderer::PresentSwapChain()
 {
 }
 
-void LacertaEngine::WinDX12Renderer::FillCommandList()
+void LacertaEngine::WinDX12Renderer::RenderToRT()
 {
     // TODO for now placeholder function to debug D3D12 setup
 
@@ -276,9 +278,19 @@ void LacertaEngine::WinDX12Renderer::FillCommandList()
     float clearValues[4] = { 1.0, 8.0, 0.0, 1.0 };
     m_commandList->ClearRenderTargetView(backBufferView, clearValues, 0, nullptr);
     m_commandList->OMSetRenderTargets(1, &backBufferView, true, nullptr);
+
+    // // Exec command list & get ready for UI rendering
+    // m_commandList->Close();
+    // ID3D12CommandList* cmdsLists[] = { m_commandList };
+    // m_graphicsQueue->GetCommandQueue()->ExecuteCommandLists(1, cmdsLists);
+    //
+    // m_graphicsQueue->FlushCommandQueue();
+    //
+    // m_commandAllocator->Reset();
+    // m_commandList->Reset(m_commandAllocator, nullptr);
 }
 
-void LacertaEngine::WinDX12Renderer::ExecuteCommandList()
+void LacertaEngine::WinDX12Renderer::Present()
 {
     // TODO for now placeholder function to debug D3D12 setup
     
@@ -325,6 +337,9 @@ void LacertaEngine::WinDX12Renderer::OnResizeWindow(unsigned width, unsigned hei
 
         if(m_backBufferRtvHandles[i].IsValid())
             m_rtvHeap->Free(m_backBufferRtvHandles[i]);
+
+        if(m_backbufferSrvHandles[i].IsValid())
+            m_srvHeap->Free(m_backbufferSrvHandles[i]);
     }
 
     m_swapChain->ResizeBuffers(m_swapChainBufferCount, width, height, m_swapChainFormat, DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH);
@@ -343,6 +358,16 @@ void LacertaEngine::WinDX12Renderer::OnResizeWindow(unsigned width, unsigned hei
 
         m_backBufferRtvHandles[i] = m_rtvHeap->Allocate();
         m_device->CreateRenderTargetView(m_swapChainBuffer[i], nullptr, m_backBufferRtvHandles[i].CPU);
+
+        m_backbufferSrvHandles[i] = m_srvHeap->Allocate();
+        D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
+        srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+        srvDesc.Format = m_swapChainFormat;
+        srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
+        srvDesc.Texture2D.MipLevels = 1;
+        m_device->CreateShaderResourceView(m_swapChainBuffer[i], &srvDesc, m_backbufferSrvHandles[i].CPU);
+
+        m_backbufferSrvHandles[i].GPU = m_srvHeap->GetHeap()->GetGPUDescriptorHandleForHeapStart();
     }
 
     m_commandList->Close();
