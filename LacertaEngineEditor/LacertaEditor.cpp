@@ -546,7 +546,7 @@ void LacertaEditor::Update()
 
 #if USE_D3D12_RHI
     auto winDX12Renderer = (WinDX12Renderer*)RHI::Get()->GetRenderer();
-    winDX12Renderer->FillCommandList();
+    winDX12Renderer->RenderToRT();
 #endif
 
     // ----------------------------- UI Update  --------------------------
@@ -558,7 +558,7 @@ void LacertaEditor::Update()
     RHI::Get()->PresentSwapChain();
 
 #if USE_D3D12_RHI
-    winDX12Renderer->ExecuteCommandList();
+    winDX12Renderer->Present();
 #endif
 }
 

@@ -50,8 +50,9 @@ public:
     ID3D12GraphicsCommandList* GetCommandList() { return m_commandList; }
 
     // TODO remove temp debug D3D12 functions
-    void FillCommandList();
-    void ExecuteCommandList();
+    DescriptorHandle GetBackBufferSrvHandle() { return m_backbufferSrvHandles[m_currentBackbuffer]; }
+    void RenderToRT();
+    void Present();
 
 private:
     ID3D12Device* m_device;
@@ -76,6 +77,7 @@ private:
     WinDX12DescriptorHeap* m_rtvHeap;
     WinDX12DescriptorHeap* m_srvHeap;
     DescriptorHandle m_backBufferRtvHandles[2];
+    DescriptorHandle m_backbufferSrvHandles[2];
 
     bool m_msaaEnabled = false;
     UINT m_msaaQualityLevel;
