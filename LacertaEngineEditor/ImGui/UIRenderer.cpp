@@ -106,11 +106,13 @@ void UIRenderer::InitializeUI(HWND hwnd, LacertaEditor* editor, RendererType ren
     
     m_editor = editor;
 
+#if !USE_D3D12_RHI
     //Create and store all the main panels
-    // m_panels.push_back(new GlobalSettingsPanel());
-    // m_panels.push_back(new SceneHierarchyPanel());
-    // m_panels.push_back(new DetailsPanel());
+    m_panels.push_back(new GlobalSettingsPanel());
+    m_panels.push_back(new SceneHierarchyPanel());
+    m_panels.push_back(new DetailsPanel());
     // m_panels.push_back(new TextureViewerPanel());
+#endif
 
     for(auto panel : m_panels)
         panel->Start();
@@ -147,7 +149,7 @@ void UIRenderer::Update()
 #if !USE_D3D12_RHI
 
     // Dockspace wip
-    static bool dockspaceOpen = true; // TODO re enable dockspace
+    static bool dockspaceOpen = true;
     if(dockspaceOpen)
     {
         static bool opt_fullscreen = true;
