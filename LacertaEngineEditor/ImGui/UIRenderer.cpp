@@ -106,11 +106,13 @@ void UIRenderer::InitializeUI(HWND hwnd, LacertaEditor* editor, RendererType ren
     
     m_editor = editor;
 
+#if !USE_D3D12_RHI
     //Create and store all the main panels
-    // m_panels.push_back(new GlobalSettingsPanel());
-    // m_panels.push_back(new SceneHierarchyPanel());
-    // m_panels.push_back(new DetailsPanel());
+    m_panels.push_back(new GlobalSettingsPanel());
+    m_panels.push_back(new SceneHierarchyPanel());
+    m_panels.push_back(new DetailsPanel());
     // m_panels.push_back(new TextureViewerPanel());
+#endif
 
     for(auto panel : m_panels)
         panel->Start();
@@ -144,8 +146,10 @@ void UIRenderer::Update()
         ImGui::End();
     }
 
+#if !USE_D3D12_RHI
+
     // Dockspace wip
-    static bool dockspaceOpen = false; // TODO re enable dockspace
+    static bool dockspaceOpen = true;
     if(dockspaceOpen)
     {
         static bool opt_fullscreen = true;
@@ -216,23 +220,6 @@ void UIRenderer::Update()
         }
     }
 
-    // ImGui::Begin("Viewport");
-    //
-    // ImVec2 viewportSize = ImGui::GetContentRegionAvail();
-    // m_editor->SetViewportCachedSize(Vector2(viewportSize.x, viewportSize.y));
-    //
-    // auto winDX12Renderer = (WinDX12Renderer*)RHI::Get()->GetRenderer();
-    // auto descriptor = winDX12Renderer->GetBackBufferSrvHandle();
-    //
-    // ImGui::Text("CPU handle = %p", descriptor.CPU.ptr);
-    // ImGui::Text("GPU handle = %p", descriptor.GPU.ptr);
-    //             
-    // ImGui::Image((ImTextureID)descriptor.GPU.ptr, viewportSize);
-    //
-    // ImGui::End();
-
-    /* // TODO re enable
-
     //Viewport 
     auto SceneTextureRenderTarget = RHI::Get()->GetRenderTarget(1);
     
@@ -289,13 +276,13 @@ void UIRenderer::Update()
         }
     }
 
-    */
-
     for(auto panel : m_panels)
         panel->Update();
 
     if(dockspaceOpen)
         ImGui::End(); // End dockspace
+
+#endif
 
     switch (m_rendererType)
     {

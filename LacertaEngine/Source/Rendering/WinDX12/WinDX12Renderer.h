@@ -43,14 +43,18 @@ public:
 
     UINT FramesInFlight() { return 1; } // TODO fix this
     DXGI_FORMAT GetSwapChainFormat() { return m_swapChainFormat; }
+    IDXGISwapChain* GetSwapChain() { return m_swapChain; }
 
     WinDX12DescriptorHeap* GetRtvHeap() { return m_rtvHeap; }
     WinDX12DescriptorHeap* GetSrvHeap() { return m_srvHeap; }
 
     ID3D12GraphicsCommandList* GetCommandList() { return m_commandList; }
+    ID3D12CommandAllocator* GetCommandAllocator() { return m_commandAllocator; }
+
+    static UINT GetSwapChainBufferCount() { return m_swapChainBufferCount; }
+    void SetCurrentBackbuffer(int idx) { m_currentBackbuffer = idx; }
 
     // TODO remove temp debug D3D12 functions
-    DescriptorHandle GetBackBufferSrvHandle() { return m_backbufferSrvHandles[m_currentBackbuffer]; }
     void RenderToRT();
     void Present();
 
@@ -63,7 +67,9 @@ private:
 
     static const UINT m_swapChainBufferCount = 2;
     DXGI_FORMAT m_swapChainFormat = DXGI_FORMAT_R8G8B8A8_UNORM;
+public: // TODO fix this
     ID3D12Resource* m_swapChainBuffer[m_swapChainBufferCount];
+private:
     IDXGISwapChain* m_swapChain;
     int m_currentBackbuffer = 0;
 
@@ -76,8 +82,6 @@ private:
 
     WinDX12DescriptorHeap* m_rtvHeap;
     WinDX12DescriptorHeap* m_srvHeap;
-    DescriptorHandle m_backBufferRtvHandles[2];
-    DescriptorHandle m_backbufferSrvHandles[2];
 
     bool m_msaaEnabled = false;
     UINT m_msaaQualityLevel;

@@ -62,6 +62,7 @@ void LacertaEditor::Start()
 
     // TODO temp simplifed init of D3D12
     RHI::Get()->InitializeRenderer((int*)hwnd, RendererType::RENDERER_WIN_DX12, width, height, 60);
+    // RHI::Get()->CreateRenderTarget(width, height, RenderTargetType::Texture2D, m_sceneRTidx); // TODO clear scene tex & Imgui docking
 
 #else // D3D11 path
     

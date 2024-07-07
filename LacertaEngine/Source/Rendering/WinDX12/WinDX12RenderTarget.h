@@ -1,16 +1,18 @@
 ﻿#pragma once
-#include <d3d11.h>
-#include "../RenderTarget.h"
 #include "../../Core.h"
+#include "../RenderTarget.h"
+#include <d3d12.h>
+
+#include "WinDX12DescriptorHeap.h"
 
 namespace LacertaEngine
 {
-
-class LACERTAENGINE_API WinDX11RenderTarget : public RenderTarget
+    
+class LACERTAENGINE_API WinDX12RenderTarget : public RenderTarget
 {
 public:
-    WinDX11RenderTarget();
-    virtual ~WinDX11RenderTarget();
+    WinDX12RenderTarget();
+    virtual ~WinDX12RenderTarget();
 
     void Initialize(Renderer* renderer, int width, int height, RenderTargetType renderTargetType, int numRt) override;
     void SetActive(Renderer* renderer) override;
@@ -23,10 +25,7 @@ public:
     Texture* CreateTextureFromDepth() override;
 
 private:
-    ID3D11ShaderResourceView* m_depthShaderResView;
-    ID3D11RenderTargetView** m_renderTargets;
-    ID3D11DepthStencilView** m_depthStencils;
-    ID3D11DepthStencilState* m_depthStencilState;
+    DescriptorHandle m_rtvHandles[2]; // TODO resize dynamically
 };
-
+    
 }
