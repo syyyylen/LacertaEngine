@@ -227,6 +227,7 @@
     <ClCompile Include="Source\Rendering\WinDX12\WinDX12CommandQueue.cpp" />
     <ClCompile Include="Source\Rendering\WinDX12\WinDX12DescriptorHeap.cpp" />
     <ClCompile Include="Source\Rendering\WinDX12\WinDX12Renderer.cpp" />
+    <ClCompile Include="Source\Rendering\WinDX12\WinDX12RenderTarget.cpp" />
     <ClCompile Include="Source\Rendering\WinDXUtilities.cpp" />
     <ClCompile Include="Source\Window\Window.cpp" />
   </ItemGroup>
@@ -280,6 +281,7 @@
     <ClInclude Include="Source\Rendering\WinDX12\WinDX12CommandQueue.h" />
     <ClInclude Include="Source\Rendering\WinDX12\WinDX12DescriptorHeap.h" />
     <ClInclude Include="Source\Rendering\WinDX12\WinDX12Renderer.h" />
+    <ClInclude Include="Source\Rendering\WinDX12\WinDX12RenderTarget.h" />
     <ClInclude Include="Source\Rendering\WinDXUtilities.h" />
     <ClInclude Include="Source\Utilities.h" />
     <ClInclude Include="Source\Window\Window.h" />

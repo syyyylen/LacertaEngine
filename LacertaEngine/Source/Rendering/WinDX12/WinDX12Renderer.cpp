@@ -2,6 +2,8 @@
 
 #include <d3d12shader.h>
 #include <dxcapi.h>
+
+#include "WinDX12RenderTarget.h"
 #include "../../Logger/Logger.h"
 #include "../WinDXUtilities.h"
 
@@ -194,8 +196,6 @@ void LacertaEngine::WinDX12Renderer::Initialize(int* context, int width, int hei
     m_rtvHeap = new WinDX12DescriptorHeap(this, D3D12_DESCRIPTOR_HEAP_TYPE_RTV, 2);
     m_srvHeap = new WinDX12DescriptorHeap(this, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, 2048);
 
-    OnResizeWindow(width, height);
-
     /*
     // TODO remove this, D3D12 setup
     CompiledShader compiledVS;
@@ -273,21 +273,9 @@ void LacertaEngine::WinDX12Renderer::RenderToRT()
     m_commandList->RSSetViewports(1, &Viewport);
     m_commandList->RSSetScissorRects(1, &Rect);
 
-    D3D12_CPU_DESCRIPTOR_HANDLE backBufferView = m_backBufferRtvHandles[m_currentBackbuffer].CPU;
-
-    float clearValues[4] = { 1.0, 8.0, 0.0, 1.0 };
-    m_commandList->ClearRenderTargetView(backBufferView, clearValues, 0, nullptr);
-    m_commandList->OMSetRenderTargets(1, &backBufferView, true, nullptr);
-
-    // // Exec command list & get ready for UI rendering
-    // m_commandList->Close();
-    // ID3D12CommandList* cmdsLists[] = { m_commandList };
-    // m_graphicsQueue->GetCommandQueue()->ExecuteCommandLists(1, cmdsLists);
-    //
-    // m_graphicsQueue->FlushCommandQueue();
-    //
-    // m_commandAllocator->Reset();
-    // m_commandList->Reset(m_commandAllocator, nullptr);
+    auto backBufferRT = m_renderTargets[0];
+    backBufferRT->Clear(this, Vector4(1.0, 8.0, 0.0, 1.0), m_currentBackbuffer);
+    backBufferRT->SetActive(this, m_currentBackbuffer);
 }
 
 void LacertaEngine::WinDX12Renderer::Present()
@@ -321,61 +309,12 @@ void LacertaEngine::WinDX12Renderer::Present()
 
 void LacertaEngine::WinDX12Renderer::OnResizeWindow(unsigned width, unsigned height)
 {
-    m_graphicsQueue->FlushCommandQueue();
-    HRESULT hr = m_commandList->Reset(m_commandAllocator, nullptr);
-    if(FAILED(hr))
-    {
-        LOG(Error, "CommandList : failed to Reset");
-        std::string errorMsg = std::system_category().message(hr);
-        LOG(Error, errorMsg);
-    }
-
-    for(int i = 0; i < m_swapChainBufferCount; ++i)
-    {
-        if(m_swapChainBuffer[i])
-            m_swapChainBuffer[i]->Release();
-
-        if(m_backBufferRtvHandles[i].IsValid())
-            m_rtvHeap->Free(m_backBufferRtvHandles[i]);
-
-        if(m_backbufferSrvHandles[i].IsValid())
-            m_srvHeap->Free(m_backbufferSrvHandles[i]);
-    }
-
-    m_swapChain->ResizeBuffers(m_swapChainBufferCount, width, height, m_swapChainFormat, DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH);
-
-    m_currentBackbuffer = 0;
-
-    for (UINT i = 0; i < m_swapChainBufferCount; i++)
-    {
-        hr = m_swapChain->GetBuffer(i, IID_PPV_ARGS(&m_swapChainBuffer[i]));
-        if(FAILED(hr))
-        {
-            LOG(Error, "SwapChain : failed to get buffer");
-            std::string errorMsg = std::system_category().message(hr);
-            LOG(Error, errorMsg);
-        }
-
-        m_backBufferRtvHandles[i] = m_rtvHeap->Allocate();
-        m_device->CreateRenderTargetView(m_swapChainBuffer[i], nullptr, m_backBufferRtvHandles[i].CPU);
-
-        m_backbufferSrvHandles[i] = m_srvHeap->Allocate();
-        D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
-        srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
-        srvDesc.Format = m_swapChainFormat;
-        srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
-        srvDesc.Texture2D.MipLevels = 1;
-        m_device->CreateShaderResourceView(m_swapChainBuffer[i], &srvDesc, m_backbufferSrvHandles[i].CPU);
-
-        m_backbufferSrvHandles[i].GPU = m_srvHeap->GetHeap()->GetGPUDescriptorHandleForHeapStart();
-    }
-
-    m_commandList->Close();
-    ID3D12CommandList* cmdLists[] = { m_commandList };
-    m_graphicsQueue->GetCommandQueue()->ExecuteCommandLists(1, cmdLists);
-
-    m_graphicsQueue->FlushCommandQueue();
+    WinDX12RenderTarget* rendTarg = (WinDX12RenderTarget*)m_renderTargets[0];
+    if(rendTarg == nullptr)
+        return;
     
+    rendTarg->Resize(this, width, height);
+
     cachedWidth = width;
     cachedHeight = height;
 }
@@ -394,7 +333,12 @@ void LacertaEngine::WinDX12Renderer::SetSamplerState(bool comparisonSampler)
 
 LacertaEngine::RenderTarget* LacertaEngine::WinDX12Renderer::CreateRenderTarget(int width, int height, RenderTargetType renderTargetType, int& outRTidx, int numRt)
 {
-    return nullptr;
+    WinDX12RenderTarget* textureRendTarg = new WinDX12RenderTarget();
+    textureRendTarg->Initialize(this, width, height, renderTargetType, numRt);
+    m_renderTargets.emplace_back(textureRendTarg);
+
+    outRTidx = (int)m_renderTargets.size() - 1;
+    return textureRendTarg;
 }
 
 void LacertaEngine::WinDX12Renderer::ExecuteComputeShader(std::string name, UINT x, UINT y, UINT z)
